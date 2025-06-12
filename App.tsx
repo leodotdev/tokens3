@@ -1,13 +1,15 @@
-import { ScreenContent } from 'components/ScreenContent';
+import React from 'react';
 import { StatusBar } from 'expo-status-bar';
+import { GluestackUIProvider } from './components/ui/provider';
+import { MainScreen } from './components/screens/MainScreen';
 
 import './global.css';
 
 export default function App() {
   return (
-    <>
-      <ScreenContent title="Home" path="App.tsx"></ScreenContent>
+    <GluestackUIProvider>
+      <MainScreen />
       <StatusBar style="auto" />
-    </>
+    </GluestackUIProvider>
   );
 }
