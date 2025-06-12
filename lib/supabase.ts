@@ -6,7 +6,7 @@ const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || '';
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-// Enhanced database types based on tokens2 learnings
+// Database types matching your existing products table structure
 export type Database = {
   public: {
     Tables: {
@@ -14,50 +14,57 @@ export type Database = {
         Row: {
           id: string;
           name: string;
-          url: string;
+          description: string | null;
           price: number | null;
-          original_price: number | null; // Track price changes
           image_url: string | null;
           category: string | null;
-          status: 'active' | 'wishlist' | 'purchased' | 'discontinued';
-          tags: string[] | null; // For flexible organization
-          notes: string | null; // Personal notes
-          priority: 'low' | 'medium' | 'high' | null; // Purchase priority
-          last_checked: string | null; // When price was last checked
+          in_stock: boolean | null;
+          amazon_link: string | null;
           created_at: string;
           updated_at: string;
+          // Future enhancements (will be added via migration)
+          original_price?: number | null;
+          tags?: string[] | null;
+          notes?: string | null;
+          priority?: 'low' | 'medium' | 'high' | null;
+          status?: 'active' | 'wishlist' | 'purchased' | 'discontinued' | null;
+          last_checked?: string | null;
         };
         Insert: {
           id?: string;
           name: string;
-          url: string;
+          description?: string | null;
           price?: number | null;
-          original_price?: number | null;
           image_url?: string | null;
           category?: string | null;
-          status?: 'active' | 'wishlist' | 'purchased' | 'discontinued';
+          in_stock?: boolean | null;
+          amazon_link?: string | null;
+          created_at?: string;
+          updated_at?: string;
+          original_price?: number | null;
           tags?: string[] | null;
           notes?: string | null;
           priority?: 'low' | 'medium' | 'high' | null;
+          status?: 'active' | 'wishlist' | 'purchased' | 'discontinued' | null;
           last_checked?: string | null;
-          created_at?: string;
-          updated_at?: string;
         };
         Update: {
           id?: string;
           name?: string;
-          url?: string;
+          description?: string | null;
           price?: number | null;
-          original_price?: number | null;
           image_url?: string | null;
           category?: string | null;
-          status?: 'active' | 'wishlist' | 'purchased' | 'discontinued';
+          in_stock?: boolean | null;
+          amazon_link?: string | null;
+          created_at?: string;
+          updated_at?: string;
+          original_price?: number | null;
           tags?: string[] | null;
           notes?: string | null;
           priority?: 'low' | 'medium' | 'high' | null;
+          status?: 'active' | 'wishlist' | 'purchased' | 'discontinued' | null;
           last_checked?: string | null;
-          created_at?: string;
-          updated_at?: string;
         };
       };
     };
