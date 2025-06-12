@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, ScrollView, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, FlatList, Dimensions } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -10,10 +10,22 @@ import Animated, {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { productQueries } from '../../lib/queries';
 import type { Product } from '../../lib/supabase';
-import { FluentEmoji, SparklesEmoji, ShoppingCartEmoji } from '../icons/FluentEmoji';
+import { FluentEmoji, SparklesEmoji, ShoppingCartEmoji } from '../icons/FluentEmojiReal';
+import { ProductCard } from '../features/ProductCard';
+
+const { width } = Dimensions.get('window');
+const CARD_MARGIN = 12;
+const PADDING = 24;
+const getNumColumns = () => {
+  const availableWidth = width - PADDING * 2;
+  if (availableWidth > 800) return 3; // Desktop
+  if (availableWidth > 500) return 2; // Tablet
+  return 1; // Mobile
+};
 
 export const MainScreen: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
 
   // Animation values
@@ -29,11 +41,14 @@ export const MainScreen: React.FC = () => {
 
       if (!error && data) {
         setProducts(data);
+        if (!searchQuery) {
+          setAllProducts(data); // Store all products for reference
+        }
       }
     } catch {
       console.log('Products will load when Supabase is configured');
-      // Mock data for now
       setProducts([]);
+      setAllProducts([]);
     }
   }, [searchQuery]);
 
@@ -83,17 +98,35 @@ export const MainScreen: React.FC = () => {
     ],
   }));
 
-  const EmptyState = () => (
-    <View className="flex-1 items-center justify-center px-8">
-      <SparklesEmoji size={80} />
-      <Text className="mt-6 text-center text-2xl font-bold text-gray-800">
-        Ready for something magical?
-      </Text>
-      <Text className="mt-3 text-center leading-6 text-gray-600">
-        Add your first product and watch your collection come to life
-      </Text>
-    </View>
-  );
+  const EmptyState = () => {
+    const isSearching = searchQuery.length > 0;
+
+    if (isSearching) {
+      return (
+        <View className="flex-1 items-center justify-center px-8">
+          <FluentEmoji name="Search" size={60} />
+          <Text className="mt-6 text-center text-xl font-semibold text-gray-700">
+            No results for &ldquo;{searchQuery}&rdquo;
+          </Text>
+          <Text className="mt-2 text-center text-gray-600">
+            Try searching with different keywords
+          </Text>
+        </View>
+      );
+    }
+
+    return (
+      <View className="flex-1 items-center justify-center px-8">
+        <SparklesEmoji size={80} />
+        <Text className="mt-6 text-center text-2xl font-bold text-gray-800">
+          Ready for something magical?
+        </Text>
+        <Text className="mt-3 text-center leading-6 text-gray-600">
+          Add your first product and watch your collection come to life
+        </Text>
+      </View>
+    );
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -118,6 +151,14 @@ export const MainScreen: React.FC = () => {
             onChangeText={setSearchQuery}
           />
         </View>
+
+        {/* Search Results Count */}
+        {searchQuery && (
+          <Text className="mt-2 text-sm text-gray-600">
+            {products.length} result{products.length !== 1 ? 's' : ''} for &ldquo;{searchQuery}
+            &rdquo;
+          </Text>
+        )}
       </Animated.View>
 
       {/* Product List with fade-in */}
@@ -125,12 +166,49 @@ export const MainScreen: React.FC = () => {
         {products.length === 0 ? (
           <EmptyState />
         ) : (
-          <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
-            {/* Product grid will be implemented here */}
-            <Text className="mt-8 text-center text-gray-600">
-              Products loading from Supabase...
-            </Text>
-          </ScrollView>
+          <FlatList
+            data={products}
+            numColumns={getNumColumns()}
+            key={getNumColumns()} // Force re-render on orientation change
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{
+              paddingHorizontal: PADDING,
+              paddingBottom: 100, // Space for FAB
+            }}
+            columnWrapperStyle={
+              getNumColumns() > 1 ? { justifyContent: 'space-between' } : undefined
+            }
+            renderItem={({ item: product, index }) => (
+              <Animated.View
+                style={[
+                  {
+                    opacity: listOpacity,
+                    transform: [
+                      {
+                        translateY: interpolate(listOpacity.value, [0, 1], [20, 0]),
+                      },
+                    ],
+                  },
+                  getNumColumns() === 1
+                    ? { width: '100%', marginBottom: CARD_MARGIN }
+                    : {
+                        width:
+                          (width - PADDING * 2 - CARD_MARGIN * (getNumColumns() - 1)) /
+                          getNumColumns(),
+                        marginBottom: CARD_MARGIN,
+                      },
+                ]}>
+                <ProductCard
+                  product={product}
+                  onLongPress={() => {
+                    // Future: Select for bulk operations
+                    console.log('Long pressed:', product.name);
+                  }}
+                />
+              </Animated.View>
+            )}
+            keyExtractor={(item) => item.id}
+          />
         )}
       </Animated.View>
 

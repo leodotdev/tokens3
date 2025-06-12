@@ -9,6 +9,7 @@ export const productQueries = {
     category?: string;
     priority?: Product['priority'];
     search?: string;
+    in_stock?: boolean;
   }) {
     let query = supabase.from('products').select('*').order('updated_at', { ascending: false });
 
@@ -22,7 +23,12 @@ export const productQueries = {
       query = query.eq('priority', filters.priority);
     }
     if (filters?.search) {
-      query = query.or(`name.ilike.%${filters.search}%,category.ilike.%${filters.search}%`);
+      query = query.or(
+        `name.ilike.%${filters.search}%,category.ilike.%${filters.search}%,description.ilike.%${filters.search}%`
+      );
+    }
+    if (filters?.in_stock !== undefined) {
+      query = query.eq('in_stock', filters.in_stock);
     }
 
     const { data, error } = await query;
