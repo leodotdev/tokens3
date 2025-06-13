@@ -16,12 +16,7 @@ import { ProductCard } from '../features/ProductCard';
 const { width } = Dimensions.get('window');
 const CARD_MARGIN = 12;
 const PADDING = 24;
-const getNumColumns = () => {
-  const availableWidth = width - PADDING * 2;
-  if (availableWidth > 800) return 3; // Desktop
-  if (availableWidth > 500) return 2; // Tablet
-  return 1; // Mobile
-};
+const NUM_COLUMNS = width > 800 ? 3 : width > 500 ? 2 : 1;
 
 export const MainScreen: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -168,15 +163,15 @@ export const MainScreen: React.FC = () => {
         ) : (
           <FlatList
             data={products}
-            numColumns={getNumColumns()}
-            key={getNumColumns()} // Force re-render on orientation change
+            numColumns={NUM_COLUMNS}
+            key={NUM_COLUMNS} // Force re-render on orientation change
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{
               paddingHorizontal: PADDING,
               paddingBottom: 100, // Space for FAB
             }}
             columnWrapperStyle={
-              getNumColumns() > 1 ? { justifyContent: 'space-between' } : undefined
+              NUM_COLUMNS > 1 ? { justifyContent: 'space-between' } : undefined
             }
             renderItem={({ item: product, index }) => (
               <Animated.View
@@ -189,12 +184,12 @@ export const MainScreen: React.FC = () => {
                       },
                     ],
                   },
-                  getNumColumns() === 1
+                  NUM_COLUMNS === 1
                     ? { width: '100%', marginBottom: CARD_MARGIN }
                     : {
                         width:
-                          (width - PADDING * 2 - CARD_MARGIN * (getNumColumns() - 1)) /
-                          getNumColumns(),
+                          (width - PADDING * 2 - CARD_MARGIN * (NUM_COLUMNS - 1)) /
+                          NUM_COLUMNS,
                         marginBottom: CARD_MARGIN,
                       },
                 ]}>
