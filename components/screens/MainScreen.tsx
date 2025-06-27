@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, TextInput, TouchableOpacity, FlatList, Dimensions } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, FlatList, Dimensions, useWindowDimensions } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -13,12 +13,12 @@ import type { Product } from '../../lib/supabase';
 import { FluentEmoji, SparklesEmoji, ShoppingCartEmoji } from '../icons/FluentEmojiReal';
 import { ProductCard } from '../features/ProductCard';
 
-const { width } = Dimensions.get('window');
 const CARD_MARGIN = 12;
 const PADDING = 24;
-const NUM_COLUMNS = width > 800 ? 3 : width > 500 ? 2 : 1;
 
 export const MainScreen: React.FC = () => {
+  const { width } = useWindowDimensions();
+  const NUM_COLUMNS = width > 960 ? 4 : width > 500 ? 2 : 1;
   const [products, setProducts] = useState<Product[]>([]);
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -101,7 +101,7 @@ export const MainScreen: React.FC = () => {
         <View className="flex-1 items-center justify-center px-8">
           <FluentEmoji name="Search" size={60} />
           <Text className="mt-6 text-center text-xl font-semibold text-gray-700">
-            No results for &ldquo;{searchQuery}&rdquo;
+            No results for "{searchQuery}"
           </Text>
           <Text className="mt-2 text-center text-gray-600">
             Try searching with different keywords
@@ -125,6 +125,7 @@ export const MainScreen: React.FC = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
+      <View style={{ flex: 1, maxWidth: 960, alignSelf: 'center', width: '100%' }}>
       {/* Header with gentle animation */}
       <Animated.View style={[headerAnimatedStyle]} className="px-6 pb-6 pt-4">
         <View className="mb-6 flex-row items-center justify-between">
@@ -150,8 +151,7 @@ export const MainScreen: React.FC = () => {
         {/* Search Results Count */}
         {searchQuery && (
           <Text className="mt-2 text-sm text-gray-600">
-            {products.length} result{products.length !== 1 ? 's' : ''} for &ldquo;{searchQuery}
-            &rdquo;
+            {products.length} result{products.length !== 1 ? 's' : ''} for "{searchQuery}"
           </Text>
         )}
       </Animated.View>
@@ -173,35 +173,25 @@ export const MainScreen: React.FC = () => {
             columnWrapperStyle={
               NUM_COLUMNS > 1 ? { justifyContent: 'space-between' } : undefined
             }
-            renderItem={({ item: product, index }) => (
-              <Animated.View
-                style={[
-                  {
-                    opacity: listOpacity,
-                    transform: [
-                      {
-                        translateY: interpolate(listOpacity.value, [0, 1], [20, 0]),
-                      },
-                    ],
-                  },
-                  NUM_COLUMNS === 1
-                    ? { width: '100%', marginBottom: CARD_MARGIN }
-                    : {
-                        width:
-                          (width - PADDING * 2 - CARD_MARGIN * (NUM_COLUMNS - 1)) /
-                          NUM_COLUMNS,
-                        marginBottom: CARD_MARGIN,
-                      },
-                ]}>
-                <ProductCard
-                  product={product}
-                  onLongPress={() => {
-                    // Future: Select for bulk operations
-                    console.log('Long pressed:', product.name);
-                  }}
-                />
-              </Animated.View>
-            )}
+            renderItem={({ item: product, index }) => {
+              const containerWidth = Math.min(width, 960); // Respect max width
+              const availableWidth = containerWidth - PADDING * 2;
+              const itemWidth = NUM_COLUMNS === 1 
+                ? availableWidth
+                : (availableWidth - CARD_MARGIN * (NUM_COLUMNS - 1)) / NUM_COLUMNS;
+              
+              return (
+                <View style={{ width: itemWidth, marginBottom: CARD_MARGIN }}>
+                  <ProductCard
+                    product={product}
+                    onLongPress={() => {
+                      // Future: Select for bulk operations
+                      console.log('Long pressed:', product.name);
+                    }}
+                  />
+                </View>
+              );
+            }}
             keyExtractor={(item) => item.id}
           />
         )}
@@ -218,7 +208,7 @@ export const MainScreen: React.FC = () => {
           },
         ]}>
         <TouchableOpacity
-          className="h-16 w-16 items-center justify-center rounded-full bg-blue-500 shadow-lg"
+          className="h-16 w-16 items-center justify-center rounded-full bg-blue-500 border border-blue-600"
           onPress={() => {
             // Add product action - will implement
             console.log('Add product pressed');
@@ -226,6 +216,7 @@ export const MainScreen: React.FC = () => {
           <FluentEmoji name="Plus" size={24} />
         </TouchableOpacity>
       </Animated.View>
+      </View>
     </SafeAreaView>
   );
 };

@@ -67,11 +67,17 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onPress, onLo
         onLongPress={onLongPress}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
-        className="mb-4 overflow-hidden rounded-2xl bg-white shadow-sm"
+        style={{
+          marginBottom: 16,
+          overflow: 'hidden',
+          borderRadius: 16,
+          backgroundColor: 'white',
+          borderWidth: 1,
+          borderColor: '#E5E7EB',
+        }}
         activeOpacity={0.9}>
-        {/* Product Image */}
         {product.image_url && (
-          <View className="aspect-square w-full overflow-hidden rounded-t-2xl bg-gray-100">
+          <View className="w-full overflow-hidden rounded-t-2xl bg-gray-100" style={{ aspectRatio: 1 }}>
             <Image
               source={{ uri: product.image_url }}
               className="h-full w-full"
@@ -80,9 +86,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onPress, onLo
           </View>
         )}
 
-        {/* Product Info */}
         <View className="p-4">
-          {/* Header with status emoji */}
           <View className="mb-2 flex-row items-start justify-between">
             <Text className="flex-1 text-base font-semibold text-gray-900" numberOfLines={2}>
               {product.name}
@@ -90,14 +94,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onPress, onLo
             <View className="ml-2">{getStatusEmoji()}</View>
           </View>
 
-          {/* Description */}
           {product.description && (
             <Text className="mb-3 text-sm leading-5 text-gray-600" numberOfLines={2}>
               {product.description}
             </Text>
           )}
 
-          {/* Price and Category */}
           <View className="flex-row items-center justify-between">
             <View>
               {product.price && (
@@ -112,7 +114,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onPress, onLo
               )}
             </View>
 
-            {/* Stock Status */}
             {product.in_stock !== null && (
               <View
                 className={`rounded-full px-3 py-1 ${
