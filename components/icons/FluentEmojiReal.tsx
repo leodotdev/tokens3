@@ -1,5 +1,5 @@
-import React from 'react';
-import { Image, View } from 'react-native';
+import React, { useState } from 'react';
+import { Image, View, Text, Platform } from 'react-native';
 
 // Real FluentUI emoji implementation using Microsoft's Fluent Emoji assets
 type EmojiName =
@@ -34,6 +34,23 @@ const emojiAssetMap: Record<EmojiName, string> = {
   Close: 'cross_mark',
 };
 
+// Unicode fallbacks for when images fail to load
+const emojiFallbackMap: Record<EmojiName, string> = {
+  ShoppingCart: '🛒',
+  Sparkles: '✨',
+  Heart: '❤️',
+  Star: '⭐',
+  Plus: '➕',
+  Search: '🔍',
+  Filter: '🔽',
+  Delete: '🗑️',
+  Edit: '✏️',
+  Check: '✅',
+  CheckboxChecked: '☑️',
+  CheckboxUnchecked: '☐',
+  Close: '✖️',
+};
+
 interface FluentEmojiProps {
   name: EmojiName;
   size?: number;
@@ -47,13 +64,46 @@ export const FluentEmoji: React.FC<FluentEmojiProps> = ({
   style,
   variant = '3D' 
 }) => {
+  const [imageError, setImageError] = useState(false);
+  const [imageLoading, setImageLoading] = useState(true);
   const assetName = emojiAssetMap[name];
+  const fallbackEmoji = emojiFallbackMap[name] || '⭐';
+  
+  // On iOS, start with Unicode emoji for immediate display
+  const shouldUseImage = Platform.OS !== 'ios' || !imageLoading;
   
   // Construct URL to Fluent Emoji from GitHub CDN
   const getEmojiUrl = () => {
     const variantPath = variant.toLowerCase().replace(' ', '_');
     return `https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/${assetName}/${variant}/${assetName}_${variantPath}.png`;
   };
+
+  // If image failed to load or we're using fallback, show Unicode emoji
+  if (imageError || !shouldUseImage) {
+    return (
+      <View
+        style={[
+          {
+            width: size,
+            height: size,
+            justifyContent: 'center',
+            alignItems: 'center',
+          },
+          style,
+        ]}>
+        <Text style={{ fontSize: size * 0.8, lineHeight: size }}>{fallbackEmoji}</Text>
+        {/* Hidden image to test loading on iOS */}
+        {Platform.OS === 'ios' && imageLoading && (
+          <Image
+            source={{ uri: getEmojiUrl() }}
+            style={{ width: 0, height: 0, position: 'absolute' }}
+            onLoad={() => setImageLoading(false)}
+            onError={() => setImageError(true)}
+          />
+        )}
+      </View>
+    );
+  }
 
   return (
     <View
@@ -70,6 +120,7 @@ export const FluentEmoji: React.FC<FluentEmojiProps> = ({
         source={{ uri: getEmojiUrl() }}
         style={{ width: size, height: size }}
         resizeMode="contain"
+        onError={() => setImageError(true)}
       />
     </View>
   );
