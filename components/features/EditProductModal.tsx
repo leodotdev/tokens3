@@ -25,7 +25,7 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({
   onProductUpdated,
 }) => {
   const backdropOpacity = useSharedValue(0);
-  const modalTranslateY = useSharedValue(Platform.OS === 'web' ? 0 : 50);
+  const modalTranslateY = useSharedValue(Platform.OS === 'web' ? 0 : 400);
   const modalOpacity = useSharedValue(0);
   const modalScale = useSharedValue(Platform.OS === 'web' ? 0.95 : 1);
 
@@ -47,7 +47,7 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({
       if (isWeb) {
         modalScale.value = withSpring(0.95, { damping: 20, stiffness: 300 });
       } else {
-        modalTranslateY.value = withSpring(50, { damping: 20, stiffness: 300 });
+        modalTranslateY.value = withSpring(400, { damping: 20, stiffness: 300 });
       }
       modalOpacity.value = withTiming(0, { duration: 200 });
     }
@@ -110,11 +110,13 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({
             {
               backgroundColor: '#ffffff',
               borderRadius: isWeb ? 24 : 0,
-              borderTopLeftRadius: 24,
-              borderTopRightRadius: 24,
+              borderTopLeftRadius: isWeb ? 24 : 20,
+              borderTopRightRadius: isWeb ? 24 : 20,
+              minHeight: isWeb ? undefined : '50%',
               maxHeight: isWeb ? '80%' : '90%',
               maxWidth: isWeb ? 600 : undefined,
               width: isWeb ? '100%' : undefined,
+              flex: isWeb ? 0 : undefined,
               shadowColor: '#000',
               shadowOffset: {
                 width: 0,
