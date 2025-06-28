@@ -17,21 +17,21 @@ type EmojiName =
   | 'CheckboxUnchecked'
   | 'Close';
 
-// Map our names to Fluent Emoji asset names
-const emojiAssetMap: Record<EmojiName, string> = {
-  ShoppingCart: 'shopping_cart',
-  Sparkles: 'sparkles',
-  Heart: 'red_heart',
-  Star: 'star',
-  Plus: 'plus',
-  Search: 'magnifying_glass_tilted_left',
-  Filter: 'filter',
-  Delete: 'wastebasket',
-  Edit: 'pencil',
-  Check: 'check_mark',
-  CheckboxChecked: 'check_box_with_check',
-  CheckboxUnchecked: 'white_square_button',
-  Close: 'cross_mark',
+// Map our names to Fluent Emoji folder names (with spaces and proper capitalization)
+const emojiAssetMap: Record<EmojiName, { folder: string; filename: string }> = {
+  ShoppingCart: { folder: 'Shopping%20cart', filename: 'shopping_cart' },
+  Sparkles: { folder: 'Sparkles', filename: 'sparkles' },
+  Heart: { folder: 'Red%20heart', filename: 'red_heart' },
+  Star: { folder: 'Star', filename: 'star' },
+  Plus: { folder: 'Plus', filename: 'plus' },
+  Search: { folder: 'Magnifying%20glass%20tilted%20left', filename: 'magnifying_glass_tilted_left' },
+  Filter: { folder: 'Filter', filename: 'filter' },
+  Delete: { folder: 'Wastebasket', filename: 'wastebasket' },
+  Edit: { folder: 'Pencil', filename: 'pencil' },
+  Check: { folder: 'Check%20mark', filename: 'check_mark' },
+  CheckboxChecked: { folder: 'Check%20box%20with%20check', filename: 'check_box_with_check' },
+  CheckboxUnchecked: { folder: 'White%20large%20square', filename: 'white_large_square' },
+  Close: { folder: 'Cross%20mark', filename: 'cross_mark' },
 };
 
 // Unicode fallbacks for when images fail to load
@@ -65,21 +65,17 @@ export const FluentEmoji: React.FC<FluentEmojiProps> = ({
   variant = '3D' 
 }) => {
   const [imageError, setImageError] = useState(false);
-  const [imageLoading, setImageLoading] = useState(true);
-  const assetName = emojiAssetMap[name];
+  const assetInfo = emojiAssetMap[name];
   const fallbackEmoji = emojiFallbackMap[name] || '⭐';
   
-  // On iOS, start with Unicode emoji for immediate display
-  const shouldUseImage = Platform.OS !== 'ios' || !imageLoading;
-  
-  // Construct URL to Fluent Emoji from GitHub CDN
+  // Construct URL to Fluent Emoji from GitHub CDN with correct format
   const getEmojiUrl = () => {
     const variantPath = variant.toLowerCase().replace(' ', '_');
-    return `https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/${assetName}/${variant}/${assetName}_${variantPath}.png`;
+    return `https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/${assetInfo.folder}/${variant}/${assetInfo.filename}_${variantPath}.png`;
   };
 
-  // If image failed to load or we're using fallback, show Unicode emoji
-  if (imageError || !shouldUseImage) {
+  // If image failed to load, show Unicode emoji fallback
+  if (imageError) {
     return (
       <View
         style={[
@@ -92,15 +88,6 @@ export const FluentEmoji: React.FC<FluentEmojiProps> = ({
           style,
         ]}>
         <Text style={{ fontSize: size * 0.8, lineHeight: size }}>{fallbackEmoji}</Text>
-        {/* Hidden image to test loading on iOS */}
-        {Platform.OS === 'ios' && imageLoading && (
-          <Image
-            source={{ uri: getEmojiUrl() }}
-            style={{ width: 0, height: 0, position: 'absolute' }}
-            onLoad={() => setImageLoading(false)}
-            onError={() => setImageError(true)}
-          />
-        )}
       </View>
     );
   }
