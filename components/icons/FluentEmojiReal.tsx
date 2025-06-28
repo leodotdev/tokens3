@@ -13,7 +13,10 @@ type EmojiName =
   | 'Filter'
   | 'Delete'
   | 'Edit'
-  | 'Check';
+  | 'Check'
+  | 'CheckboxChecked'
+  | 'CheckboxUnchecked'
+  | 'Close';
 
 const emojiMap: Record<EmojiName, string> = {
   ShoppingCart: '🛒',
@@ -26,6 +29,9 @@ const emojiMap: Record<EmojiName, string> = {
   Delete: '🗑️',
   Edit: '✏️',
   Check: '✅',
+  CheckboxChecked: '☑️',
+  CheckboxUnchecked: '☐',
+  Close: '✖️',
 };
 
 interface FluentEmojiProps {

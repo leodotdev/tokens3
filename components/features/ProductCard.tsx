@@ -13,9 +13,19 @@ interface ProductCardProps {
   product: Product;
   onPress?: () => void;
   onLongPress?: () => void;
+  onEdit?: () => void;
+  isSelected?: boolean;
+  selectionMode?: boolean;
 }
 
-export const ProductCard: React.FC<ProductCardProps> = ({ product, onPress, onLongPress }) => {
+export const ProductCard: React.FC<ProductCardProps> = ({ 
+  product, 
+  onPress, 
+  onLongPress,
+  onEdit,
+  isSelected = false,
+  selectionMode = false
+}) => {
   const scale = useSharedValue(1);
   const opacity = useSharedValue(1);
 
@@ -72,19 +82,50 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onPress, onLo
           overflow: 'hidden',
           borderRadius: 16,
           backgroundColor: 'white',
-          borderWidth: 1,
-          borderColor: '#E5E7EB',
+          borderWidth: isSelected ? 2 : 1,
+          borderColor: isSelected ? '#3B82F6' : '#E5E7EB',
         }}
         activeOpacity={0.9}>
-        {product.image_url && (
-          <View className="w-full overflow-hidden rounded-t-2xl bg-gray-100" style={{ aspectRatio: 1 }}>
-            <Image
-              source={{ uri: product.image_url }}
-              className="h-full w-full"
-              resizeMode="cover"
-            />
-          </View>
-        )}
+        <View className="relative">
+          {product.image_url && (
+            <View className="w-full overflow-hidden rounded-t-2xl bg-gray-100" style={{ aspectRatio: 1 }}>
+              <Image
+                source={{ uri: product.image_url }}
+                className="h-full w-full"
+                resizeMode="cover"
+              />
+            </View>
+          )}
+          
+          {/* Edit button */}
+          {!selectionMode && onEdit && (
+            <TouchableOpacity
+              onPress={(e) => {
+                e.stopPropagation();
+                onEdit();
+              }}
+              className="absolute right-2 top-2 rounded-full bg-white/90 p-2"
+              style={{
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.1,
+                shadowRadius: 4,
+                elevation: 3,
+              }}>
+              <FluentEmoji name="Edit" size={20} />
+            </TouchableOpacity>
+          )}
+          
+          {/* Selection checkbox */}
+          {selectionMode && (
+            <View className="absolute right-2 top-2 rounded-full bg-white/90 p-2">
+              <FluentEmoji 
+                name={isSelected ? "CheckboxChecked" : "CheckboxUnchecked"} 
+                size={24} 
+              />
+            </View>
+          )}
+        </View>
 
         <View className="p-4">
           <View className="mb-2 flex-row items-start justify-between">

@@ -22,6 +22,8 @@ export const MainScreen: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [selectionMode, setSelectionMode] = useState(false);
 
   // Animation values
   const headerScale = useSharedValue(0);
@@ -123,6 +125,29 @@ export const MainScreen: React.FC = () => {
     );
   };
 
+  const handleDeleteSelected = async () => {
+    if (selectedIds.size === 0) return;
+    
+    const ids = Array.from(selectedIds);
+    const { error } = await productQueries.deleteMany(ids);
+    
+    if (!error) {
+      setSelectedIds(new Set());
+      setSelectionMode(false);
+      loadProducts();
+    }
+  };
+
+  const toggleSelection = (id: string) => {
+    const newSelection = new Set(selectedIds);
+    if (newSelection.has(id)) {
+      newSelection.delete(id);
+    } else {
+      newSelection.add(id);
+    }
+    setSelectedIds(newSelection);
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-white">
       <View style={{ flex: 1, maxWidth: 960, alignSelf: 'center', width: '100%' }}>
@@ -133,7 +158,33 @@ export const MainScreen: React.FC = () => {
             <Text className="text-3xl font-bold text-gray-900">Tokens</Text>
             <Text className="mt-1 text-gray-600">Your personal collection</Text>
           </View>
-          <ShoppingCartEmoji size={32} />
+          <View className="flex-row items-center gap-4">
+            {selectionMode ? (
+              <>
+                <TouchableOpacity
+                  onPress={() => {
+                    setSelectionMode(false);
+                    setSelectedIds(new Set());
+                  }}>
+                  <FluentEmoji name="Close" size={24} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={handleDeleteSelected}
+                  disabled={selectedIds.size === 0}>
+                  <FluentEmoji 
+                    name="Delete" 
+                    size={24} 
+                    style={{ opacity: selectedIds.size === 0 ? 0.5 : 1 }}
+                  />
+                </TouchableOpacity>
+                <Text className="text-sm font-medium text-gray-700">
+                  {selectedIds.size} selected
+                </Text>
+              </>
+            ) : (
+              <ShoppingCartEmoji size={32} />
+            )}
+          </View>
         </View>
 
         {/* Search with subtle focus animation */}
@@ -184,9 +235,22 @@ export const MainScreen: React.FC = () => {
                 <View style={{ width: itemWidth, marginBottom: CARD_MARGIN }}>
                   <ProductCard
                     product={product}
+                    isSelected={selectedIds.has(product.id)}
+                    selectionMode={selectionMode}
+                    onPress={() => {
+                      if (selectionMode) {
+                        toggleSelection(product.id);
+                      }
+                    }}
                     onLongPress={() => {
-                      // Future: Select for bulk operations
-                      console.log('Long pressed:', product.name);
+                      if (!selectionMode) {
+                        setSelectionMode(true);
+                        toggleSelection(product.id);
+                      }
+                    }}
+                    onEdit={() => {
+                      console.log('Edit product:', product.name);
+                      // TODO: Navigate to edit screen or open modal
                     }}
                   />
                 </View>
