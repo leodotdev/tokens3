@@ -110,10 +110,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         <View className="flex-row">
           {/* Image Section */}
           {product.image_url && (
-            <View className="relative w-24 h-24 overflow-hidden rounded-l-2xl bg-background-secondary">
+            <View className="w-24 bg-background-secondary" style={{ alignSelf: 'stretch' }}>
               <Image
                 source={{ uri: product.image_url }}
-                className="h-full w-full"
+                className="h-full w-full rounded-l-2xl"
                 resizeMode="cover"
               />
             </View>
