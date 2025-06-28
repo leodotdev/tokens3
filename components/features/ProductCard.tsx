@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, Linking } from 'react-native';
+import { View, Text, TouchableOpacity, Linking, Platform } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -21,18 +21,18 @@ interface ProductCardProps {
   selectionMode?: boolean;
 }
 
-export const ProductCard: React.FC<ProductCardProps> = ({ 
-  product, 
-  onPress, 
+export const ProductCard: React.FC<ProductCardProps> = ({
+  product,
+  onPress,
   onLongPress,
   onEdit,
   isSelected = false,
-  selectionMode = false
+  selectionMode = false,
 }) => {
   const { user } = useAuth();
   const [likeCount, setLikeCount] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
-  
+
   const scale = useSharedValue(1);
   const opacity = useSharedValue(1);
 
@@ -111,7 +111,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         <View className="flex-row">
           {/* Image Section */}
           {product.image_url && (
-            <View className="w-24 h-24 overflow-hidden rounded-l-2xl bg-background-secondary">
+            <View 
+              className={`bg-background-secondary w-24 overflow-hidden rounded-l-2xl ${
+                Platform.OS === 'web' ? 'h-full' : 'h-24'
+              }`}
+              style={Platform.OS === 'web' ? { alignSelf: 'stretch' } : undefined}
+            >
               <WebImage
                 source={{ uri: product.image_url }}
                 className="h-full w-full"
@@ -121,9 +126,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               />
             </View>
           )}
-          
+
           {/* Content Section */}
-          <View className="flex-1 p-4 relative">
+          <View className="relative flex-1 p-4">
             {/* Edit button */}
             {!selectionMode && onEdit && (
               <TouchableOpacity
@@ -142,26 +147,26 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                 <FluentEmoji name="Edit" size={16} />
               </TouchableOpacity>
             )}
-            
+
             {/* Selection checkbox */}
             {selectionMode && (
               <View className="absolute right-2 top-2 rounded-full bg-white/90 p-1">
-                <FluentEmoji 
-                  name={isSelected ? "CheckboxChecked" : "CheckboxUnchecked"} 
-                  size={20} 
+                <FluentEmoji
+                  name={isSelected ? 'CheckboxChecked' : 'CheckboxUnchecked'}
+                  size={20}
                 />
               </View>
             )}
 
-            <View className="flex-row items-start justify-between mb-1">
-              <Text className="flex-1 text-sm font-semibold text-foreground pr-8" numberOfLines={1}>
+            <View className="mb-1 flex-row items-start justify-between">
+              <Text className="text-foreground flex-1 pr-8 text-sm font-semibold" numberOfLines={1}>
                 {product.name}
               </Text>
               {getStatusEmoji() && <View className="ml-1">{getStatusEmoji()}</View>}
             </View>
 
             {product.description && (
-              <Text className="mb-2 text-xs leading-4 text-foreground-tertiary" numberOfLines={1}>
+              <Text className="text-foreground-tertiary mb-2 text-xs leading-4" numberOfLines={1}>
                 {product.description}
               </Text>
             )}
@@ -169,12 +174,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             <View className="flex-row items-end justify-between">
               <View className="flex-1">
                 {formatPrice(product.price) && (
-                  <Text className="text-sm font-bold text-foreground">
+                  <Text className="text-foreground text-sm font-bold">
                     {formatPrice(product.price)}
                   </Text>
                 )}
                 {product.category && (
-                  <Text className="text-xs font-medium uppercase tracking-wide text-foreground-muted">
+                  <Text className="text-foreground-muted text-xs font-medium uppercase tracking-wide">
                     {product.category}
                   </Text>
                 )}
@@ -184,12 +189,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                 {likeCount > 0 && (
                   <View className="flex-row items-center gap-1">
                     <HeartEmoji size={12} style={{ opacity: isLiked ? 1 : 0.5 }} />
-                    <Text className="text-xs font-medium text-foreground-tertiary">
+                    <Text className="text-foreground-tertiary text-xs font-medium">
                       {likeCount}
                     </Text>
                   </View>
                 )}
-                
+
                 {product.in_stock !== null && (
                   <View
                     className={`rounded-full px-2 py-0.5 ${
