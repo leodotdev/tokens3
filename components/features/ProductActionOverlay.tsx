@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text, Image, TouchableOpacity, Modal, Linking } from 'react-native';
+import { View, Text, Image, TouchableOpacity, Modal, Linking, Platform } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -31,6 +31,8 @@ export const ProductActionOverlay: React.FC<ProductActionOverlayProps> = ({
   const backdropOpacity = useSharedValue(0);
   const overlayScale = useSharedValue(0.8);
   const overlayOpacity = useSharedValue(0);
+
+  const isWeb = Platform.OS === 'web';
 
   useEffect(() => {
     if (visible) {

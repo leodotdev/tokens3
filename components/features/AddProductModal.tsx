@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Modal, View, TouchableOpacity } from 'react-native';
+import { Modal, View, TouchableOpacity, Platform } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -23,29 +23,43 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({
   onProductAdded,
 }) => {
   const backdropOpacity = useSharedValue(0);
-  const modalTranslateY = useSharedValue(50);
+  const modalTranslateY = useSharedValue(Platform.OS === 'web' ? 0 : 50);
   const modalOpacity = useSharedValue(0);
+  const modalScale = useSharedValue(Platform.OS === 'web' ? 0.95 : 1);
+
+  const isWeb = Platform.OS === 'web';
 
   useEffect(() => {
     if (visible) {
       // Entrance animation
       backdropOpacity.value = withTiming(1, { duration: 300 });
-      modalTranslateY.value = withSpring(0, { damping: 20, stiffness: 300 });
+      if (isWeb) {
+        modalScale.value = withSpring(1, { damping: 20, stiffness: 300 });
+      } else {
+        modalTranslateY.value = withSpring(0, { damping: 20, stiffness: 300 });
+      }
       modalOpacity.value = withTiming(1, { duration: 300 });
     } else {
       // Exit animation
       backdropOpacity.value = withTiming(0, { duration: 200 });
-      modalTranslateY.value = withSpring(50, { damping: 20, stiffness: 300 });
+      if (isWeb) {
+        modalScale.value = withSpring(0.95, { damping: 20, stiffness: 300 });
+      } else {
+        modalTranslateY.value = withSpring(50, { damping: 20, stiffness: 300 });
+      }
       modalOpacity.value = withTiming(0, { duration: 200 });
     }
-  }, [visible]);
+  }, [visible, isWeb]);
 
   const backdropAnimatedStyle = useAnimatedStyle(() => ({
     opacity: backdropOpacity.value,
   }));
 
   const modalAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: modalTranslateY.value }],
+    transform: [
+      { translateY: modalTranslateY.value },
+      { scale: modalScale.value },
+    ],
     opacity: modalOpacity.value,
   }));
 
@@ -72,7 +86,9 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({
           {
             flex: 1,
             backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            justifyContent: 'flex-end',
+            justifyContent: isWeb ? 'center' : 'flex-end',
+            alignItems: isWeb ? 'center' : 'stretch',
+            paddingHorizontal: isWeb ? 24 : 0,
           },
         ]}>
         <TouchableOpacity
@@ -87,13 +103,16 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({
             modalAnimatedStyle,
             {
               backgroundColor: '#ffffff',
+              borderRadius: isWeb ? 24 : 0,
               borderTopLeftRadius: 24,
               borderTopRightRadius: 24,
-              maxHeight: '90%',
+              maxHeight: isWeb ? '80%' : '90%',
+              maxWidth: isWeb ? 600 : undefined,
+              width: isWeb ? '100%' : undefined,
               shadowColor: '#000',
               shadowOffset: {
                 width: 0,
-                height: -10,
+                height: isWeb ? 0 : -10,
               },
               shadowOpacity: 0.25,
               shadowRadius: 25,
