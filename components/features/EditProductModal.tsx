@@ -1,0 +1,130 @@
+import React, { useEffect } from 'react';
+import { Modal, View, TouchableOpacity } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
+import { productQueries } from '../../lib/queries';
+import type { Product, ProductUpdate } from '../../lib/supabase';
+import { ProductForm } from './ProductForm';
+import { FluentEmoji } from '../icons/FluentEmojiReal';
+
+interface EditProductModalProps {
+  visible: boolean;
+  product: Product | null;
+  onClose: () => void;
+  onProductUpdated?: () => void;
+}
+
+export const EditProductModal: React.FC<EditProductModalProps> = ({
+  visible,
+  product,
+  onClose,
+  onProductUpdated,
+}) => {
+  const backdropOpacity = useSharedValue(0);
+  const modalTranslateY = useSharedValue(50);
+  const modalOpacity = useSharedValue(0);
+
+  useEffect(() => {
+    if (visible) {
+      // Entrance animation
+      backdropOpacity.value = withTiming(1, { duration: 300 });
+      modalTranslateY.value = withSpring(0, { damping: 20, stiffness: 300 });
+      modalOpacity.value = withTiming(1, { duration: 300 });
+    } else {
+      // Exit animation
+      backdropOpacity.value = withTiming(0, { duration: 200 });
+      modalTranslateY.value = withSpring(50, { damping: 20, stiffness: 300 });
+      modalOpacity.value = withTiming(0, { duration: 200 });
+    }
+  }, [visible]);
+
+  const backdropAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: backdropOpacity.value,
+  }));
+
+  const modalAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: modalTranslateY.value }],
+    opacity: modalOpacity.value,
+  }));
+
+  const handleSubmit = async (data: ProductUpdate) => {
+    if (!product?.id) return;
+    
+    const { error } = await productQueries.update(product.id, data);
+    if (!error) {
+      onProductUpdated?.();
+      onClose();
+    } else {
+      throw new Error('Failed to update product');
+    }
+  };
+
+  if (!product) return null;
+
+  return (
+    <Modal
+      visible={visible}
+      transparent
+      animationType="none"
+      onRequestClose={onClose}>
+      {/* Backdrop */}
+      <Animated.View
+        style={[
+          backdropAnimatedStyle,
+          {
+            flex: 1,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            justifyContent: 'flex-end',
+          },
+        ]}>
+        <TouchableOpacity
+          style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+          onPress={onClose}
+          activeOpacity={1}
+        />
+
+        {/* Modal Content */}
+        <Animated.View
+          style={[
+            modalAnimatedStyle,
+            {
+              backgroundColor: '#ffffff',
+              borderTopLeftRadius: 24,
+              borderTopRightRadius: 24,
+              maxHeight: '90%',
+              shadowColor: '#000',
+              shadowOffset: {
+                width: 0,
+                height: -10,
+              },
+              shadowOpacity: 0.25,
+              shadowRadius: 25,
+              elevation: 25,
+            },
+          ]}>
+          {/* Header */}
+          <View className="flex-row items-center justify-between border-b border-border px-6 py-4">
+            <View className="flex-1" />
+            <TouchableOpacity
+              onPress={onClose}
+              className="h-8 w-8 items-center justify-center rounded-full bg-background-secondary">
+              <FluentEmoji name="Close" size={16} />
+            </TouchableOpacity>
+          </View>
+
+          {/* Form */}
+          <ProductForm
+            initialData={product}
+            onSubmit={handleSubmit}
+            onCancel={onClose}
+            isEditing={true}
+          />
+        </Animated.View>
+      </Animated.View>
+    </Modal>
+  );
+};

@@ -13,6 +13,8 @@ import type { Product } from '../../lib/supabase';
 import { FluentEmoji, SparklesEmoji, ShoppingCartEmoji } from '../icons/FluentEmojiReal';
 import { ProductCard } from '../features/ProductCard';
 import { ProductActionOverlay } from '../features/ProductActionOverlay';
+import { AddProductModal } from '../features/AddProductModal';
+import { EditProductModal } from '../features/EditProductModal';
 
 const CARD_MARGIN = 12;
 const PADDING = 24;
@@ -27,6 +29,9 @@ export const MainScreen: React.FC = () => {
   const [selectionMode, setSelectionMode] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [overlayVisible, setOverlayVisible] = useState(false);
+  const [addModalVisible, setAddModalVisible] = useState(false);
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
   // Animation values
   const headerScale = useSharedValue(0);
@@ -161,6 +166,24 @@ export const MainScreen: React.FC = () => {
     setTimeout(() => setSelectedProduct(null), 300); // Clear after animation
   };
 
+  const openEditModal = (product: Product) => {
+    setEditingProduct(product);
+    setEditModalVisible(true);
+  };
+
+  const closeEditModal = () => {
+    setEditModalVisible(false);
+    setTimeout(() => setEditingProduct(null), 300); // Clear after animation
+  };
+
+  const handleProductAdded = () => {
+    loadProducts(); // Refresh the product list
+  };
+
+  const handleProductUpdated = () => {
+    loadProducts(); // Refresh the product list
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-background">
       <View style={{ flex: 1, maxWidth: 960, alignSelf: 'center', width: '100%' }}>
@@ -264,8 +287,7 @@ export const MainScreen: React.FC = () => {
                       }
                     }}
                     onEdit={() => {
-                      console.log('Edit product:', product.name);
-                      // TODO: Navigate to edit screen or open modal
+                      openEditModal(product);
                     }}
                   />
                 </View>
@@ -304,8 +326,7 @@ export const MainScreen: React.FC = () => {
             elevation: 16,
           }}
           onPress={() => {
-            // Add product action - will implement
-            console.log('Add product pressed');
+            setAddModalVisible(true);
           }}>
           <FluentEmoji name="Plus" size={24} />
         </TouchableOpacity>
@@ -317,6 +338,21 @@ export const MainScreen: React.FC = () => {
         product={selectedProduct}
         visible={overlayVisible}
         onClose={closeProductOverlay}
+      />
+
+      {/* Add Product Modal */}
+      <AddProductModal
+        visible={addModalVisible}
+        onClose={() => setAddModalVisible(false)}
+        onProductAdded={handleProductAdded}
+      />
+
+      {/* Edit Product Modal */}
+      <EditProductModal
+        visible={editModalVisible}
+        product={editingProduct}
+        onClose={closeEditModal}
+        onProductUpdated={handleProductUpdated}
       />
     </SafeAreaView>
   );
