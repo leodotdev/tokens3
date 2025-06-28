@@ -272,7 +272,22 @@ export const MainScreen: React.FC = () => {
           },
         ]}>
         <TouchableOpacity
-          className="h-16 w-16 items-center justify-center rounded-full bg-blue-500 border border-blue-600"
+          style={{
+            height: 64,
+            width: 64,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 32,
+            backgroundColor: 'white',
+            shadowColor: '#000',
+            shadowOffset: {
+              width: 0,
+              height: 8,
+            },
+            shadowOpacity: 0.24,
+            shadowRadius: 16,
+            elevation: 16,
+          }}
           onPress={() => {
             // Add product action - will implement
             console.log('Add product pressed');
