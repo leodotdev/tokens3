@@ -12,6 +12,7 @@ import { productQueries } from '../../lib/queries';
 import type { Product } from '../../lib/supabase';
 import { FluentEmoji, SparklesEmoji, ShoppingCartEmoji } from '../icons/FluentEmojiReal';
 import { ProductCard } from '../features/ProductCard';
+import { ProductActionOverlay } from '../features/ProductActionOverlay';
 
 const CARD_MARGIN = 12;
 const PADDING = 24;
@@ -24,6 +25,8 @@ export const MainScreen: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [selectionMode, setSelectionMode] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [overlayVisible, setOverlayVisible] = useState(false);
 
   // Animation values
   const headerScale = useSharedValue(0);
@@ -148,6 +151,16 @@ export const MainScreen: React.FC = () => {
     setSelectedIds(newSelection);
   };
 
+  const openProductOverlay = (product: Product) => {
+    setSelectedProduct(product);
+    setOverlayVisible(true);
+  };
+
+  const closeProductOverlay = () => {
+    setOverlayVisible(false);
+    setTimeout(() => setSelectedProduct(null), 300); // Clear after animation
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-white">
       <View style={{ flex: 1, maxWidth: 960, alignSelf: 'center', width: '100%' }}>
@@ -240,6 +253,8 @@ export const MainScreen: React.FC = () => {
                     onPress={() => {
                       if (selectionMode) {
                         toggleSelection(product.id);
+                      } else {
+                        openProductOverlay(product);
                       }
                     }}
                     onLongPress={() => {
@@ -296,6 +311,13 @@ export const MainScreen: React.FC = () => {
         </TouchableOpacity>
       </Animated.View>
       </View>
+
+      {/* Product Action Overlay */}
+      <ProductActionOverlay
+        product={selectedProduct}
+        visible={overlayVisible}
+        onClose={closeProductOverlay}
+      />
     </SafeAreaView>
   );
 };

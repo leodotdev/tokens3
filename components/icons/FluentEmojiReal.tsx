@@ -15,7 +15,8 @@ type EmojiName =
   | 'Check'
   | 'CheckboxChecked'
   | 'CheckboxUnchecked'
-  | 'Close';
+  | 'Close'
+  | 'ArrowRight';
 
 // Map our names to Fluent Emoji folder names (with spaces and proper capitalization)
 const emojiAssetMap: Record<EmojiName, { folder: string; filename: string }> = {
@@ -32,6 +33,7 @@ const emojiAssetMap: Record<EmojiName, { folder: string; filename: string }> = {
   CheckboxChecked: { folder: 'Check%20box%20with%20check', filename: 'check_box_with_check' },
   CheckboxUnchecked: { folder: 'White%20large%20square', filename: 'white_large_square' },
   Close: { folder: 'Cross%20mark', filename: 'cross_mark' },
+  ArrowRight: { folder: 'Right%20arrow', filename: 'right_arrow' },
 };
 
 // Unicode fallbacks for when images fail to load
@@ -49,6 +51,7 @@ const emojiFallbackMap: Record<EmojiName, string> = {
   CheckboxChecked: '☑️',
   CheckboxUnchecked: '☐',
   Close: '✖️',
+  ArrowRight: '→',
 };
 
 interface FluentEmojiProps {
