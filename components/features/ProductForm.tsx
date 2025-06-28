@@ -75,8 +75,9 @@ export const ProductForm: React.FC<ProductFormProps> = ({
   };
 
   return (
-    <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-      <View className="p-6">
+    <View className="flex-1">
+      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+        <View className="p-6 pb-2">
         {/* Form Title */}
         <View className="mb-6">
           <Text className="text-2xl font-bold text-foreground">
@@ -250,8 +251,11 @@ export const ProductForm: React.FC<ProductFormProps> = ({
             autoCorrect={false}
           />
         </View>
+        </View>
+      </ScrollView>
 
-        {/* Action Buttons */}
+      {/* Sticky Action Buttons */}
+      <View className="border-t border-border bg-background p-6">
         <View className="flex-row gap-4">
           <TouchableOpacity
             onPress={onCancel}
@@ -279,6 +283,6 @@ export const ProductForm: React.FC<ProductFormProps> = ({
           </TouchableOpacity>
         </View>
       </View>
-    </ScrollView>
+    </View>
   );
 };
