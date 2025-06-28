@@ -5,7 +5,17 @@
     "version": "1.0.0",
 
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro",
+      "output": "static",
+      "build": {
+        "babel": {
+          "include": [
+            "node_modules/react-native-vector-icons",
+            "node_modules/react-native-safe-area-context"
+          ]
+        }
+      }
     },
 
     "experiments": {

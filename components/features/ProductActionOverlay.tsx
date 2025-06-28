@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { View, Text, Image, TouchableOpacity, Modal, Linking, Platform } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, Image, TouchableOpacity, Modal, Linking, Platform, Alert } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -9,11 +9,14 @@ import Animated, {
 } from 'react-native-reanimated';
 import type { Product } from '../../lib/supabase';
 import { FluentEmoji } from '../icons/FluentEmojiReal';
+import { useAuth } from '../../contexts/AuthContext';
+import { bookmarkQueries, likeQueries } from '../../lib/queries';
 
 interface ProductActionOverlayProps {
   product: Product | null;
   visible: boolean;
   onClose: () => void;
+  onAuthRequired?: () => void;
 }
 
 interface ActionItem {
@@ -27,7 +30,12 @@ export const ProductActionOverlay: React.FC<ProductActionOverlayProps> = ({
   product,
   visible,
   onClose,
+  onAuthRequired,
 }) => {
+  const { user } = useAuth();
+  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
+  
   const backdropOpacity = useSharedValue(0);
   const overlayScale = useSharedValue(0.8);
   const overlayOpacity = useSharedValue(0);
@@ -48,6 +56,25 @@ export const ProductActionOverlay: React.FC<ProductActionOverlayProps> = ({
     }
   }, [visible]);
 
+  // Load bookmark and like status when product changes
+  useEffect(() => {
+    if (product && user) {
+      loadUserInteractions();
+    }
+  }, [product, user]);
+
+  const loadUserInteractions = async () => {
+    if (!product || !user) return;
+
+    // Check bookmark status
+    const { data: bookmarkData } = await bookmarkQueries.getByProduct(product.id, user.id);
+    setIsBookmarked(!!bookmarkData);
+
+    // Check like status
+    const { data: likeData } = await likeQueries.getUserLike(product.id, user.id);
+    setIsLiked(!!likeData);
+  };
+
   const backdropAnimatedStyle = useAnimatedStyle(() => ({
     opacity: backdropOpacity.value,
   }));
@@ -67,6 +94,56 @@ export const ProductActionOverlay: React.FC<ProductActionOverlayProps> = ({
 
   if (!product) return null;
 
+  const handleBookmark = async () => {
+    if (!user || !product) {
+      onClose();
+      onAuthRequired?.();
+      return;
+    }
+    
+    try {
+      if (isBookmarked) {
+        const { error } = await bookmarkQueries.delete(product.id, user.id);
+        if (!error) {
+          setIsBookmarked(false);
+          Alert.alert('Removed', `${product.name} removed from bookmarks`);
+        }
+      } else {
+        const { error } = await bookmarkQueries.create(product.id, user.id);
+        if (!error) {
+          setIsBookmarked(true);
+          Alert.alert('Bookmarked!', `${product.name} added to bookmarks`);
+        }
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Failed to update bookmark');
+    }
+  };
+
+  const handleLike = async () => {
+    if (!user || !product) {
+      onClose();
+      onAuthRequired?.();
+      return;
+    }
+    
+    try {
+      if (isLiked) {
+        const { error } = await likeQueries.delete(product.id, user.id);
+        if (!error) {
+          setIsLiked(false);
+        }
+      } else {
+        const { error } = await likeQueries.create(product.id, user.id);
+        if (!error) {
+          setIsLiked(true);
+        }
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Failed to update like');
+    }
+  };
+
   const actions: ActionItem[] = [
     {
       id: 'goto',
@@ -80,39 +157,39 @@ export const ProductActionOverlay: React.FC<ProductActionOverlayProps> = ({
       },
     },
     {
-      id: 'save',
-      label: 'Quick save…',
-      icon: 'Star',
-      onPress: () => {
-        onClose();
-        console.log('Quick save:', product.name);
-      },
+      id: 'bookmark',
+      label: isBookmarked ? 'Remove bookmark' : 'Bookmark',
+      icon: isBookmarked ? 'StarFilled' : 'Star',
+      onPress: handleBookmark,
+    },
+    {
+      id: 'like',
+      label: isLiked ? 'Unlike' : 'Like',
+      icon: 'Heart',
+      onPress: handleLike,
     },
     {
       id: 'list',
       label: 'Add to list…',
       icon: 'Plus',
       onPress: () => {
+        if (!user) {
+          onClose();
+          onAuthRequired?.();
+          return;
+        }
         onClose();
-        console.log('Add to list:', product.name);
-      },
-    },
-    {
-      id: 'remind',
-      label: 'Remind me…',
-      icon: 'Check',
-      onPress: () => {
-        onClose();
-        console.log('Remind me:', product.name);
+        Alert.alert('Coming soon', 'Lists feature will be available soon!');
       },
     },
     {
       id: 'share',
       label: 'Share…',
-      icon: 'Heart',
+      icon: 'Send',
       onPress: () => {
         onClose();
-        console.log('Share:', product.name);
+        // Could implement share functionality here
+        Alert.alert('Share', `Check out ${product.name}!`);
       },
     },
   ];

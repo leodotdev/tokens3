@@ -8,6 +8,7 @@ interface ProductFormProps {
   onSubmit: (data: ProductInsert | ProductUpdate) => Promise<void>;
   onCancel: () => void;
   isEditing?: boolean;
+  autoFocus?: boolean;
 }
 
 const statusOptions = [
@@ -27,6 +28,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
   onSubmit,
   onCancel,
   isEditing = false,
+  autoFocus = true,
 }) => {
   const [formData, setFormData] = useState({
     name: initialData?.name || '',
@@ -86,6 +88,39 @@ export const ProductForm: React.FC<ProductFormProps> = ({
           <Text className="mt-1 text-foreground-tertiary">
             {isEditing ? 'Update product details' : 'Add a new product to your collection'}
           </Text>
+        </View>
+
+        {/* Amazon Link */}
+        <View className="mb-4">
+          <Text className="mb-2 text-sm font-medium text-foreground-secondary">
+            Amazon Link
+          </Text>
+          <TextInput
+            className="rounded-xl border border-border bg-background px-4 py-3 text-base text-foreground"
+            placeholder="https://amazon.com/..."
+            placeholderTextColor="#a1a1aa"
+            value={formData.amazon_link}
+            onChangeText={(value) => updateFormData('amazon_link', value)}
+            autoCapitalize="none"
+            autoCorrect={false}
+            autoFocus={autoFocus}
+          />
+        </View>
+
+        {/* Image URL */}
+        <View className="mb-4">
+          <Text className="mb-2 text-sm font-medium text-foreground-secondary">
+            Image URL
+          </Text>
+          <TextInput
+            className="rounded-xl border border-border bg-background px-4 py-3 text-base text-foreground"
+            placeholder="https://example.com/image.jpg"
+            placeholderTextColor="#a1a1aa"
+            value={formData.image_url}
+            onChangeText={(value) => updateFormData('image_url', value)}
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
         </View>
 
         {/* Product Name */}
@@ -206,7 +241,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
         </View>
 
         {/* In Stock Toggle */}
-        <View className="mb-4">
+        <View className="mb-6">
           <TouchableOpacity
             onPress={() => updateFormData('in_stock', !formData.in_stock)}
             className="flex-row items-center rounded-xl border border-border bg-background px-4 py-3">
@@ -219,43 +254,11 @@ export const ProductForm: React.FC<ProductFormProps> = ({
             </Text>
           </TouchableOpacity>
         </View>
-
-        {/* Amazon Link */}
-        <View className="mb-4">
-          <Text className="mb-2 text-sm font-medium text-foreground-secondary">
-            Amazon Link
-          </Text>
-          <TextInput
-            className="rounded-xl border border-border bg-background px-4 py-3 text-base text-foreground"
-            placeholder="https://amazon.com/..."
-            placeholderTextColor="#a1a1aa"
-            value={formData.amazon_link}
-            onChangeText={(value) => updateFormData('amazon_link', value)}
-            autoCapitalize="none"
-            autoCorrect={false}
-          />
-        </View>
-
-        {/* Image URL */}
-        <View className="mb-6">
-          <Text className="mb-2 text-sm font-medium text-foreground-secondary">
-            Image URL
-          </Text>
-          <TextInput
-            className="rounded-xl border border-border bg-background px-4 py-3 text-base text-foreground"
-            placeholder="https://example.com/image.jpg"
-            placeholderTextColor="#a1a1aa"
-            value={formData.image_url}
-            onChangeText={(value) => updateFormData('image_url', value)}
-            autoCapitalize="none"
-            autoCorrect={false}
-          />
-        </View>
         </View>
       </ScrollView>
 
       {/* Sticky Action Buttons */}
-      <View className="border-t border-border bg-background p-6">
+      <View className="border-t border-border bg-background p-6 pb-8">
         <View className="flex-row gap-4">
           <TouchableOpacity
             onPress={onCancel}

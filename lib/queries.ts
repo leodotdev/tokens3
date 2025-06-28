@@ -119,3 +119,179 @@ export const productQueries = {
       .subscribe();
   },
 };
+
+export const bookmarkQueries = {
+  async getByUser(userId: string) {
+    const { data, error } = await supabase
+      .from('bookmarks')
+      .select('*, product:products(*)')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+    
+    return { data, error };
+  },
+
+  async getByProduct(productId: string, userId: string) {
+    const { data, error } = await supabase
+      .from('bookmarks')
+      .select('*')
+      .eq('product_id', productId)
+      .eq('user_id', userId)
+      .maybeSingle();
+    
+    return { data, error };
+  },
+
+  async create(productId: string, userId: string) {
+    const { data, error } = await supabase
+      .from('bookmarks')
+      .insert({ product_id: productId, user_id: userId })
+      .select()
+      .single();
+    
+    return { data, error };
+  },
+
+  async delete(productId: string, userId: string) {
+    const { error } = await supabase
+      .from('bookmarks')
+      .delete()
+      .eq('product_id', productId)
+      .eq('user_id', userId);
+    
+    return { error };
+  },
+};
+
+export const likeQueries = {
+  async getByUser(userId: string) {
+    const { data, error } = await supabase
+      .from('likes')
+      .select('*, product:products(*)')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+    
+    return { data, error };
+  },
+
+  async getByProduct(productId: string) {
+    const { data, error } = await supabase
+      .from('likes')
+      .select('*')
+      .eq('product_id', productId);
+    
+    return { data, error };
+  },
+
+  async getUserLike(productId: string, userId: string) {
+    const { data, error } = await supabase
+      .from('likes')
+      .select('*')
+      .eq('product_id', productId)
+      .eq('user_id', userId)
+      .maybeSingle();
+    
+    return { data, error };
+  },
+
+  async create(productId: string, userId: string) {
+    const { data, error } = await supabase
+      .from('likes')
+      .insert({ product_id: productId, user_id: userId })
+      .select()
+      .single();
+    
+    return { data, error };
+  },
+
+  async delete(productId: string, userId: string) {
+    const { error } = await supabase
+      .from('likes')
+      .delete()
+      .eq('product_id', productId)
+      .eq('user_id', userId);
+    
+    return { error };
+  },
+
+  async countByProduct(productId: string) {
+    const { count, error } = await supabase
+      .from('likes')
+      .select('*', { count: 'exact', head: true })
+      .eq('product_id', productId);
+    
+    return { count: count || 0, error };
+  },
+};
+
+export const listQueries = {
+  async getByUser(userId: string) {
+    const { data, error } = await supabase
+      .from('lists')
+      .select('*')
+      .eq('user_id', userId)
+      .order('updated_at', { ascending: false });
+    
+    return { data, error };
+  },
+
+  async getById(id: string) {
+    const { data, error } = await supabase
+      .from('lists')
+      .select('*, list_products(*, product:products(*))')
+      .eq('id', id)
+      .single();
+    
+    return { data, error };
+  },
+
+  async create(name: string, description: string | null, userId: string) {
+    const { data, error } = await supabase
+      .from('lists')
+      .insert({ name, description, user_id: userId })
+      .select()
+      .single();
+    
+    return { data, error };
+  },
+
+  async update(id: string, updates: { name?: string; description?: string }) {
+    const { data, error } = await supabase
+      .from('lists')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
+    
+    return { data, error };
+  },
+
+  async delete(id: string) {
+    const { error } = await supabase
+      .from('lists')
+      .delete()
+      .eq('id', id);
+    
+    return { error };
+  },
+
+  async addProduct(listId: string, productId: string, notes?: string) {
+    const { data, error } = await supabase
+      .from('list_products')
+      .insert({ list_id: listId, product_id: productId, notes })
+      .select()
+      .single();
+    
+    return { data, error };
+  },
+
+  async removeProduct(listId: string, productId: string) {
+    const { error } = await supabase
+      .from('list_products')
+      .delete()
+      .eq('list_id', listId)
+      .eq('product_id', productId);
+    
+    return { error };
+  },
+};

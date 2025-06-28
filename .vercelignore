@@ -1,0 +1,8 @@
+node_modules
+.expo
+.git
+ios
+android
+*.log
+*.tgz
+.DS_Store

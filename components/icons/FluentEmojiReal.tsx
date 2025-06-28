@@ -7,6 +7,7 @@ type EmojiName =
   | 'Sparkles'
   | 'Heart'
   | 'Star'
+  | 'StarFilled'
   | 'Plus'
   | 'Search'
   | 'Filter'
@@ -16,7 +17,10 @@ type EmojiName =
   | 'CheckboxChecked'
   | 'CheckboxUnchecked'
   | 'Close'
-  | 'ArrowRight';
+  | 'ArrowRight'
+  | 'Send'
+  | 'Globe'
+  | 'Person';
 
 // Map our names to Fluent Emoji folder names (with spaces and proper capitalization)
 const emojiAssetMap: Record<EmojiName, { folder: string; filename: string }> = {
@@ -34,6 +38,10 @@ const emojiAssetMap: Record<EmojiName, { folder: string; filename: string }> = {
   CheckboxUnchecked: { folder: 'White%20large%20square', filename: 'white_large_square' },
   Close: { folder: 'Cross%20mark', filename: 'cross_mark' },
   ArrowRight: { folder: 'Right%20arrow', filename: 'right_arrow' },
+  StarFilled: { folder: 'Star', filename: 'star' },
+  Send: { folder: 'Paper%20plane', filename: 'paper_plane' },
+  Globe: { folder: 'Globe%20with%20meridians', filename: 'globe_with_meridians' },
+  Person: { folder: 'Bust%20in%20silhouette', filename: 'bust_in_silhouette' },
 };
 
 // Unicode fallbacks for when images fail to load
@@ -52,6 +60,10 @@ const emojiFallbackMap: Record<EmojiName, string> = {
   CheckboxUnchecked: '☐',
   Close: '✖️',
   ArrowRight: '→',
+  StarFilled: '⭐',
+  Send: '📤',
+  Globe: '🌐',
+  Person: '👤',
 };
 
 interface FluentEmojiProps {
@@ -73,12 +85,18 @@ export const FluentEmoji: React.FC<FluentEmojiProps> = ({
   
   // Construct URL to Fluent Emoji from GitHub CDN with correct format
   const getEmojiUrl = () => {
+    if (!assetInfo) {
+      console.warn(`FluentEmoji: No mapping found for emoji "${name}"`);
+      return null;
+    }
     const variantPath = variant.toLowerCase().replace(' ', '_');
     return `https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/${assetInfo.folder}/${variant}/${assetInfo.filename}_${variantPath}.png`;
   };
 
-  // If image failed to load, show Unicode emoji fallback
-  if (imageError) {
+  const emojiUrl = getEmojiUrl();
+  
+  // If no asset mapping exists or image failed to load, show Unicode emoji fallback
+  if (!emojiUrl || imageError) {
     return (
       <View
         style={[
@@ -107,7 +125,7 @@ export const FluentEmoji: React.FC<FluentEmojiProps> = ({
         style,
       ]}>
       <Image
-        source={{ uri: getEmojiUrl() }}
+        source={{ uri: emojiUrl }}
         style={{ width: size, height: size }}
         resizeMode="contain"
         onError={() => setImageError(true)}

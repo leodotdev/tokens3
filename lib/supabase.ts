@@ -74,3 +74,39 @@ export type Database = {
 export type Product = Database['public']['Tables']['products']['Row'];
 export type ProductInsert = Database['public']['Tables']['products']['Insert'];
 export type ProductUpdate = Database['public']['Tables']['products']['Update'];
+
+// User feature types
+export interface Bookmark {
+  id: string;
+  user_id: string;
+  product_id: string;
+  created_at: string | null;
+  product?: Product;
+}
+
+export interface Like {
+  id: string;
+  user_id: string;
+  product_id: string;
+  created_at: string | null;
+  product?: Product;
+}
+
+export interface List {
+  id: string;
+  user_id: string;
+  name: string;
+  description: string | null;
+  is_public: boolean | null;
+  created_at: string | null;
+  updated_at: string | null;
+}
+
+export interface ListProduct {
+  id: string;
+  list_id: string;
+  product_id: string;
+  added_at: string | null;
+  notes: string | null;
+  product?: Product;
+}

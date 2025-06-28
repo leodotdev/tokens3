@@ -15,11 +15,14 @@ import { ProductCard } from '../features/ProductCard';
 import { ProductActionOverlay } from '../features/ProductActionOverlay';
 import { AddProductModal } from '../features/AddProductModal';
 import { EditProductModal } from '../features/EditProductModal';
+import { AuthModal } from '../features/AuthModal';
+import { useAuth } from '../../contexts/AuthContext';
 
 const CARD_MARGIN = 12;
 const PADDING = 24;
 
 export const MainScreen: React.FC = () => {
+  const { user, signOut } = useAuth();
   const { width } = useWindowDimensions();
   const NUM_COLUMNS = width > 960 ? 4 : width > 500 ? 2 : 1;
   const [products, setProducts] = useState<Product[]>([]);
@@ -28,6 +31,7 @@ export const MainScreen: React.FC = () => {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [selectionMode, setSelectionMode] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [authModalVisible, setAuthModalVisible] = useState(false);
   const [overlayVisible, setOverlayVisible] = useState(false);
   const [addModalVisible, setAddModalVisible] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
@@ -218,16 +222,37 @@ export const MainScreen: React.FC = () => {
                 </Text>
               </>
             ) : (
-              <ShoppingCartEmoji size={32} />
+              <>
+                {user ? (
+                  <TouchableOpacity
+                    onPress={() => signOut()}
+                    className="flex-row items-center gap-2 rounded-xl bg-background-secondary px-3 py-2">
+                    <FluentEmoji name="Person" size={20} />
+                    <Text className="text-sm font-medium text-foreground">
+                      {user.email?.split('@')[0]}
+                    </Text>
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity
+                    onPress={() => setAuthModalVisible(true)}
+                    className="flex-row items-center gap-2 rounded-xl bg-accent px-4 py-2">
+                    <Text className="text-sm font-medium text-accent-foreground">
+                      Sign In
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              </>
             )}
           </View>
         </View>
 
         {/* Search with subtle focus animation */}
-        <View className="flex-row items-center rounded-2xl bg-background-secondary px-4 py-3">
-          <FluentEmoji name="Search" size={20} />
+        <View className="flex-row items-center rounded-2xl bg-background-secondary">
+          <View className="pl-4">
+            <FluentEmoji name="Search" size={20} />
+          </View>
           <TextInput
-            className="ml-3 flex-1 text-foreground"
+            className="flex-1 rounded-2xl bg-transparent px-3 py-3 text-foreground"
             placeholder="Search your collection..."
             placeholderTextColor="#a1a1aa"
             value={searchQuery}
@@ -338,6 +363,7 @@ export const MainScreen: React.FC = () => {
         product={selectedProduct}
         visible={overlayVisible}
         onClose={closeProductOverlay}
+        onAuthRequired={() => setAuthModalVisible(true)}
       />
 
       {/* Add Product Modal */}
@@ -353,6 +379,12 @@ export const MainScreen: React.FC = () => {
         product={editingProduct}
         onClose={closeEditModal}
         onProductUpdated={handleProductUpdated}
+      />
+
+      {/* Auth Modal */}
+      <AuthModal
+        visible={authModalVisible}
+        onClose={() => setAuthModalVisible(false)}
       />
     </SafeAreaView>
   );

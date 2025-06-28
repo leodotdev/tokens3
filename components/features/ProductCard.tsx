@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, Image, TouchableOpacity, Linking } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -8,6 +8,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import type { Product } from '../../lib/supabase';
 import { FluentEmoji, HeartEmoji, StarEmoji } from '../icons/FluentEmojiReal';
+import { likeQueries } from '../../lib/queries';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface ProductCardProps {
   product: Product;
@@ -26,6 +28,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   isSelected = false,
   selectionMode = false
 }) => {
+  const { user } = useAuth();
+  const [likeCount, setLikeCount] = useState(0);
+  const [isLiked, setIsLiked] = useState(false);
+  
   const scale = useSharedValue(1);
   const opacity = useSharedValue(1);
 
@@ -33,6 +39,22 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     transform: [{ scale: scale.value }],
     opacity: opacity.value,
   }));
+
+  useEffect(() => {
+    loadLikeData();
+  }, [product.id, user]);
+
+  const loadLikeData = async () => {
+    // Get like count
+    const { count } = await likeQueries.countByProduct(product.id);
+    setLikeCount(count);
+
+    // Check if current user liked it
+    if (user) {
+      const { data } = await likeQueries.getUserLike(product.id, user.id);
+      setIsLiked(!!data);
+    }
+  };
 
   const handlePressIn = () => {
     scale.value = withSpring(0.95, { damping: 15, stiffness: 400 });
@@ -58,8 +80,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const getStatusEmoji = () => {
     if (product.status === 'wishlist') return <HeartEmoji size={16} />;
     if (product.status === 'purchased') return <FluentEmoji name="Check" size={16} />;
-    if (product.in_stock === false) return <FluentEmoji name="Delete" size={16} />;
-    return <StarEmoji size={16} />;
+    return null;
   };
 
   const formatPrice = (price: number | null) => {
@@ -132,7 +153,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             <Text className="flex-1 text-base font-semibold text-foreground" numberOfLines={2}>
               {product.name}
             </Text>
-            <View className="ml-2">{getStatusEmoji()}</View>
+            {getStatusEmoji() && <View className="ml-2">{getStatusEmoji()}</View>}
           </View>
 
           {product.description && (
@@ -155,19 +176,30 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               )}
             </View>
 
-            {product.in_stock !== null && (
-              <View
-                className={`rounded-full px-3 py-1 ${
-                  product.in_stock ? 'bg-success-light' : 'bg-error-light'
-                }`}>
-                <Text
-                  className={`text-xs font-medium ${
-                    product.in_stock ? 'text-success' : 'text-error'
+            <View className="flex-row items-center gap-3">
+              {likeCount > 0 && (
+                <View className="flex-row items-center gap-1">
+                  <HeartEmoji size={16} style={{ opacity: isLiked ? 1 : 0.5 }} />
+                  <Text className="text-xs font-medium text-foreground-tertiary">
+                    {likeCount}
+                  </Text>
+                </View>
+              )}
+              
+              {product.in_stock !== null && (
+                <View
+                  className={`rounded-full px-3 py-1 ${
+                    product.in_stock ? 'bg-success-light' : 'bg-error-light'
                   }`}>
-                  {product.in_stock ? 'In Stock' : 'Out of Stock'}
-                </Text>
-              </View>
-            )}
+                  <Text
+                    className={`text-xs font-medium ${
+                      product.in_stock ? 'text-success' : 'text-error'
+                    }`}>
+                    {product.in_stock ? 'In Stock' : 'Out of Stock'}
+                  </Text>
+                </View>
+              )}
+            </View>
           </View>
         </View>
       </TouchableOpacity>

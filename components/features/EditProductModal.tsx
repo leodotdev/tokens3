@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { Modal, View, TouchableOpacity, Platform, KeyboardAvoidingView } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Modal, View, TouchableOpacity, Platform, Keyboard, Dimensions } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -28,6 +28,9 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({
   const modalTranslateY = useSharedValue(Platform.OS === 'web' ? 0 : 400);
   const modalOpacity = useSharedValue(0);
   const modalScale = useSharedValue(Platform.OS === 'web' ? 0.95 : 1);
+  
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
+  const [screenData, setScreenData] = useState(Dimensions.get('window'));
 
   const isWeb = Platform.OS === 'web';
 
@@ -52,6 +55,24 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({
       modalOpacity.value = withTiming(0, { duration: 200 });
     }
   }, [visible, isWeb]);
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', (e) => {
+      setKeyboardHeight(e.endCoordinates.height);
+    });
+    
+    const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
+      setKeyboardHeight(0);
+    });
+
+    const dimensionsHandler = Dimensions.addEventListener('change', setScreenData);
+
+    return () => {
+      keyboardDidShowListener?.remove();
+      keyboardDidHideListener?.remove();
+      dimensionsHandler?.remove();
+    };
+  }, []);
 
   const backdropAnimatedStyle = useAnimatedStyle(() => ({
     opacity: backdropOpacity.value,
@@ -113,10 +134,13 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({
               borderTopLeftRadius: isWeb ? 24 : 20,
               borderTopRightRadius: isWeb ? 24 : 20,
               minHeight: isWeb ? undefined : '50%',
-              maxHeight: isWeb ? '80%' : '90%',
+              height: isWeb ? '80vh' : undefined,
+              maxHeight: isWeb ? '80vh' : keyboardHeight > 0 ? screenData.height - keyboardHeight - 60 : '90%',
               maxWidth: isWeb ? 600 : undefined,
               width: isWeb ? '100%' : undefined,
-              flex: isWeb ? 0 : 1,
+              flex: isWeb ? undefined : 1,
+              display: 'flex',
+              flexDirection: 'column',
               shadowColor: '#000',
               shadowOffset: {
                 width: 0,
@@ -127,10 +151,7 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({
               elevation: 25,
             },
           ]}>
-          <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            style={{ flex: 1 }}
-            keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}>
+          <View style={{ flex: 1, overflow: 'hidden' }}>
             {/* Header */}
             <View className="flex-row items-center justify-between border-b border-border px-6 py-4">
               <View className="flex-1" />
@@ -147,8 +168,9 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({
               onSubmit={handleSubmit}
               onCancel={onClose}
               isEditing={true}
+              autoFocus={visible}
             />
-          </KeyboardAvoidingView>
+          </View>
         </Animated.View>
       </Animated.View>
     </Modal>
