@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Modal, View, TouchableOpacity, Platform } from 'react-native';
+import { Modal, View, TouchableOpacity, Platform, KeyboardAvoidingView } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -116,7 +116,7 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({
               maxHeight: isWeb ? '80%' : '90%',
               maxWidth: isWeb ? 600 : undefined,
               width: isWeb ? '100%' : undefined,
-              flex: isWeb ? 0 : undefined,
+              flex: isWeb ? 0 : 1,
               shadowColor: '#000',
               shadowOffset: {
                 width: 0,
@@ -127,23 +127,28 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({
               elevation: 25,
             },
           ]}>
-          {/* Header */}
-          <View className="flex-row items-center justify-between border-b border-border px-6 py-4">
-            <View className="flex-1" />
-            <TouchableOpacity
-              onPress={onClose}
-              className="h-8 w-8 items-center justify-center rounded-full bg-background-secondary">
-              <FluentEmoji name="Close" size={16} />
-            </TouchableOpacity>
-          </View>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={{ flex: 1 }}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}>
+            {/* Header */}
+            <View className="flex-row items-center justify-between border-b border-border px-6 py-4">
+              <View className="flex-1" />
+              <TouchableOpacity
+                onPress={onClose}
+                className="h-8 w-8 items-center justify-center rounded-full bg-background-secondary">
+                <FluentEmoji name="Close" size={16} />
+              </TouchableOpacity>
+            </View>
 
-          {/* Form */}
-          <ProductForm
-            initialData={product}
-            onSubmit={handleSubmit}
-            onCancel={onClose}
-            isEditing={true}
-          />
+            {/* Form */}
+            <ProductForm
+              initialData={product}
+              onSubmit={handleSubmit}
+              onCancel={onClose}
+              isEditing={true}
+            />
+          </KeyboardAvoidingView>
         </Animated.View>
       </Animated.View>
     </Modal>
