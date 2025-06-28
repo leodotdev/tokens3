@@ -81,14 +81,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           marginBottom: 16,
           overflow: 'hidden',
           borderRadius: 16,
-          backgroundColor: 'white',
+          backgroundColor: '#ffffff',
           borderWidth: isSelected ? 2 : 1,
-          borderColor: isSelected ? '#3B82F6' : '#E5E7EB',
+          borderColor: isSelected ? '#3b82f6' : '#e4e4e7',
         }}
         activeOpacity={0.9}>
         <View className="relative">
           {product.image_url && (
-            <View className="w-full overflow-hidden rounded-t-2xl bg-gray-100" style={{ aspectRatio: 1 }}>
+            <View className="w-full overflow-hidden rounded-t-2xl bg-background-secondary" style={{ aspectRatio: 1 }}>
               <Image
                 source={{ uri: product.image_url }}
                 className="h-full w-full"
@@ -129,14 +129,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
         <View className="p-4">
           <View className="mb-2 flex-row items-start justify-between">
-            <Text className="flex-1 text-base font-semibold text-gray-900" numberOfLines={2}>
+            <Text className="flex-1 text-base font-semibold text-foreground" numberOfLines={2}>
               {product.name}
             </Text>
             <View className="ml-2">{getStatusEmoji()}</View>
           </View>
 
           {product.description && (
-            <Text className="mb-3 text-sm leading-5 text-gray-600" numberOfLines={2}>
+            <Text className="mb-3 text-sm leading-5 text-foreground-tertiary" numberOfLines={2}>
               {product.description}
             </Text>
           )}
@@ -144,12 +144,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           <View className="flex-row items-center justify-between">
             <View>
               {product.price && (
-                <Text className="text-lg font-bold text-gray-900">
+                <Text className="text-lg font-bold text-foreground">
                   {formatPrice(product.price)}
                 </Text>
               )}
               {product.category && (
-                <Text className="text-xs font-medium uppercase tracking-wide text-gray-500">
+                <Text className="text-xs font-medium uppercase tracking-wide text-foreground-muted">
                   {product.category}
                 </Text>
               )}
@@ -158,11 +158,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             {product.in_stock !== null && (
               <View
                 className={`rounded-full px-3 py-1 ${
-                  product.in_stock ? 'bg-green-100' : 'bg-red-100'
+                  product.in_stock ? 'bg-success-light' : 'bg-error-light'
                 }`}>
                 <Text
                   className={`text-xs font-medium ${
-                    product.in_stock ? 'text-green-800' : 'text-red-800'
+                    product.in_stock ? 'text-success' : 'text-error'
                   }`}>
                   {product.in_stock ? 'In Stock' : 'Out of Stock'}
                 </Text>

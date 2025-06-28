@@ -105,10 +105,10 @@ export const MainScreen: React.FC = () => {
       return (
         <View className="flex-1 items-center justify-center px-8">
           <FluentEmoji name="Search" size={60} />
-          <Text className="mt-6 text-center text-xl font-semibold text-gray-700">
+          <Text className="mt-6 text-center text-xl font-semibold text-foreground-secondary">
             No results for "{searchQuery}"
           </Text>
-          <Text className="mt-2 text-center text-gray-600">
+          <Text className="mt-2 text-center text-foreground-tertiary">
             Try searching with different keywords
           </Text>
         </View>
@@ -118,10 +118,10 @@ export const MainScreen: React.FC = () => {
     return (
       <View className="flex-1 items-center justify-center px-8">
         <SparklesEmoji size={80} />
-        <Text className="mt-6 text-center text-2xl font-bold text-gray-800">
+        <Text className="mt-6 text-center text-2xl font-bold text-foreground">
           Ready for something magical?
         </Text>
-        <Text className="mt-3 text-center leading-6 text-gray-600">
+        <Text className="mt-3 text-center leading-6 text-foreground-tertiary">
           Add your first product and watch your collection come to life
         </Text>
       </View>
@@ -162,14 +162,14 @@ export const MainScreen: React.FC = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView className="flex-1 bg-background">
       <View style={{ flex: 1, maxWidth: 960, alignSelf: 'center', width: '100%' }}>
       {/* Header with gentle animation */}
       <Animated.View style={[headerAnimatedStyle]} className="px-6 pb-6 pt-4">
         <View className="mb-6 flex-row items-center justify-between">
           <View>
-            <Text className="text-3xl font-bold text-gray-900">Tokens</Text>
-            <Text className="mt-1 text-gray-600">Your personal collection</Text>
+            <Text className="text-3xl font-bold text-foreground">Tokens</Text>
+            <Text className="mt-1 text-foreground-tertiary">Your personal collection</Text>
           </View>
           <View className="flex-row items-center gap-4">
             {selectionMode ? (
@@ -190,7 +190,7 @@ export const MainScreen: React.FC = () => {
                     style={{ opacity: selectedIds.size === 0 ? 0.5 : 1 }}
                   />
                 </TouchableOpacity>
-                <Text className="text-sm font-medium text-gray-700">
+                <Text className="text-sm font-medium text-foreground-secondary">
                   {selectedIds.size} selected
                 </Text>
               </>
@@ -201,12 +201,12 @@ export const MainScreen: React.FC = () => {
         </View>
 
         {/* Search with subtle focus animation */}
-        <View className="flex-row items-center rounded-2xl bg-gray-50 px-4 py-3">
+        <View className="flex-row items-center rounded-2xl bg-background-secondary px-4 py-3">
           <FluentEmoji name="Search" size={20} />
           <TextInput
-            className="ml-3 flex-1 text-gray-900"
+            className="ml-3 flex-1 text-foreground"
             placeholder="Search your collection..."
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor="#a1a1aa"
             value={searchQuery}
             onChangeText={setSearchQuery}
           />
@@ -214,7 +214,7 @@ export const MainScreen: React.FC = () => {
 
         {/* Search Results Count */}
         {searchQuery && (
-          <Text className="mt-2 text-sm text-gray-600">
+          <Text className="mt-2 text-sm text-foreground-tertiary">
             {products.length} result{products.length !== 1 ? 's' : ''} for "{searchQuery}"
           </Text>
         )}
@@ -293,7 +293,7 @@ export const MainScreen: React.FC = () => {
             alignItems: 'center',
             justifyContent: 'center',
             borderRadius: 32,
-            backgroundColor: 'white',
+            backgroundColor: '#ffffff',
             shadowColor: '#000',
             shadowOffset: {
               width: 0,

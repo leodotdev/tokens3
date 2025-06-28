@@ -140,7 +140,7 @@ export const ProductActionOverlay: React.FC<ProductActionOverlayProps> = ({
           style={[
             overlayAnimatedStyle,
             {
-              backgroundColor: 'white',
+              backgroundColor: '#ffffff',
               borderRadius: 24,
               padding: 24,
               width: '100%',
@@ -158,7 +158,7 @@ export const ProductActionOverlay: React.FC<ProductActionOverlayProps> = ({
           {/* Product Header */}
           <View className="mb-6 flex-row items-center">
             {product.image_url && (
-              <View className="mr-4 overflow-hidden rounded-xl bg-gray-100">
+              <View className="mr-4 overflow-hidden rounded-xl bg-background-secondary">
                 <Image
                   source={{ uri: product.image_url }}
                   style={{ width: 60, height: 60 }}
@@ -167,16 +167,16 @@ export const ProductActionOverlay: React.FC<ProductActionOverlayProps> = ({
               </View>
             )}
             <View className="flex-1">
-              <Text className="text-lg font-semibold text-gray-900" numberOfLines={2}>
+              <Text className="text-lg font-semibold text-foreground" numberOfLines={2}>
                 {product.name}
               </Text>
               {product.price && (
-                <Text className="mt-1 text-xl font-bold text-gray-900">
+                <Text className="mt-1 text-xl font-bold text-foreground">
                   {formatPrice(product.price)}
                 </Text>
               )}
               {product.category && (
-                <Text className="mt-1 text-sm font-medium uppercase tracking-wide text-gray-500">
+                <Text className="mt-1 text-sm font-medium uppercase tracking-wide text-foreground-muted">
                   {product.category}
                 </Text>
               )}
@@ -191,12 +191,12 @@ export const ProductActionOverlay: React.FC<ProductActionOverlayProps> = ({
                 onPress={action.onPress}
                 className="flex-row items-center rounded-xl px-4 py-4"
                 style={{
-                  backgroundColor: '#F9FAFB',
+                  backgroundColor: '#fafafa',
                 }}>
                 <View className="mr-4">
                   <FluentEmoji name={action.icon as any} size={24} />
                 </View>
-                <Text className="flex-1 text-base font-medium text-gray-900">{action.label}</Text>
+                <Text className="flex-1 text-base font-medium text-foreground">{action.label}</Text>
                 <FluentEmoji name="ArrowRight" size={16} style={{ opacity: 0.5 }} />
               </TouchableOpacity>
             ))}

@@ -18,3 +18,43 @@ body {
   font-size: 16px;
   line-height: 1.5;
 }
+
+/* Design system semantic colors for light mode */
+:root {
+  --color-background: 255 255 255; /* white */
+  --color-background-secondary: 244 244 245; /* zinc-100 */
+  --color-background-tertiary: 250 250 250; /* zinc-50 */
+  
+  --color-foreground: 24 24 27; /* zinc-900 */
+  --color-foreground-secondary: 63 63 70; /* zinc-700 */
+  --color-foreground-tertiary: 113 113 122; /* zinc-500 */
+  --color-foreground-muted: 161 161 170; /* zinc-400 */
+  
+  --color-border: 228 228 231; /* zinc-200 */
+  --color-border-secondary: 212 212 216; /* zinc-300 */
+  
+  --color-accent: 59 130 246; /* blue-500 */
+  --color-accent-foreground: 255 255 255; /* white */
+  --color-accent-light: 219 234 254; /* blue-100 */
+  --color-accent-dark: 29 78 216; /* blue-700 */
+}
+
+/* Design system semantic colors for dark mode */
+.dark {
+  --color-background: 24 24 27; /* zinc-900 */
+  --color-background-secondary: 39 39 42; /* zinc-800 */
+  --color-background-tertiary: 63 63 70; /* zinc-700 */
+  
+  --color-foreground: 250 250 250; /* zinc-50 */
+  --color-foreground-secondary: 244 244 245; /* zinc-100 */
+  --color-foreground-tertiary: 212 212 216; /* zinc-300 */
+  --color-foreground-muted: 161 161 170; /* zinc-400 */
+  
+  --color-border: 63 63 70; /* zinc-700 */
+  --color-border-secondary: 82 82 91; /* zinc-600 */
+  
+  --color-accent: 96 165 250; /* blue-400 */
+  --color-accent-foreground: 24 24 27; /* zinc-900 */
+  --color-accent-light: 30 58 138; /* blue-800 */
+  --color-accent-dark: 147 197 253; /* blue-300 */
+}
