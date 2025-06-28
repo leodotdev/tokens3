@@ -107,20 +107,20 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           borderColor: isSelected ? '#3b82f6' : '#e4e4e7',
         }}
         activeOpacity={0.9}>
-        <View className="flex-row">
+        <View className="flex-row" style={{ minHeight: 96 }}>
           {/* Image Section */}
           {product.image_url && (
-            <View className="w-24 h-24 overflow-hidden rounded-l-2xl bg-background-secondary">
+            <View className="w-24 overflow-hidden rounded-l-2xl bg-background-secondary" style={{ alignSelf: 'stretch' }}>
               <Image
                 source={{ uri: product.image_url }}
-                className="h-full w-full"
+                style={{ width: '100%', height: '100%' }}
                 resizeMode="cover"
               />
             </View>
           )}
           
           {/* Content Section */}
-          <View className="flex-1 p-4 relative">
+          <View className="flex-1 p-4 relative" style={{ minHeight: 96 }}>
             {/* Edit button */}
             {!selectionMode && onEdit && (
               <TouchableOpacity
