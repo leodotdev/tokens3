@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, TouchableOpacity, Linking } from 'react-native';
+import { View, Text, TouchableOpacity, Linking } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -10,6 +10,7 @@ import type { Product } from '../../lib/supabase';
 import { FluentEmoji, HeartEmoji, StarEmoji } from '../icons/FluentEmojiReal';
 import { likeQueries } from '../../lib/queries';
 import { useAuth } from '../../contexts/AuthContext';
+import { WebImage } from '../ui/WebImage';
 
 interface ProductCardProps {
   product: Product;
@@ -111,10 +112,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           {/* Image Section */}
           {product.image_url && (
             <View className="w-24 h-24 overflow-hidden rounded-l-2xl bg-background-secondary">
-              <Image
+              <WebImage
                 source={{ uri: product.image_url }}
                 className="h-full w-full"
                 resizeMode="cover"
+                fallbackIcon="Package"
+                fallbackIconSize={40}
               />
             </View>
           )}

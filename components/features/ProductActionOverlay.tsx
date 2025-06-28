@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, TouchableOpacity, Modal, Linking, Platform, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, Modal, Linking, Platform, Alert } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -11,6 +11,7 @@ import type { Product } from '../../lib/supabase';
 import { FluentEmoji } from '../icons/FluentEmojiReal';
 import { useAuth } from '../../contexts/AuthContext';
 import { bookmarkQueries, likeQueries } from '../../lib/queries';
+import { WebImage } from '../ui/WebImage';
 
 interface ProductActionOverlayProps {
   product: Product | null;
@@ -238,10 +239,12 @@ export const ProductActionOverlay: React.FC<ProductActionOverlayProps> = ({
           <View className="mb-6 flex-row items-center">
             {product.image_url && (
               <View className="mr-4 overflow-hidden rounded-xl bg-background-secondary">
-                <Image
+                <WebImage
                   source={{ uri: product.image_url }}
                   style={{ width: 60, height: 60 }}
                   resizeMode="cover"
+                  fallbackIcon="Package"
+                  fallbackIconSize={30}
                 />
               </View>
             )}

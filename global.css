@@ -58,3 +58,32 @@ body {
   --color-accent-light: 30 58 138; /* blue-800 */
   --color-accent-dark: 147 197 253; /* blue-300 */
 }
+
+/* Web-specific image handling */
+@media (hover: hover) {
+  /* Ensure images load properly on web */
+  img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+  
+  /* Prevent image loading issues */
+  img[src=""],
+  img:not([src]) {
+    opacity: 0;
+  }
+  
+  /* Smooth image loading transitions */
+  img {
+    transition: opacity 0.3s ease-in-out;
+  }
+  
+  /* Handle broken images gracefully */
+  img:not([src]),
+  img[src=""] {
+    min-height: 100px;
+    background-color: rgb(var(--color-background-secondary));
+    position: relative;
+  }
+}
