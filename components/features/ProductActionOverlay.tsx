@@ -58,7 +58,7 @@ export const ProductActionOverlay: React.FC<ProductActionOverlayProps> = ({
   }));
 
   const formatPrice = (price: number | null) => {
-    if (!price) return '';
+    if (!price || price === 0) return null;
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
@@ -172,7 +172,7 @@ export const ProductActionOverlay: React.FC<ProductActionOverlayProps> = ({
               <Text className="text-lg font-semibold text-foreground" numberOfLines={2}>
                 {product.name}
               </Text>
-              {product.price && (
+              {formatPrice(product.price) && (
                 <Text className="mt-1 text-xl font-bold text-foreground">
                   {formatPrice(product.price)}
                 </Text>

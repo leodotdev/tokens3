@@ -63,7 +63,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   };
 
   const formatPrice = (price: number | null) => {
-    if (!price) return '';
+    if (!price || price === 0) return null;
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
@@ -143,7 +143,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
           <View className="flex-row items-center justify-between">
             <View>
-              {product.price && (
+              {formatPrice(product.price) && (
                 <Text className="text-lg font-bold text-foreground">
                   {formatPrice(product.price)}
                 </Text>
