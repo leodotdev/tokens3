@@ -116,11 +116,7 @@ export const ProductActionOverlay: React.FC<ProductActionOverlayProps> = ({
   ];
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="none"
-      onRequestClose={onClose}>
+    <Modal visible={visible} transparent animationType="none" onRequestClose={onClose}>
       {/* Backdrop */}
       <Animated.View
         style={[
@@ -188,7 +184,7 @@ export const ProductActionOverlay: React.FC<ProductActionOverlayProps> = ({
           </View>
 
           {/* Actions List */}
-          <View className="space-y-1">
+          <View className="flex gap-2">
             {actions.map((action, index) => (
               <TouchableOpacity
                 key={action.id}
@@ -200,9 +196,7 @@ export const ProductActionOverlay: React.FC<ProductActionOverlayProps> = ({
                 <View className="mr-4">
                   <FluentEmoji name={action.icon as any} size={24} />
                 </View>
-                <Text className="flex-1 text-base font-medium text-gray-900">
-                  {action.label}
-                </Text>
+                <Text className="flex-1 text-base font-medium text-gray-900">{action.label}</Text>
                 <FluentEmoji name="ArrowRight" size={16} style={{ opacity: 0.5 }} />
               </TouchableOpacity>
             ))}
