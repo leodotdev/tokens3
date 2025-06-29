@@ -388,6 +388,7 @@ export const MainScreen: React.FC = () => {
         visible={authModalVisible}
         onClose={() => setAuthModalVisible(false)}
       />
+      </View>
     </View>
   );
 };
