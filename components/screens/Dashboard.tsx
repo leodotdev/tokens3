@@ -7,6 +7,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { peopleQueries, specialDatesQueries, bookmarkQueries } from '../../lib/queries';
 import type { Person, SpecialDate, Bookmark } from '../../lib/supabase';
 import { ProductCard } from '../features/ProductCard';
+import { anthropicAI } from '../../lib/ai';
 
 export const Dashboard: React.FC = () => {
   const { user } = useAuth();
@@ -54,20 +55,58 @@ export const Dashboard: React.FC = () => {
     
     setAddingPerson(true);
     try {
-      // TODO: Process with AI to extract person details
-      // For now, create a basic person
-      const { error } = await peopleQueries.create({
+      // Use AI to parse the person details
+      const parsedPerson = await anthropicAI.parsePerson(aiInput);
+      
+      // Create person with AI-extracted data
+      const personData = {
         user_id: user.id,
-        name: aiInput.trim(),
-        ai_context: { raw_input: aiInput },
-      });
+        name: parsedPerson.name,
+        relationship: parsedPerson.relationship,
+        age: parsedPerson.age,
+        birthday: parsedPerson.birthday,
+        interests: parsedPerson.interests,
+        address: parsedPerson.address,
+        notes: parsedPerson.notes,
+        ai_context: { 
+          raw_input: aiInput,
+          parsed_data: parsedPerson,
+          confidence: parsedPerson.confidence 
+        },
+      };
 
-      if (!error) {
+      const { data: person, error } = await peopleQueries.create(personData);
+
+      if (!error && person) {
+        // If birthday was provided, create a special date
+        if (parsedPerson.birthday) {
+          await specialDatesQueries.create({
+            person_id: person.id,
+            user_id: user.id,
+            name: `${parsedPerson.name}'s Birthday`,
+            date: parsedPerson.birthday,
+            recurrence_type: 'annual',
+            category: 'birthday',
+            reminder_days_before: 14,
+          });
+        }
+        
         setAiInput('');
         loadDashboardData();
       }
     } catch (error) {
       console.error('Error adding person:', error);
+      // Fallback: create basic person if AI fails
+      const { error: fallbackError } = await peopleQueries.create({
+        user_id: user.id,
+        name: aiInput.trim(),
+        ai_context: { raw_input: aiInput, ai_failed: true },
+      });
+      
+      if (!fallbackError) {
+        setAiInput('');
+        loadDashboardData();
+      }
     } finally {
       setAddingPerson(false);
     }

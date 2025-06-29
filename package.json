@@ -20,6 +20,7 @@
     "expo": "^53.0.11",
     "expo-status-bar": "~2.2.3",
     "gluestack-ui": "^0.7.22",
+    "lodash": "^4.17.21",
     "nativewind": "latest",
     "react": "19.0.0",
     "react-dom": "19.0.0",
@@ -31,6 +32,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
+    "@types/lodash": "^4.17.19",
     "@types/react": "~19.0.10",
     "eslint": "^9.25.1",
     "eslint-config-expo": "^9.2.0",

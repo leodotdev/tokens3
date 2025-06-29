@@ -16,6 +16,7 @@ import { ProductActionOverlay } from '../features/ProductActionOverlay';
 import { AddProductModal } from '../features/AddProductModal';
 import { EditProductModal } from '../features/EditProductModal';
 import { AuthModal } from '../features/AuthModal';
+import { AISearch } from '../features/AISearch';
 import { useAuth } from '../../contexts/AuthContext';
 
 const CARD_MARGIN = 12;
@@ -30,6 +31,7 @@ export const MainScreen: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [aiSearchEnhancement, setAiSearchEnhancement] = useState<any>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [selectionMode, setSelectionMode] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -46,14 +48,33 @@ export const MainScreen: React.FC = () => {
 
   const loadProducts = useCallback(async () => {
     try {
-      const { data, error } = await productQueries.getAll({
-        search: searchQuery || undefined,
-      });
+      let searchParams: any = {};
+      
+      if (searchQuery) {
+        // Use AI enhancement if available
+        if (aiSearchEnhancement) {
+          // Use AI-enhanced search terms
+          const enhancedQuery = aiSearchEnhancement.searchTerms?.join(' ') || searchQuery;
+          searchParams.search = enhancedQuery;
+        } else {
+          searchParams.search = searchQuery;
+        }
+      }
+      
+      const { data, error } = await productQueries.getAll(searchParams);
 
       if (!error && data) {
-        setProducts(data);
+        let productsData = data;
+        
+        // Apply AI-based sorting if we have enhancement data and user is authenticated
+        if (aiSearchEnhancement && user) {
+          // TODO: Sort by AI relevance score in future
+          // For now, maintain original order but could add preference weighting
+        }
+        
+        setProducts(productsData);
         if (!searchQuery) {
-          setAllProducts(data); // Store all products for reference
+          setAllProducts(productsData); // Store all products for reference
         }
       }
     } catch {
@@ -61,7 +82,7 @@ export const MainScreen: React.FC = () => {
       setProducts([]);
       setAllProducts([]);
     }
-  }, [searchQuery]);
+  }, [searchQuery, aiSearchEnhancement, user]);
 
   useEffect(() => {
     loadProducts();
@@ -190,6 +211,11 @@ export const MainScreen: React.FC = () => {
     loadProducts(); // Refresh the product list
   };
 
+  const handleAISearch = (query: string, aiEnhancement?: any) => {
+    setSearchQuery(query);
+    setAiSearchEnhancement(aiEnhancement);
+  };
+
   return (
     <View className="flex-1 bg-background" style={{ paddingTop: isMobile ? insets.top : 0 }}>
       <View style={{ flex: 1, maxWidth: 960, alignSelf: 'center', width: '100%' }}>
@@ -249,24 +275,26 @@ export const MainScreen: React.FC = () => {
         </View>
 
         {/* Search with subtle focus animation */}
-        <View className="flex-row items-center rounded-2xl bg-background-secondary">
-          <View className="pl-4">
-            <FluentEmoji name="Search" size={20} />
-          </View>
-          <TextInput
-            className="flex-1 rounded-2xl bg-transparent px-3 py-3 text-foreground"
-            placeholder="Search your collection..."
-            placeholderTextColor="#a1a1aa"
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-          />
-        </View>
+        <AISearch
+          onSearch={handleAISearch}
+          placeholder={user 
+            ? "AI-powered gift search for your people..." 
+            : "Discover high-quality, reviewed products..."
+          }
+        />
 
-        {/* Search Results Count */}
+        {/* Search Results Count with AI Enhancement */}
         {searchQuery && (
-          <Text className="mt-2 text-sm text-foreground-tertiary">
-            {products.length} result{products.length !== 1 ? 's' : ''} for "{searchQuery}"
-          </Text>
+          <View className="mb-2">
+            <Text className="text-sm text-foreground-tertiary">
+              {products.length} result{products.length !== 1 ? 's' : ''} for "{searchQuery}"
+            </Text>
+            {aiSearchEnhancement && (
+              <Text className="mt-1 text-xs text-primary">
+                ✨ Enhanced with AI suggestions
+              </Text>
+            )}
+          </View>
         )}
       </Animated.View>
 
