@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, useWindowDimensions } from 'react-native';
 import { useAuth } from '../../contexts/AuthContext';
 import { TabNavigator } from '../navigation/TabNavigator';
 import { MainScreen } from './MainScreen';
 import { Dashboard } from './Dashboard';
 import { About } from './About';
+import { SignInPlaceholder } from './SignInPlaceholder';
 import { AuthModal } from '../features/AuthModal';
 
 const tabs = [
@@ -17,21 +18,25 @@ export const AppNavigator: React.FC = () => {
   const { user } = useAuth();
   const { width } = useWindowDimensions();
   const isMobile = width <= 500;
-  const [activeTab, setActiveTab] = useState(user ? 'dashboard' : 'products');
+  const [activeTab, setActiveTab] = useState('products');
   const [authModalVisible, setAuthModalVisible] = useState(false);
 
-  const handleTabPress = (tabId: string) => {
-    if (!user && tabId === 'dashboard') {
-      setAuthModalVisible(true);
-      return;
+  // Auto-switch to dashboard and close modal when user signs in
+  useEffect(() => {
+    if (user) {
+      setAuthModalVisible(false);
+      setActiveTab('dashboard');
     }
+  }, [user]);
+
+  const handleTabPress = (tabId: string) => {
     setActiveTab(tabId);
   };
 
   const renderScreen = () => {
     switch (activeTab) {
       case 'dashboard':
-        return user ? <Dashboard /> : <MainScreen />;
+        return user ? <Dashboard /> : <SignInPlaceholder onSignIn={() => setAuthModalVisible(true)} />;
       case 'products':
         return <MainScreen />;
       case 'about':
@@ -64,12 +69,8 @@ export const AppNavigator: React.FC = () => {
       )}
 
       <AuthModal
-        isVisible={authModalVisible}
+        visible={authModalVisible}
         onClose={() => setAuthModalVisible(false)}
-        onSuccess={() => {
-          setAuthModalVisible(false);
-          setActiveTab('dashboard');
-        }}
       />
     </View>
   );

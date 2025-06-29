@@ -20,6 +20,7 @@ interface ProductCardProps {
   isSelected?: boolean;
   selectionMode?: boolean;
   isHorizontal?: boolean;
+  showAIIndicator?: boolean;
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({
@@ -30,6 +31,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   isSelected = false,
   selectionMode = false,
   isHorizontal = false,
+  showAIIndicator = false,
 }) => {
   const { user } = useAuth();
   const [likeCount, setLikeCount] = useState(0);
