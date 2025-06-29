@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, TextInput, FlatList, ActivityIndicator } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, Text, ScrollView, TouchableOpacity, TextInput, FlatList, ActivityIndicator, useWindowDimensions } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { FluentEmoji, HeartEmoji, SparklesEmoji } from '../icons/FluentEmojiReal';
 import { useAuth } from '../../contexts/AuthContext';
@@ -10,6 +10,9 @@ import { ProductCard } from '../features/ProductCard';
 
 export const Dashboard: React.FC = () => {
   const { user } = useAuth();
+  const { width } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
+  const isMobile = width <= 500;
   const [people, setPeople] = useState<Person[]>([]);
   const [upcomingDates, setUpcomingDates] = useState<SpecialDate[]>([]);
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
@@ -94,7 +97,7 @@ export const Dashboard: React.FC = () => {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
+    <View className="flex-1 bg-background" style={{ paddingTop: isMobile ? insets.top : 0 }}>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="mx-auto w-full max-w-4xl px-6 pb-32">
           {/* Header */}
@@ -271,6 +274,6 @@ export const Dashboard: React.FC = () => {
           )}
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };

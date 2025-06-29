@@ -70,9 +70,9 @@ export const TabNavigator: React.FC<TabNavigatorProps> = ({
     );
   }
 
-  // Desktop/Tablet: Top center tabs
+  // Desktop/Tablet: Top navigation
   return (
-    <View className="border-b border-border bg-background">
+    <View className="border-b border-border bg-background" style={{ paddingTop: insets.top }}>
       <View className="mx-auto flex-row items-center justify-center space-x-8 px-6 py-4">
         {tabs.map((tab) => (
           <TouchableOpacity

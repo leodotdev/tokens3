@@ -7,7 +7,7 @@ import Animated, {
   withTiming,
   interpolate,
 } from 'react-native-reanimated';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { productQueries } from '../../lib/queries';
 import type { Product } from '../../lib/supabase';
 import { FluentEmoji, SparklesEmoji, ShoppingCartEmoji } from '../icons/FluentEmojiReal';
@@ -24,6 +24,8 @@ const PADDING = 24;
 export const MainScreen: React.FC = () => {
   const { user, signOut } = useAuth();
   const { width } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
+  const isMobile = width <= 500;
   const NUM_COLUMNS = width > 960 ? 4 : width > 500 ? 2 : 1;
   const [products, setProducts] = useState<Product[]>([]);
   const [allProducts, setAllProducts] = useState<Product[]>([]);
@@ -189,7 +191,7 @@ export const MainScreen: React.FC = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
+    <View className="flex-1 bg-background" style={{ paddingTop: isMobile ? insets.top : 0 }}>
       <View style={{ flex: 1, maxWidth: 960, alignSelf: 'center', width: '100%' }}>
       {/* Header with gentle animation */}
       <Animated.View style={[headerAnimatedStyle]} className="px-6 pb-6 pt-4">

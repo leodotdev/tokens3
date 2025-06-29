@@ -1,12 +1,16 @@
 import React from 'react';
-import { View, Text, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, Text, ScrollView, useWindowDimensions } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { FluentEmoji, HeartEmoji, SparklesEmoji } from '../icons/FluentEmojiReal';
 
 export const About: React.FC = () => {
+  const { width } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
+  const isMobile = width <= 500;
+
   return (
-    <SafeAreaView className="flex-1 bg-background">
+    <View className="flex-1 bg-background" style={{ paddingTop: isMobile ? insets.top : 0 }}>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="mx-auto w-full max-w-2xl px-6 py-8">
           {/* Header */}
@@ -130,6 +134,6 @@ export const About: React.FC = () => {
           </Animated.View>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };

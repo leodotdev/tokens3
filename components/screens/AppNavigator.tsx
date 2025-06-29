@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View } from 'react-native';
+import { View, useWindowDimensions } from 'react-native';
 import { useAuth } from '../../contexts/AuthContext';
 import { TabNavigator } from '../navigation/TabNavigator';
 import { MainScreen } from './MainScreen';
@@ -15,6 +15,8 @@ const tabs = [
 
 export const AppNavigator: React.FC = () => {
   const { user } = useAuth();
+  const { width } = useWindowDimensions();
+  const isMobile = width <= 500;
   const [activeTab, setActiveTab] = useState(user ? 'dashboard' : 'products');
   const [authModalVisible, setAuthModalVisible] = useState(false);
 
@@ -41,13 +43,25 @@ export const AppNavigator: React.FC = () => {
 
   return (
     <View className="flex-1">
+      {/* Desktop/Tablet: Navigation at top */}
+      {!isMobile && (
+        <TabNavigator
+          activeTab={activeTab}
+          onTabPress={handleTabPress}
+          tabs={tabs}
+        />
+      )}
+      
       {renderScreen()}
       
-      <TabNavigator
-        activeTab={activeTab}
-        onTabPress={handleTabPress}
-        tabs={tabs}
-      />
+      {/* Mobile: Navigation at bottom */}
+      {isMobile && (
+        <TabNavigator
+          activeTab={activeTab}
+          onTabPress={handleTabPress}
+          tabs={tabs}
+        />
+      )}
 
       <AuthModal
         isVisible={authModalVisible}
