@@ -110,3 +110,57 @@ export interface ListProduct {
   notes: string | null;
   product?: Product;
 }
+
+// People and gift tracking types
+export interface Person {
+  id: string;
+  user_id: string;
+  name: string;
+  relationship?: string;
+  birthday?: string;
+  age?: number;
+  interests?: string[];
+  address?: string;
+  notes?: string;
+  ai_context?: any;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface SpecialDate {
+  id: string;
+  person_id: string;
+  user_id: string;
+  name: string;
+  date?: string;
+  recurrence_type?: 'once' | 'annual' | 'quarterly' | 'monthly';
+  category?: string;
+  notes?: string;
+  reminder_days_before?: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface GiftGiven {
+  id: string;
+  person_id: string;
+  user_id: string;
+  product_id?: string;
+  name: string;
+  date_given?: string;
+  occasion?: string;
+  price?: number;
+  notes?: string;
+  created_at?: string;
+}
+
+export interface PersonProductBookmark {
+  id: string;
+  person_id: string;
+  product_id: string;
+  user_id: string;
+  notes?: string;
+  created_at?: string;
+  person?: Person;
+  product?: Product;
+}

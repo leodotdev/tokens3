@@ -295,3 +295,123 @@ export const listQueries = {
     return { error };
   },
 };
+
+export const peopleQueries = {
+  // Get all people for a user
+  async getAll(userId: string) {
+    const { data, error } = await supabase
+      .from('people')
+      .select('*')
+      .eq('user_id', userId)
+      .order('name');
+      
+    return { data, error };
+  },
+
+  // Get a single person
+  async getById(id: string) {
+    const { data, error } = await supabase
+      .from('people')
+      .select('*')
+      .eq('id', id)
+      .single();
+      
+    return { data, error };
+  },
+
+  // Create a new person
+  async create(person: any) {
+    const { data, error } = await supabase
+      .from('people')
+      .insert(person)
+      .select()
+      .single();
+      
+    return { data, error };
+  },
+
+  // Update a person
+  async update(id: string, updates: any) {
+    const { data, error } = await supabase
+      .from('people')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
+      
+    return { data, error };
+  },
+
+  // Delete a person
+  async delete(id: string) {
+    const { error } = await supabase
+      .from('people')
+      .delete()
+      .eq('id', id);
+      
+    return { error };
+  },
+};
+
+export const specialDatesQueries = {
+  // Get all special dates for a person
+  async getByPerson(personId: string) {
+    const { data, error } = await supabase
+      .from('special_dates')
+      .select('*')
+      .eq('person_id', personId)
+      .order('date');
+      
+    return { data, error };
+  },
+
+  // Get upcoming dates for a user
+  async getUpcoming(userId: string, days: number = 30) {
+    const today = new Date();
+    const future = new Date();
+    future.setDate(today.getDate() + days);
+
+    const { data, error } = await supabase
+      .from('special_dates')
+      .select('*, person:people(*)')
+      .eq('user_id', userId)
+      .gte('date', today.toISOString())
+      .lte('date', future.toISOString())
+      .order('date');
+      
+    return { data, error };
+  },
+
+  // Create a special date
+  async create(date: any) {
+    const { data, error } = await supabase
+      .from('special_dates')
+      .insert(date)
+      .select()
+      .single();
+      
+    return { data, error };
+  },
+
+  // Update a special date
+  async update(id: string, updates: any) {
+    const { data, error } = await supabase
+      .from('special_dates')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
+      
+    return { data, error };
+  },
+
+  // Delete a special date
+  async delete(id: string) {
+    const { error } = await supabase
+      .from('special_dates')
+      .delete()
+      .eq('id', id);
+      
+    return { error };
+  },
+};

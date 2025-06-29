@@ -2,7 +2,7 @@ import React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GluestackUIProvider } from './components/ui/provider';
-import { MainScreen } from './components/screens/MainScreen';
+import { AppNavigator } from './components/screens/AppNavigator';
 import { AuthProvider } from './contexts/AuthContext';
 
 import './global.css';
@@ -12,7 +12,7 @@ export default function App() {
     <SafeAreaProvider>
       <GluestackUIProvider>
         <AuthProvider>
-          <MainScreen />
+          <AppNavigator />
           <StatusBar style="auto" />
         </AuthProvider>
       </GluestackUIProvider>
