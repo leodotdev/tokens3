@@ -359,7 +359,6 @@ export const MainScreen: React.FC = () => {
           <FluentEmoji name="Plus" size={24} />
         </TouchableOpacity>
       </Animated.View>
-      </View>
 
       {/* Product Action Overlay */}
       <ProductActionOverlay
@@ -389,6 +388,6 @@ export const MainScreen: React.FC = () => {
         visible={authModalVisible}
         onClose={() => setAuthModalVisible(false)}
       />
-    </SafeAreaView>
+    </View>
   );
 };
