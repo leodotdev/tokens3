@@ -1,36 +1,87 @@
-# Tokens3 - Project Memory & Architecture
+# Tokens3 - AI-Powered Gift Management Platform
 
 ## Project Vision
-**Tokens3** is a complete restart of the tokens project series, built as simple and elegant as possible. This is the third iteration, learning from `tokens` (basic React Native + SQLite) and `tokens2` (Supabase + advanced UI) to create the most refined version yet.
+**Tokens3** transforms gift giving from stressful to magical. The third iteration of the tokens series, built with AI-first architecture to deliver personalized gift suggestions and relationship management.
 
 ### Core Philosophy: Family Values Design Manifesto
 Following https://benji.org/family-values principles:
 
-**Simplicity**: Reveal features gradually, fundamentals at fingertips
-**Fluidity**: Seamless transitions, constantly evolving interface  
-**Delight**: Selective magical moments, emotional connection over pure functionality
+**Simplicity**: AI handles complexity, users get instant value
+**Fluidity**: Seamless navigation between people, dates, and gifts
+**Delight**: Magical AI moments that feel genuinely helpful
 
-## Tech Stack - Minimal & Elegant
+## Tech Stack - AI-Enhanced & Elegant
 - **React Native + Expo** (v53) - Cross-platform foundation
-- **Supabase MCP** - Cloud database, auth, real-time, storage 
-- **Gluestack** - Universal UI components, design system
-- **React Native Reanimated** - Fluid animations and transitions
-- **FluentUI Emoji** - All icons and graphics (no other icon libraries)
-- **TypeScript** - Type safety
-- **Git Integration** - Auto commit/push to https://github.com/leodotdev/tokens3.git
+- **Supabase** - Database, auth, real-time, people & gift tracking
+- **Anthropic Claude** - AI-powered person parsing and gift suggestions
+- **React Native Reanimated** - Fluid micro-interactions
+- **FluentUI Emoji** - Consistent visual language
+- **NativeWind** - Responsive styling system
+- **TypeScript** - Type safety throughout
 
-## Architecture Principles
-1. **Simplicity First**: Start with core features, add complexity gradually
-2. **Universal Components**: Gluestack for consistent cross-platform UI
-3. **Fluid Interactions**: Reanimated for meaningful animations
-4. **Emotional Design**: FluentUI emoji for personality and delight
-5. **Progressive Enhancement**: Features reveal as needed
-6. **Cloud-Native**: Supabase for all backend needs
+## New Architecture - People-First Design
 
-## Project Evolution Context
-- **tokens**: Local SQLite, basic CRUD, learning project
-- **tokens2**: Supabase migration, advanced UI, production-ready
-- **tokens3**: Minimal elegance, emotion-first design, refined architecture
+### Core Features Implemented
+1. **Dashboard Home** - Welcome screen for authenticated users
+2. **People Management** - Add people via AI natural language input
+3. **Special Dates Tracking** - Birthdays, anniversaries, custom events
+4. **Gift History** - Track what you've given to prevent duplicates
+5. **Product Discovery** - Enhanced with AI search coming soon
+6. **Responsive Navigation** - Floating tabs on mobile, top tabs on desktop
+
+### Database Schema
+- `people` - Core person profiles with AI context
+- `special_dates` - Events with recurrence patterns
+- `gifts_given` - Historical gift tracking
+- `person_product_bookmarks` - Wishlist management per person
+- Enhanced `products` table with AI-ready metadata
+
+### AI Integration Points (Coming Soon)
+1. **Person Creation**: "Add my mom Mary, 68, loves gardening and cooking"
+2. **Gift Suggestions**: Context-aware recommendations per person
+3. **Event Planning**: "Get them a housewarming gift in 2 weeks"
+4. **Smart Reminders**: Proactive notifications with curated suggestions
+
+## User Journey - Magical Gift Giving
+1. **Sign Up** → Dashboard with people management
+2. **Add People** → AI parses natural language descriptions
+3. **Track Dates** → Important occasions with smart reminders
+4. **Discover Gifts** → AI-curated suggestions based on person profile
+5. **Never Repeat** → Automatic filtering of previously given gifts
+6. **Effortless Giving** → One-click to Amazon with affiliate support
+
+## Revenue Model - Transparent & Ethical
+- **No ads ever** - Clean, focused experience
+- **No data selling** - Privacy-first approach
+- **Affiliate commissions** - Small percentage from Amazon purchases
+- **Premium features** (future) - Advanced AI insights and automation
+
+## Responsive Design Strategy
+- **Mobile (≤500px)**: 1 column, horizontal cards, floating bottom nav
+- **Tablet (501-960px)**: 2 columns, vertical cards, top navigation
+- **Desktop (>960px)**: 4 columns, rich vertical cards, top navigation
+
+## Development Principles
+- **AI-First**: Every feature considers how AI can enhance the experience
+- **Privacy-First**: User data never leaves secure boundaries
+- **Delight-First**: Micro-interactions create emotional connection
+- **Mobile-First**: Touch-optimized experiences scale up beautifully
+
+## Key Technical Decisions
+- **Supabase RLS**: Row-level security ensures data privacy
+- **Platform-Specific UI**: Different layouts optimize for each screen size
+- **Real-time Sync**: Live updates across devices
+- **Type Safety**: Full TypeScript coverage for reliability
+
+## Current Status (December 2024)
+✅ Core product management and discovery
+✅ User authentication and profiles  
+✅ People and special dates tracking
+✅ Responsive navigation system
+✅ Dashboard with AI person input
+✅ About page with transparent mission
+
+🚧 **Next Phase**: AI integration with Anthropic Claude for person parsing and gift suggestions
 
 ## Development Heuristics
 - Always check with user before major changes
@@ -40,15 +91,5 @@ Following https://benji.org/family-values principles:
 - Use only specified tech stack (no additional dependencies without approval)
 - Prioritize user delight over feature completeness
 
-## Key Learnings from Previous Versions
-- Supabase provides excellent developer experience for React Native
-- Grid-based UI with search/filter works well for product catalogs
-- Web scraping Amazon products is valuable but complex
-- Real-time updates create magical user experiences
-- Simple, focused feature sets are more delightful than feature bloat
-
-## Current Status
-Fresh start with basic Expo + NativeWind setup. Ready to build something beautiful and simple.
-
 ---
-*Generated 2025-01-12 by Claude Code*
+*Updated 2025-01-12 - AI-Enhanced Gift Platform Architecture*
