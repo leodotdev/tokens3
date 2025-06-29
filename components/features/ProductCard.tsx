@@ -19,6 +19,7 @@ interface ProductCardProps {
   onEdit?: () => void;
   isSelected?: boolean;
   selectionMode?: boolean;
+  isHorizontal?: boolean;
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({
@@ -28,6 +29,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   onEdit,
   isSelected = false,
   selectionMode = false,
+  isHorizontal = false,
 }) => {
   const { user } = useAuth();
   const [likeCount, setLikeCount] = useState(0);
@@ -92,6 +94,129 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     }).format(price);
   };
 
+  if (isHorizontal) {
+    // Horizontal layout for mobile (1 column)
+    return (
+      <Animated.View style={animatedStyle}>
+        <TouchableOpacity
+          onPress={handlePress}
+          onLongPress={onLongPress}
+          onPressIn={handlePressIn}
+          onPressOut={handlePressOut}
+          style={{
+            marginBottom: 16,
+            overflow: 'hidden',
+            borderRadius: 16,
+            backgroundColor: '#ffffff',
+            borderWidth: isSelected ? 2 : 1,
+            borderColor: isSelected ? '#3b82f6' : '#e4e4e7',
+          }}
+          activeOpacity={0.9}>
+          <View className="flex-row">
+            {/* Image Section */}
+            {product.image_url && (
+              <View className="bg-background-secondary h-24 w-24 overflow-hidden rounded-l-2xl">
+                <WebImage
+                  source={{ uri: product.image_url }}
+                  className="h-full w-full"
+                  resizeMode="cover"
+                  fallbackIcon="Package"
+                  fallbackIconSize={40}
+                />
+              </View>
+            )}
+
+            {/* Content Section */}
+            <View className="relative flex-1 p-4">
+              {/* Edit button */}
+              {!selectionMode && onEdit && (
+                <TouchableOpacity
+                  onPress={(e) => {
+                    e.stopPropagation();
+                    onEdit();
+                  }}
+                  className="absolute right-2 top-2 rounded-full bg-white/90 p-1.5"
+                  style={{
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.1,
+                    shadowRadius: 4,
+                    elevation: 3,
+                  }}>
+                  <FluentEmoji name="Edit" size={16} />
+                </TouchableOpacity>
+              )}
+
+              {/* Selection checkbox */}
+              {selectionMode && (
+                <View className="absolute right-2 top-2 rounded-full bg-white/90 p-1">
+                  <FluentEmoji
+                    name={isSelected ? 'CheckboxChecked' : 'CheckboxUnchecked'}
+                    size={20}
+                  />
+                </View>
+              )}
+
+              <View className="mb-1 flex-row items-start justify-between">
+                <Text className="text-foreground flex-1 pr-8 text-sm font-semibold" numberOfLines={1}>
+                  {product.name}
+                </Text>
+                {getStatusEmoji() && <View className="ml-1">{getStatusEmoji()}</View>}
+              </View>
+
+              {product.description && (
+                <Text className="text-foreground-tertiary mb-2 text-xs leading-4" numberOfLines={1}>
+                  {product.description}
+                </Text>
+              )}
+
+              <View className="flex-row items-end justify-between">
+                <View className="flex-1">
+                  {formatPrice(product.price) && (
+                    <Text className="text-foreground text-sm font-bold">
+                      {formatPrice(product.price)}
+                    </Text>
+                  )}
+                  {product.category && (
+                    <Text className="text-foreground-muted text-xs font-medium uppercase tracking-wide">
+                      {product.category}
+                    </Text>
+                  )}
+                </View>
+
+                <View className="flex-row items-center gap-2">
+                  {likeCount > 0 && (
+                    <View className="flex-row items-center gap-1">
+                      <HeartEmoji size={12} style={{ opacity: isLiked ? 1 : 0.5 }} />
+                      <Text className="text-foreground-tertiary text-xs font-medium">
+                        {likeCount}
+                      </Text>
+                    </View>
+                  )}
+
+                  {product.in_stock !== null && (
+                    <View
+                      className={`rounded-full px-2 py-0.5 ${
+                        product.in_stock ? 'bg-success-light' : 'bg-error-light'
+                      }`}>
+                      <Text
+                        className={`text-xs font-medium ${
+                          product.in_stock ? 'text-success' : 'text-error'
+                        }`}>
+                        {product.in_stock ? 'In Stock' : 'Out'}
+                      </Text>
+                    </View>
+                  )}
+                </View>
+              </View>
+            </View>
+          </View>
+        </TouchableOpacity>
+      </Animated.View>
+    );
+  }
+
+  // Vertical layout for tablets/desktop (multi-column)
   return (
     <Animated.View style={animatedStyle}>
       <TouchableOpacity
@@ -100,7 +225,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
         style={{
-          marginBottom: 16,
           overflow: 'hidden',
           borderRadius: 16,
           backgroundColor: '#ffffff',
@@ -108,107 +232,100 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           borderColor: isSelected ? '#3b82f6' : '#e4e4e7',
         }}
         activeOpacity={0.9}>
-        <View className="flex-row">
-          {/* Image Section */}
+        <View className="relative">
           {product.image_url && (
-            <View 
-              className={`bg-background-secondary w-24 overflow-hidden rounded-l-2xl ${
-                Platform.OS === 'web' ? 'h-full' : 'h-24'
-              }`}
-              style={Platform.OS === 'web' ? { alignSelf: 'stretch' } : undefined}
-            >
+            <View className="w-full overflow-hidden rounded-t-2xl bg-background-secondary" style={{ aspectRatio: 1 }}>
               <WebImage
                 source={{ uri: product.image_url }}
                 className="h-full w-full"
                 resizeMode="cover"
                 fallbackIcon="Package"
-                fallbackIconSize={40}
+                fallbackIconSize={60}
               />
             </View>
           )}
+          
+          {/* Edit button */}
+          {!selectionMode && onEdit && (
+            <TouchableOpacity
+              onPress={(e) => {
+                e.stopPropagation();
+                onEdit();
+              }}
+              className="absolute right-2 top-2 rounded-full bg-white/90 p-2"
+              style={{
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.1,
+                shadowRadius: 4,
+                elevation: 3,
+              }}>
+              <FluentEmoji name="Edit" size={20} />
+            </TouchableOpacity>
+          )}
+          
+          {/* Selection checkbox */}
+          {selectionMode && (
+            <View className="absolute right-2 top-2 rounded-full bg-white/90 p-2">
+              <FluentEmoji 
+                name={isSelected ? "CheckboxChecked" : "CheckboxUnchecked"} 
+                size={24} 
+              />
+            </View>
+          )}
+        </View>
 
-          {/* Content Section */}
-          <View className="relative flex-1 p-4">
-            {/* Edit button */}
-            {!selectionMode && onEdit && (
-              <TouchableOpacity
-                onPress={(e) => {
-                  e.stopPropagation();
-                  onEdit();
-                }}
-                className="absolute right-2 top-2 rounded-full bg-white/90 p-1.5"
-                style={{
-                  shadowColor: '#000',
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.1,
-                  shadowRadius: 4,
-                  elevation: 3,
-                }}>
-                <FluentEmoji name="Edit" size={16} />
-              </TouchableOpacity>
-            )}
+        <View className="p-4">
+          <View className="mb-2 flex-row items-start justify-between">
+            <Text className="flex-1 text-base font-semibold text-foreground" numberOfLines={2}>
+              {product.name}
+            </Text>
+            {getStatusEmoji() && <View className="ml-2">{getStatusEmoji()}</View>}
+          </View>
 
-            {/* Selection checkbox */}
-            {selectionMode && (
-              <View className="absolute right-2 top-2 rounded-full bg-white/90 p-1">
-                <FluentEmoji
-                  name={isSelected ? 'CheckboxChecked' : 'CheckboxUnchecked'}
-                  size={20}
-                />
-              </View>
-            )}
+          {product.description && (
+            <Text className="mb-3 text-sm leading-5 text-foreground-tertiary" numberOfLines={2}>
+              {product.description}
+            </Text>
+          )}
 
-            <View className="mb-1 flex-row items-start justify-between">
-              <Text className="text-foreground flex-1 pr-8 text-sm font-semibold" numberOfLines={1}>
-                {product.name}
-              </Text>
-              {getStatusEmoji() && <View className="ml-1">{getStatusEmoji()}</View>}
+          <View className="flex-row items-center justify-between">
+            <View>
+              {formatPrice(product.price) && (
+                <Text className="text-lg font-bold text-foreground">
+                  {formatPrice(product.price)}
+                </Text>
+              )}
+              {product.category && (
+                <Text className="text-xs font-medium uppercase tracking-wide text-foreground-muted">
+                  {product.category}
+                </Text>
+              )}
             </View>
 
-            {product.description && (
-              <Text className="text-foreground-tertiary mb-2 text-xs leading-4" numberOfLines={1}>
-                {product.description}
-              </Text>
-            )}
-
-            <View className="flex-row items-end justify-between">
-              <View className="flex-1">
-                {formatPrice(product.price) && (
-                  <Text className="text-foreground text-sm font-bold">
-                    {formatPrice(product.price)}
+            <View className="flex-row items-center gap-3">
+              {likeCount > 0 && (
+                <View className="flex-row items-center gap-1">
+                  <HeartEmoji size={16} style={{ opacity: isLiked ? 1 : 0.5 }} />
+                  <Text className="text-xs font-medium text-foreground-tertiary">
+                    {likeCount}
                   </Text>
-                )}
-                {product.category && (
-                  <Text className="text-foreground-muted text-xs font-medium uppercase tracking-wide">
-                    {product.category}
-                  </Text>
-                )}
-              </View>
-
-              <View className="flex-row items-center gap-2">
-                {likeCount > 0 && (
-                  <View className="flex-row items-center gap-1">
-                    <HeartEmoji size={12} style={{ opacity: isLiked ? 1 : 0.5 }} />
-                    <Text className="text-foreground-tertiary text-xs font-medium">
-                      {likeCount}
-                    </Text>
-                  </View>
-                )}
-
-                {product.in_stock !== null && (
-                  <View
-                    className={`rounded-full px-2 py-0.5 ${
-                      product.in_stock ? 'bg-success-light' : 'bg-error-light'
+                </View>
+              )}
+              
+              {product.in_stock !== null && (
+                <View
+                  className={`rounded-full px-3 py-1 ${
+                    product.in_stock ? 'bg-success-light' : 'bg-error-light'
+                  }`}>
+                  <Text
+                    className={`text-xs font-medium ${
+                      product.in_stock ? 'text-success' : 'text-error'
                     }`}>
-                    <Text
-                      className={`text-xs font-medium ${
-                        product.in_stock ? 'text-success' : 'text-error'
-                      }`}>
-                      {product.in_stock ? 'In Stock' : 'Out'}
-                    </Text>
-                  </View>
-                )}
-              </View>
+                    {product.in_stock ? 'In Stock' : 'Out of Stock'}
+                  </Text>
+                </View>
+              )}
             </View>
           </View>
         </View>

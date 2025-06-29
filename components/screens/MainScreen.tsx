@@ -298,6 +298,7 @@ export const MainScreen: React.FC = () => {
                     product={product}
                     isSelected={selectedIds.has(product.id)}
                     selectionMode={selectionMode}
+                    isHorizontal={NUM_COLUMNS === 1}
                     onPress={() => {
                       if (selectionMode) {
                         toggleSelection(product.id);
