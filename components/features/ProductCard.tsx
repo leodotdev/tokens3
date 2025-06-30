@@ -109,30 +109,18 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           onLongPress={onLongPress}
           onPressIn={handlePressIn}
           onPressOut={handlePressOut}
-          className={getThemeClassName(
-            `mb-4 overflow-hidden rounded-2xl border-2`,
-            ['bg-background', isSelected ? 'border-blue-500' : 'border-border'],
-            isWeb
-          )}
+          className={`mb-4 overflow-hidden rounded-2xl border-2 bg-background ${isSelected ? 'border-blue-500' : 'border-border'}`}
           style={{
-            ...(!isWeb && {
-              backgroundColor: colors.background,
-              borderColor: isSelected ? '#3b82f6' : colors.border
-            })
+            backgroundColor: colors.background,
+            borderColor: isSelected ? '#3b82f6' : colors.border
           }}
           activeOpacity={0.9}>
           <View className="flex-row">
             {/* Image Section */}
             {product.image_url && (
               <View 
-                className={getThemeClassName(
-                  'h-24 w-24 overflow-hidden rounded-l-2xl',
-                  ['bg-background-secondary'],
-                  isWeb
-                )}
-                style={{
-                  ...(!isWeb && { backgroundColor: colors.backgroundSecondary })
-                }}
+                className="h-24 w-24 overflow-hidden rounded-l-2xl bg-background-secondary"
+                style={{ backgroundColor: colors.backgroundSecondary }}
               >
                 <WebImage
                   source={{ uri: product.image_url }}
@@ -235,29 +223,19 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         onLongPress={onLongPress}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
-        className={getThemeClassName(
-          `overflow-hidden rounded-2xl border-2`,
-          ['bg-background', isSelected ? 'border-blue-500' : 'border-border'],
-          isWeb
-        )}
+        className={`overflow-hidden rounded-2xl border-2 bg-background ${isSelected ? 'border-blue-500' : 'border-border'}`}
         style={{
-          ...(!isWeb && {
-            backgroundColor: colors.background,
-            borderColor: isSelected ? '#3b82f6' : colors.border
-          })
+          backgroundColor: colors.background,
+          borderColor: isSelected ? '#3b82f6' : colors.border
         }}
         activeOpacity={0.9}>
         <View className="relative">
           {product.image_url && (
             <View 
-              className={getThemeClassName(
-                'w-full overflow-hidden rounded-t-2xl',
-                ['bg-background-secondary'],
-                isWeb
-              )}
+              className="w-full overflow-hidden rounded-t-2xl bg-background-secondary"
               style={{
                 aspectRatio: 1,
-                ...(!isWeb && { backgroundColor: colors.backgroundSecondary })
+                backgroundColor: colors.backgroundSecondary
               }}
             >
               <WebImage

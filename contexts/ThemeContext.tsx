@@ -170,13 +170,16 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const setTheme = (newTheme: Theme) => {
-    console.log('Setting theme to:', newTheme);
+    console.log('ThemeContext setTheme called with:', newTheme);
+    console.log('Platform.OS:', Platform.OS);
     setThemeState(newTheme);
     
     // Apply theme immediately for better responsiveness
     const immediateActualTheme = newTheme === 'system' 
       ? (systemColorScheme === 'dark' ? 'dark' : 'light')
       : newTheme;
+    
+    console.log('Immediate actual theme:', immediateActualTheme);
     
     // For React Native, also force the appearance
     if (Platform.OS !== 'web' && newTheme !== 'system') {

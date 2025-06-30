@@ -71,9 +71,15 @@ export const SettingsScreen: React.FC = () => {
   };
 
   const handleThemeSelect = (selectedTheme: 'light' | 'dark' | 'system') => {
-    console.log('Setting theme to:', selectedTheme);
+    console.log('handleThemeSelect called with:', selectedTheme);
+    console.log('Current theme:', theme);
     setTheme(selectedTheme);
     setThemePickerVisible(false);
+    
+    // Force re-render to ensure UI updates
+    setTimeout(() => {
+      console.log('Theme after setTheme:', theme);
+    }, 100);
   };
 
   if (!user) {
