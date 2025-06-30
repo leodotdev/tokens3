@@ -141,7 +141,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                     e.stopPropagation();
                     onEdit();
                   }}
-                  className="absolute right-2 top-2 rounded-full bg-background border border-border p-1.5">
+                  className="absolute right-2 top-2 rounded-full bg-background border border-border p-1.5"
+                  style={{ backgroundColor: colors.background, borderColor: colors.border }}>
                   <FluentEmoji name="Edit" size={16} />
                 </TouchableOpacity>
               )}
@@ -157,14 +158,22 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               )}
 
               <View className="mb-1 flex-row items-start justify-between">
-                <Text className="text-foreground flex-1 pr-8 text-sm font-semibold" numberOfLines={1}>
+                <Text 
+                  className="text-foreground flex-1 pr-8 text-sm font-semibold" 
+                  style={{ color: colors.foreground }}
+                  numberOfLines={1}
+                >
                   {product.name}
                 </Text>
                 {getStatusEmoji() && <View className="ml-1">{getStatusEmoji()}</View>}
               </View>
 
               {product.description && (
-                <Text className="text-foreground-tertiary mb-2 text-xs leading-4" numberOfLines={1}>
+                <Text 
+                  className="text-foreground-tertiary mb-2 text-xs leading-4" 
+                  style={{ color: colors.foregroundSecondary }}
+                  numberOfLines={1}
+                >
                   {product.description}
                 </Text>
               )}
@@ -172,12 +181,18 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               <View className="flex-row items-end justify-between">
                 <View className="flex-1">
                   {formatPrice(product.price) && (
-                    <Text className="text-foreground text-sm font-bold">
+                    <Text 
+                      className="text-foreground text-sm font-bold"
+                      style={{ color: colors.foreground }}
+                    >
                       {formatPrice(product.price)}
                     </Text>
                   )}
                   {product.category && (
-                    <Text className="text-foreground-muted text-xs font-medium uppercase tracking-wide">
+                    <Text 
+                      className="text-foreground-muted text-xs font-medium uppercase tracking-wide"
+                      style={{ color: colors.foregroundMuted }}
+                    >
                       {product.category}
                     </Text>
                   )}
@@ -187,7 +202,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                   {likeCount > 0 && (
                     <View className="flex-row items-center gap-1">
                       <HeartEmoji size={12} style={{ opacity: isLiked ? 1 : 0.5 }} />
-                      <Text className="text-foreground-tertiary text-xs font-medium">
+                      <Text 
+                        className="text-foreground-tertiary text-xs font-medium"
+                        style={{ color: colors.foregroundSecondary }}
+                      >
                         {likeCount}
                       </Text>
                     </View>
@@ -255,7 +273,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                 e.stopPropagation();
                 onEdit();
               }}
-              className="absolute right-2 top-2 rounded-full bg-background border border-border p-2">
+              className="absolute right-2 top-2 rounded-full bg-background border border-border p-2"
+              style={{ backgroundColor: colors.background, borderColor: colors.border }}>
               <FluentEmoji name="Edit" size={20} />
             </TouchableOpacity>
           )}
@@ -273,14 +292,22 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
         <View className="p-4">
           <View className="mb-2 flex-row items-start justify-between">
-            <Text className="flex-1 text-base font-semibold text-foreground" numberOfLines={2}>
+            <Text 
+              className="flex-1 text-base font-semibold text-foreground" 
+              style={{ color: colors.foreground }}
+              numberOfLines={2}
+            >
               {product.name}
             </Text>
             {getStatusEmoji() && <View className="ml-2">{getStatusEmoji()}</View>}
           </View>
 
           {product.description && (
-            <Text className="mb-3 text-sm leading-5 text-foreground-tertiary" numberOfLines={2}>
+            <Text 
+              className="mb-3 text-sm leading-5 text-foreground-tertiary" 
+              style={{ color: colors.foregroundSecondary }}
+              numberOfLines={2}
+            >
               {product.description}
             </Text>
           )}
@@ -288,12 +315,18 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           <View className="flex-row items-center justify-between">
             <View>
               {formatPrice(product.price) && (
-                <Text className="text-lg font-bold text-foreground">
+                <Text 
+                  className="text-lg font-bold text-foreground"
+                  style={{ color: colors.foreground }}
+                >
                   {formatPrice(product.price)}
                 </Text>
               )}
               {product.category && (
-                <Text className="text-xs font-medium uppercase tracking-wide text-foreground-muted">
+                <Text 
+                  className="text-xs font-medium uppercase tracking-wide text-foreground-muted"
+                  style={{ color: colors.foregroundMuted }}
+                >
                   {product.category}
                 </Text>
               )}
@@ -303,7 +336,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               {likeCount > 0 && (
                 <View className="flex-row items-center gap-1">
                   <HeartEmoji size={16} style={{ opacity: isLiked ? 1 : 0.5 }} />
-                  <Text className="text-xs font-medium text-foreground-tertiary">
+                  <Text 
+                    className="text-xs font-medium text-foreground-tertiary"
+                    style={{ color: colors.foregroundSecondary }}
+                  >
                     {likeCount}
                   </Text>
                 </View>
