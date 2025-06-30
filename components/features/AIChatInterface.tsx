@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, ActivityIndicator, Alert, Platform } from 'react-native';
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { FluentEmoji } from '../icons/FluentEmojiReal';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
+import { getThemeClassName } from '../../lib/theme-utils';
 import { anthropicAI } from '../../lib/ai';
 import { peopleQueries, specialDatesQueries, productQueries } from '../../lib/queries';
 import { ProductCard } from './ProductCard';
@@ -56,6 +57,7 @@ export const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
   const [showPrompts, setShowPrompts] = useState(true);
   const [aiAvailable, setAiAvailable] = useState(true);
   const scrollViewRef = useRef<ScrollView>(null);
+  const isWeb = Platform.OS === 'web';
 
   useEffect(() => {
     if (messages.length > 0) {
@@ -499,10 +501,16 @@ export const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
 
       {/* Input Area */}
       <View 
-        className="px-4 pt-4 pb-6 border-t"
+        className={getThemeClassName(
+          'px-4 pt-4 pb-6 border-t',
+          ['bg-background', 'border-border'],
+          isWeb
+        )}
         style={{
-          backgroundColor: '#ffffff',
-          borderColor: '#e4e4e7',
+          ...(!isWeb && {
+            backgroundColor: colors.background,
+            borderColor: colors.border
+          }),
           position: isMobile && !compact ? 'absolute' : 'relative',
           bottom: isMobile && !compact ? 56 + insets.bottom : 0,
           left: 0,
