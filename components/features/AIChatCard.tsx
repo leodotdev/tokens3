@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Modal } from 'react-native';
+import { View, Text, TouchableOpacity, Modal, Platform } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { TablerIcon } from '../icons/TablerIcon';
 import { SparklesEmoji } from '../icons/FluentEmojiReal';
+import { useTheme } from '../../contexts/ThemeContext';
 import { AIChatInterface } from './AIChatInterface';
 
 interface AIChatCardProps {
@@ -10,7 +11,9 @@ interface AIChatCardProps {
 }
 
 export const AIChatCard: React.FC<AIChatCardProps> = ({ onDataUpdate }) => {
+  const { colors } = useTheme();
   const [showFullChat, setShowFullChat] = useState(false);
+  const isWeb = Platform.OS === 'web';
 
   const quickPrompts = [
     "🎁 Gift ideas for mom",
@@ -27,15 +30,25 @@ export const AIChatCard: React.FC<AIChatCardProps> = ({ onDataUpdate }) => {
       <Animated.View 
         entering={FadeInDown.delay(100)}
         className="rounded-2xl bg-background-secondary border border-border p-6 h-full"
+        style={isWeb ? {} : { 
+          backgroundColor: colors.backgroundSecondary, 
+          borderColor: colors.border 
+        }}
       >
         <View className="mb-4 flex-row items-center">
           <SparklesEmoji size={24} />
-          <Text className="ml-2 text-lg font-semibold text-foreground">
+          <Text 
+            className="ml-2 text-lg font-semibold text-foreground"
+            style={isWeb ? {} : { color: colors.foreground }}
+          >
             AI Assistant
           </Text>
         </View>
 
-        <Text className="mb-4 text-foreground-tertiary text-sm">
+        <Text 
+          className="mb-4 text-foreground-secondary text-sm"
+          style={isWeb ? {} : { color: colors.foregroundSecondary }}
+        >
           Ask me anything about gifts, people, or events
         </Text>
 
@@ -44,9 +57,16 @@ export const AIChatCard: React.FC<AIChatCardProps> = ({ onDataUpdate }) => {
             <TouchableOpacity
               key={prompt}
               onPress={() => handlePromptPress(prompt)}
-              className="rounded-xl bg-gray-50 p-4 border-2 border-dashed border-gray-200"
+              className="rounded-xl bg-background p-4 border-2 border-dashed border-border"
+              style={isWeb ? {} : { 
+                backgroundColor: colors.background, 
+                borderColor: colors.border 
+              }}
             >
-              <Text className="text-foreground font-medium text-sm">
+              <Text 
+                className="text-foreground font-medium text-sm"
+                style={isWeb ? {} : { color: colors.foreground }}
+              >
                 {prompt}
               </Text>
             </TouchableOpacity>

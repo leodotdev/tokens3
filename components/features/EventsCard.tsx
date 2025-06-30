@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, TextInput, ActivityIndicator, Alert, FlatList } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, ActivityIndicator, Alert, FlatList, Platform } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { FluentEmoji } from '../icons/FluentEmojiReal';
 import { useAuth } from '../../contexts/AuthContext';
+import { useTheme } from '../../contexts/ThemeContext';
 import { anthropicAI } from '../../lib/ai';
 import { specialDatesQueries, peopleQueries } from '../../lib/queries';
 import type { SpecialDate } from '../../lib/supabase';
@@ -14,8 +15,10 @@ interface EventsCardProps {
 
 export const EventsCard: React.FC<EventsCardProps> = ({ upcomingDates, onEventAdded }) => {
   const { user } = useAuth();
+  const { colors } = useTheme();
   const [aiInput, setAiInput] = useState('');
   const [addingEvent, setAddingEvent] = useState(false);
+  const isWeb = Platform.OS === 'web';
 
   const handleAddEvent = async () => {
     if (!user || !aiInput.trim()) return;
@@ -141,10 +144,17 @@ export const EventsCard: React.FC<EventsCardProps> = ({ upcomingDates, onEventAd
     <Animated.View 
       entering={FadeInDown.delay(200)}
       className="rounded-2xl bg-background-secondary border border-border p-6 h-full"
+      style={isWeb ? {} : { 
+        backgroundColor: colors.backgroundSecondary, 
+        borderColor: colors.border 
+      }}
     >
       <View className="mb-4 flex-row items-center">
         <FluentEmoji name="Calendar" size={24} />
-        <Text className="ml-2 text-lg font-semibold text-foreground">
+        <Text 
+          className="ml-2 text-lg font-semibold text-foreground"
+          style={isWeb ? {} : { color: colors.foreground }}
+        >
           Upcoming Events
         </Text>
       </View>
@@ -157,12 +167,21 @@ export const EventsCard: React.FC<EventsCardProps> = ({ upcomingDates, onEventAd
             renderItem={({ item }) => {
               const daysUntil = getDaysUntil(item.date);
               return (
-                <View className="flex-row items-center justify-between mb-3 p-2 rounded-lg bg-gray-50">
+                <View 
+                  className="flex-row items-center justify-between mb-3 p-2 rounded-lg bg-background"
+                  style={isWeb ? {} : { backgroundColor: colors.background }}
+                >
                   <View className="flex-1">
-                    <Text className="text-sm font-medium text-foreground">
+                    <Text 
+                      className="text-sm font-medium text-foreground"
+                      style={isWeb ? {} : { color: colors.foreground }}
+                    >
                       {item.name}
                     </Text>
-                    <Text className="text-xs text-foreground-tertiary">
+                    <Text 
+                      className="text-xs text-foreground-secondary"
+                      style={isWeb ? {} : { color: colors.foregroundSecondary }}
+                    >
                       {formatDate(item.date)}
                     </Text>
                   </View>
