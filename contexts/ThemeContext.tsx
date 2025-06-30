@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useColorScheme, Appearance } from 'react-native';
+import { useColorScheme, Appearance, StyleSheet } from 'react-native';
 import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -89,6 +89,19 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const systemColorScheme = useColorScheme();
   const [theme, setThemeState] = useState<Theme>('system');
   const [isInitialized, setIsInitialized] = useState(false);
+
+  // Configure React Native Web to use class-based dark mode
+  useEffect(() => {
+    if (Platform.OS === 'web') {
+      try {
+        // @ts-ignore - StyleSheet.setFlag is web-only
+        StyleSheet.setFlag('darkMode', 'class');
+        console.log('Set React Native Web to use class-based dark mode');
+      } catch (error) {
+        console.warn('Could not set StyleSheet darkMode flag:', error);
+      }
+    }
+  }, []);
 
   // Load saved theme on startup
   useEffect(() => {
@@ -181,10 +194,14 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     
     console.log('Immediate actual theme:', immediateActualTheme);
     
-    // For React Native, also force the appearance
+    // For React Native (not web), also force the appearance
     if (Platform.OS !== 'web' && newTheme !== 'system') {
-      // Force React Native to use the selected theme
-      Appearance.setColorScheme(newTheme);
+      try {
+        // Force React Native to use the selected theme
+        Appearance.setColorScheme(newTheme);
+      } catch (error) {
+        console.warn('Could not set appearance color scheme:', error);
+      }
     }
     
     applyTheme(immediateActualTheme);
