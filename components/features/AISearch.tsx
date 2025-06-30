@@ -1,9 +1,10 @@
 import React, { useState, useCallback } from 'react';
 import { View, TextInput, TouchableOpacity, Text, ActivityIndicator } from 'react-native';
-import { FluentEmoji, SparklesEmoji } from '../icons/FluentEmojiReal';
+import { TablerIcon } from '../icons/TablerIcon';
+import { SparklesEmoji } from '../icons/FluentEmojiReal';
 import { anthropicAI } from '../../lib/ai';
 import { useAuth } from '../../contexts/AuthContext';
-import { debounce } from 'lodash';
+import debounce from 'lodash/debounce';
 
 interface AISearchProps {
   onSearch: (query: string, aiEnhancement?: any) => void;
@@ -88,7 +89,7 @@ export const AISearch: React.FC<AISearchProps> = ({
             }}
             className="pr-4"
           >
-            <FluentEmoji name="Close" size={20} />
+            <TablerIcon name="x" size={20} color="#6B7280" />
           </TouchableOpacity>
         )}
       </View>

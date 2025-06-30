@@ -1,13 +1,16 @@
 import React from 'react';
 import { View, TouchableOpacity, Text, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { FluentEmoji } from '../icons/FluentEmojiReal';
+import { TablerIcon } from '../icons/TablerIcon';
+import type { TablerIconName } from '../icons/TablerIcon';
 import { useWindowDimensions } from 'react-native';
+import { useTheme } from '../../contexts/ThemeContext';
+import { getThemeStyle, getThemeClassName } from '../../lib/theme-utils';
 
 interface Tab {
   id: string;
   label: string;
-  icon: string;
+  icon: TablerIconName;
   iconSize?: number;
 }
 
@@ -24,75 +27,108 @@ export const TabNavigator: React.FC<TabNavigatorProps> = ({
 }) => {
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
+  const { colors, cssClasses } = useTheme();
   const isMobile = width <= 500;
+  const isWeb = Platform.OS === 'web';
 
   if (isMobile) {
-    // Mobile: Floating bottom tabs
+    // Mobile: Fixed bottom tabs
     return (
       <View
-        className="absolute bottom-6 left-6 right-6"
-        style={{ paddingBottom: insets.bottom }}
+        className={getThemeClassName(
+          'absolute bottom-0 left-0 right-0 border-t',
+          ['bg-background-secondary/90', 'border-border'],
+          isWeb
+        )}
+        style={{ 
+          ...(!isWeb && {
+            backgroundColor: `${colors.backgroundSecondary}F0`,
+            borderTopColor: colors.border
+          }),
+          paddingBottom: insets.bottom 
+        }}
       >
-        <View
-          className="flex-row items-center justify-around rounded-full bg-white px-4 py-3"
-          style={{
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 8 },
-            shadowOpacity: 0.15,
-            shadowRadius: 24,
-            elevation: 8,
-          }}
-        >
+        <View className="flex-row items-center justify-around py-2">
           {tabs.map((tab) => (
             <TouchableOpacity
               key={tab.id}
               onPress={() => onTabPress(tab.id)}
               className="items-center justify-center px-4 py-2"
             >
-              <FluentEmoji
+              <TablerIcon
                 name={tab.icon}
                 size={tab.iconSize || 24}
-                style={{
-                  opacity: activeTab === tab.id ? 1 : 0.5,
-                }}
+                color={activeTab === tab.id ? colors.accent : colors.foregroundMuted}
               />
               <Text
-                className={`mt-1 text-xs font-medium ${
-                  activeTab === tab.id ? 'text-primary' : 'text-foreground-tertiary'
-                }`}
+                className={getThemeClassName(
+                  'mt-1 text-xs font-medium',
+                  [activeTab === tab.id ? 'text-accent' : 'text-foreground-muted'],
+                  isWeb
+                )}
+                style={{
+                  ...(!isWeb && {
+                    color: activeTab === tab.id ? colors.accent : colors.foregroundMuted
+                  })
+                }}
               >
                 {tab.label}
               </Text>
             </TouchableOpacity>
           ))}
-        </View>
+          </View>
       </View>
     );
   }
 
   // Desktop/Tablet: Top navigation
   return (
-    <View className="border-b border-border bg-background" style={{ paddingTop: insets.top }}>
-      <View className="mx-auto flex-row items-center justify-center space-x-8 px-6 py-4">
+    <View 
+      className={getThemeClassName(
+        'border-b',
+        ['bg-background-secondary/90', 'border-border'],
+        isWeb
+      )}
+      style={{ 
+        ...(!isWeb && {
+          backgroundColor: `${colors.backgroundSecondary}F0`,
+          borderBottomColor: colors.border
+        }),
+        paddingTop: insets.top 
+      }}
+    >
+      <View className="mx-auto flex-row items-center justify-center gap-8 px-6 py-4">
         {tabs.map((tab) => (
           <TouchableOpacity
             key={tab.id}
             onPress={() => onTabPress(tab.id)}
-            className={`flex-row items-center space-x-2 rounded-full px-6 py-2 ${
-              activeTab === tab.id ? 'bg-primary/10' : ''
-            }`}
+            className={getThemeClassName(
+              'flex-row items-center gap-2 rounded-full px-6 py-2',
+              [activeTab === tab.id ? 'bg-background-secondary' : 'bg-transparent'],
+              isWeb
+            )}
+            style={{
+              ...(!isWeb && {
+                backgroundColor: activeTab === tab.id ? colors.backgroundSecondary : 'transparent'
+              })
+            }}
           >
-            <FluentEmoji
+            <TablerIcon
               name={tab.icon}
               size={tab.iconSize || 20}
-              style={{
-                opacity: activeTab === tab.id ? 1 : 0.6,
-              }}
+              color={activeTab === tab.id ? colors.accent : colors.foregroundMuted}
             />
             <Text
-              className={`text-sm font-medium ${
-                activeTab === tab.id ? 'text-primary' : 'text-foreground-tertiary'
-              }`}
+              className={getThemeClassName(
+                'text-sm font-medium',
+                [activeTab === tab.id ? 'text-accent' : 'text-foreground-muted'],
+                isWeb
+              )}
+              style={{
+                ...(!isWeb && {
+                  color: activeTab === tab.id ? colors.accent : colors.foregroundMuted
+                })
+              }}
             >
               {tab.label}
             </Text>

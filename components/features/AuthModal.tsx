@@ -15,6 +15,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
+import { TablerIcon } from '../icons/TablerIcon';
 import { FluentEmoji } from '../icons/FluentEmojiReal';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -118,13 +119,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({ visible, onClose }) => {
               padding: 32,
               width: '100%',
               maxWidth: 400,
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 20 },
-              shadowOpacity: 0.25,
-              shadowRadius: 25,
-              elevation: 20,
             },
-          ]}>
+          ]}
+          className="border border-border">
           {/* Header */}
           <View className="mb-6 flex-row items-center justify-between">
             <View>
@@ -138,7 +135,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ visible, onClose }) => {
               </Text>
             </View>
             <TouchableOpacity onPress={onClose}>
-              <FluentEmoji name="Close" size={24} />
+              <TablerIcon name="x" size={24} color="#6B7280" />
             </TouchableOpacity>
           </View>
 

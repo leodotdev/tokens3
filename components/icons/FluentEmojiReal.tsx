@@ -20,7 +20,13 @@ type EmojiName =
   | 'ArrowRight'
   | 'Send'
   | 'Globe'
-  | 'Person';
+  | 'Person'
+  | 'Calendar'
+  | 'Gear'
+  | 'Gift'
+  | 'GraduationCap'
+  | 'House'
+  | 'Cake';
 
 // Map our names to Fluent Emoji folder names (with spaces and proper capitalization)
 const emojiAssetMap: Record<EmojiName, { folder: string; filename: string }> = {
@@ -42,6 +48,12 @@ const emojiAssetMap: Record<EmojiName, { folder: string; filename: string }> = {
   Send: { folder: 'Paper%20plane', filename: 'paper_plane' },
   Globe: { folder: 'Globe%20with%20meridians', filename: 'globe_with_meridians' },
   Person: { folder: 'Bust%20in%20silhouette', filename: 'bust_in_silhouette' },
+  Calendar: { folder: 'Calendar', filename: 'calendar' },
+  Gear: { folder: 'Gear', filename: 'gear' },
+  Gift: { folder: 'Wrapped%20gift', filename: 'wrapped_gift' },
+  GraduationCap: { folder: 'Graduation%20cap', filename: 'graduation_cap' },
+  House: { folder: 'House', filename: 'house' },
+  Cake: { folder: 'Birthday%20cake', filename: 'birthday_cake' },
 };
 
 // Unicode fallbacks for when images fail to load
@@ -64,6 +76,12 @@ const emojiFallbackMap: Record<EmojiName, string> = {
   Send: '📤',
   Globe: '🌐',
   Person: '👤',
+  Calendar: '📅',
+  Gear: '⚙️',
+  Gift: '🎁',
+  GraduationCap: '🎓',
+  House: '🏠',
+  Cake: '🎂',
 };
 
 interface FluentEmojiProps {
@@ -149,4 +167,16 @@ export const HeartEmoji = (props: Omit<FluentEmojiProps, 'name'>) => (
 
 export const StarEmoji = (props: Omit<FluentEmojiProps, 'name'>) => (
   <FluentEmoji {...props} name="Star" />
+);
+
+export const PersonEmoji = (props: Omit<FluentEmojiProps, 'name'>) => (
+  <FluentEmoji {...props} name="Person" />
+);
+
+export const CalendarEmoji = (props: Omit<FluentEmojiProps, 'name'>) => (
+  <FluentEmoji {...props} name="Calendar" />
+);
+
+export const GearEmoji = (props: Omit<FluentEmojiProps, 'name'>) => (
+  <FluentEmoji {...props} name="Gear" />
 );

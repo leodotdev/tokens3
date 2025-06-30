@@ -2,7 +2,9 @@ import React from 'react';
 import { View, Text, TouchableOpacity, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeInDown } from 'react-native-reanimated';
-import { FluentEmoji, HeartEmoji, SparklesEmoji } from '../icons/FluentEmojiReal';
+import { TablerIcon } from '../icons/TablerIcon';
+import { FluentEmoji, HeartEmoji, SparklesEmoji, PersonEmoji, CalendarEmoji } from '../icons/FluentEmojiReal';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface SignInPlaceholderProps {
   onSignIn: () => void;
@@ -10,85 +12,85 @@ interface SignInPlaceholderProps {
 
 export const SignInPlaceholder: React.FC<SignInPlaceholderProps> = ({ onSignIn }) => {
   const { width } = useWindowDimensions();
+  const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const isMobile = width <= 500;
 
   return (
-    <View className="flex-1 bg-background" style={{ paddingTop: isMobile ? insets.top : 0 }}>
-      <View className="flex-1 items-center justify-center px-8">
-        <Animated.View entering={FadeInDown.delay(100)} className="items-center">
-          <HeartEmoji size={80} />
-          <Text className="mt-6 text-center text-3xl font-bold text-foreground">
-            Your Personal Dashboard
-          </Text>
-          <Text className="mt-3 text-center leading-relaxed text-foreground-tertiary">
-            Sign in to add people you care about, track special dates, and get AI-powered gift suggestions
-          </Text>
-        </Animated.View>
+    <View className="flex-1" style={{ backgroundColor: colors.background }}>
+      <View className={`flex-1 justify-center px-8 ${isMobile ? 'pb-20' : ''}`}>
+        <View className="flex-col items-center gap-12">
+          {/* Header */}
+          <Animated.View entering={FadeInDown.delay(100)} className="flex-col items-center gap-6">
+            <View className="flex-col items-center gap-4">
+              <HeartEmoji size={80} />
+              <Text className="text-center text-2xl font-bold" style={{ color: colors.foreground }}>
+                Your Personal Dashboard
+              </Text>
+              <Text className="text-center leading-relaxed px-4" style={{ color: colors.foregroundSecondary }}>
+                Sign in to add people you care about, track special dates, and get AI-powered gift suggestions
+              </Text>
+            </View>
+          </Animated.View>
 
-        <Animated.View entering={FadeInDown.delay(300)} className="mt-8 w-full max-w-sm space-y-4">
-          <View className="flex-row items-center rounded-2xl bg-white p-4" style={{
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.05,
-            shadowRadius: 8,
-            elevation: 2,
-          }}>
-            <FluentEmoji name="Person" size={24} />
-            <Text className="ml-3 flex-1 text-sm text-foreground-secondary">
-              Add people in your life with AI
-            </Text>
-          </View>
+          {/* Features */}
+          <Animated.View entering={FadeInDown.delay(200)} className="w-full max-w-md flex-col gap-3">
+            {/* Feature 1 */}
+            <View className="mb-3">
+              <View className="flex-row items-center gap-3 rounded-2xl border p-4" style={{ backgroundColor: colors.backgroundSecondary, borderColor: colors.border }}>
+                <PersonEmoji size={24} />
+                <Text className="flex-1 text-sm" style={{ color: colors.foreground }}>
+                  Add people in your life with AI
+                </Text>
+              </View>
+            </View>
+            
+            {/* Feature 2 */}
+            <View className="mb-3">
+              <View className="flex-row items-center gap-3 rounded-2xl border p-4" style={{ backgroundColor: colors.backgroundSecondary, borderColor: colors.border }}>
+                <CalendarEmoji size={24} />
+                <Text className="flex-1 text-sm" style={{ color: colors.foreground }}>
+                  Never miss important dates
+                </Text>
+              </View>
+            </View>
+            
+            {/* Feature 3 */}
+            <View className="mb-3">
+              <View className="flex-row items-center gap-3 rounded-2xl border p-4" style={{ backgroundColor: colors.backgroundSecondary, borderColor: colors.border }}>
+                <SparklesEmoji size={24} />
+                <Text className="flex-1 text-sm" style={{ color: colors.foreground }}>
+                  Get perfect gift suggestions
+                </Text>
+              </View>
+            </View>
+          </Animated.View>
 
-          <View className="flex-row items-center rounded-2xl bg-white p-4" style={{
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.05,
-            shadowRadius: 8,
-            elevation: 2,
-          }}>
-            <FluentEmoji name="Calendar" size={24} />
-            <Text className="ml-3 flex-1 text-sm text-foreground-secondary">
-              Never miss important dates
-            </Text>
-          </View>
-
-          <View className="flex-row items-center rounded-2xl bg-white p-4" style={{
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.05,
-            shadowRadius: 8,
-            elevation: 2,
-          }}>
-            <SparklesEmoji size={24} />
-            <Text className="ml-3 flex-1 text-sm text-foreground-secondary">
-              Get perfect gift suggestions
-            </Text>
-          </View>
-        </Animated.View>
-
-        <Animated.View entering={FadeInDown.delay(500)} className="mt-8 w-full max-w-sm">
-          <TouchableOpacity
-            onPress={onSignIn}
-            className="flex-row items-center justify-center rounded-full bg-primary py-4"
-            style={{
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.1,
-              shadowRadius: 8,
-              elevation: 4,
-            }}
-          >
-            <FluentEmoji name="StarFilled" size={20} />
-            <Text className="ml-2 text-base font-semibold text-white">
-              Get Started
-            </Text>
-          </TouchableOpacity>
-
-          <Text className="mt-4 text-center text-xs text-foreground-tertiary">
-            No ads • No data selling • Just thoughtful gift giving
-          </Text>
-        </Animated.View>
+          {/* CTA */}
+          <Animated.View entering={FadeInDown.delay(300)} className="w-full max-w-md flex-col gap-3">
+            <TouchableOpacity
+              onPress={onSignIn}
+              className="w-full rounded-full py-4"
+              style={{ backgroundColor: colors.accent }}
+            >
+              <Text className="text-center text-base font-medium" style={{ color: colors.accentForeground }}>Sign In</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity
+              onPress={onSignIn}
+              className="w-full rounded-full border py-4"
+              style={{ borderColor: colors.border }}
+            >
+              <Text className="text-center text-base font-medium" style={{ color: colors.foreground }}>Create Account</Text>
+            </TouchableOpacity>
+            
+            <View className="mt-4">
+              <Text className="text-center text-xs" style={{ color: colors.foregroundSecondary }}>
+                No ads • No data selling • Just thoughtful gift giving
+              </Text>
+            </View>
+          </Animated.View>
+        </View>
       </View>
     </View>
   );

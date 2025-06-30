@@ -9,7 +9,7 @@ import Animated, {
 import { productQueries } from '../../lib/queries';
 import type { Product, ProductUpdate } from '../../lib/supabase';
 import { ProductForm } from './ProductForm';
-import { FluentEmoji } from '../icons/FluentEmojiReal';
+import { TablerIcon } from '../icons/TablerIcon';
 
 interface EditProductModalProps {
   visible: boolean;
@@ -141,16 +141,9 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({
               flex: isWeb ? undefined : 1,
               display: 'flex',
               flexDirection: 'column',
-              shadowColor: '#000',
-              shadowOffset: {
-                width: 0,
-                height: isWeb ? 0 : -10,
-              },
-              shadowOpacity: 0.25,
-              shadowRadius: 25,
-              elevation: 25,
             },
-          ]}>
+          ]}
+          className="border border-border">
           <View style={{ flex: 1, overflow: 'hidden' }}>
             {/* Header */}
             <View className="flex-row items-center justify-between border-b border-border px-6 py-4">
@@ -158,7 +151,7 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({
               <TouchableOpacity
                 onPress={onClose}
                 className="h-8 w-8 items-center justify-center rounded-full bg-background-secondary">
-                <FluentEmoji name="Close" size={16} />
+                <TablerIcon name="x" size={16} color="#6B7280" />
               </TouchableOpacity>
             </View>
 

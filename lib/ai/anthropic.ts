@@ -30,9 +30,11 @@ export class AnthropicAI {
 
   constructor() {
     if (!ANTHROPIC_API_KEY) {
-      throw new Error('EXPO_PUBLIC_ANTHROPIC_API_KEY is not set');
+      console.error('❌ EXPO_PUBLIC_ANTHROPIC_API_KEY is not set in environment variables');
+      throw new Error('EXPO_PUBLIC_ANTHROPIC_API_KEY is not set - please add your Anthropic API key to .env');
     }
     this.apiKey = ANTHROPIC_API_KEY;
+    console.log('✅ Anthropic AI initialized successfully');
   }
 
   async chat(messages: AnthropicMessage[], options?: {
@@ -260,6 +262,176 @@ Provide enhanced search terms and filtering strategy for finding the best gift p
     }
   }
 
+  // Parse events from natural language
+  async parseEvent(input: string): Promise<{
+    name: string;
+    date: string;
+    person_name?: string;
+    category?: string;
+    recurrence_type?: 'annual' | 'monthly' | 'weekly' | 'none';
+    reminder_days_before?: number;
+    confidence: number;
+  }> {
+    const systemPrompt = `You are an AI assistant that parses natural language descriptions of events and special dates.
+
+Extract the following information from the user's input:
+- name (required): The event name
+- date (required): Convert to YYYY-MM-DD format, assume current year if not specified
+- person_name (optional): If a person is mentioned
+- category (optional): birthday, anniversary, graduation, wedding, holiday, etc.
+- recurrence_type (default: "none"): annual, monthly, weekly, none
+- reminder_days_before (default: 14): days before to remind
+- confidence (0-1): how confident you are in the parsing
+
+Return ONLY a valid JSON object with these fields.
+
+Examples:
+Input: "Sarah's birthday is March 15th"
+Output: {"name": "Sarah's Birthday", "date": "2024-03-15", "person_name": "Sarah", "category": "birthday", "recurrence_type": "annual", "reminder_days_before": 14, "confidence": 0.9}
+
+Input: "My anniversary is June 10"
+Output: {"name": "Anniversary", "date": "2024-06-10", "category": "anniversary", "recurrence_type": "annual", "reminder_days_before": 30, "confidence": 0.8}
+
+Input: "Christmas party December 25"
+Output: {"name": "Christmas Party", "date": "2024-12-25", "category": "holiday", "recurrence_type": "annual", "reminder_days_before": 14, "confidence": 0.9}`;
+
+    const response = await this.chat([
+      { role: 'user', content: input }
+    ], {
+      systemPrompt,
+      temperature: 0.3,
+      maxTokens: 400
+    });
+
+    try {
+      return JSON.parse(response);
+    } catch (error) {
+      console.error('Failed to parse event JSON:', error);
+      throw new Error('Failed to parse event information');
+    }
+  }
+
+  // Handle conversational AI interactions
+  async handleConversation(
+    message: string, 
+    context?: {
+      user_id?: string;
+      existing_people?: string[];
+      recent_events?: string[];
+      conversation_history?: Array<{role: 'user' | 'assistant', content: string}>;
+    }
+  ): Promise<{
+    response: string;
+    intent: 'gift_search' | 'add_person' | 'create_event' | 'general' | 'follow_up';
+    actions: Array<{
+      type: 'add_person' | 'create_event' | 'search_products' | 'ask_follow_up';
+      label: string;
+      data: any;
+    }>;
+    products_query?: string;
+  }> {
+    const systemPrompt = `You are an AI gift-giving assistant that helps users find gifts, manage people in their lives, and track important dates.
+
+CONTEXT:
+${context?.existing_people ? `User's People: ${context.existing_people.join(', ')}` : 'No people added yet'}
+${context?.recent_events ? `Recent Events: ${context.recent_events.join(', ')}` : 'No recent events'}
+
+YOUR CAPABILITIES:
+1. **Gift Suggestions**: Recommend specific, well-reviewed products based on person, relationship, interests, budget
+2. **People Management**: Help users add family, friends, colleagues to their profile
+3. **Event Tracking**: Create birthdays, anniversaries, holidays for gift reminders
+4. **Smart Follow-ups**: Ask relevant questions to improve recommendations
+
+CONVERSATION GUIDELINES:
+- Be conversational, helpful, and enthusiastic about gift-giving
+- When someone asks for gifts, provide 2-3 specific suggestions and ask if they want to see more
+- When gifts are mentioned for a person not in their profile, suggest adding them
+- Always ask follow-up questions to understand the recipient better
+- Suggest creating events/reminders for important dates
+- Keep responses concise but warm and personal
+
+RESPONSE FORMAT (JSON):
+{
+  "response": "Your conversational response",
+  "intent": "gift_search|add_person|create_event|general|follow_up", 
+  "actions": [
+    {"type": "add_person", "label": "Add Mom to Profile", "data": {"name": "Mom", "relationship": "mother"}},
+    {"type": "search_products", "label": "Browse Kitchen Gifts", "data": {"category": "Kitchen", "query": "cooking gifts"}},
+    {"type": "create_event", "label": "Add Mom's Birthday", "data": {"name": "Mom's Birthday", "date": "2024-06-15"}}
+  ],
+  "products_query": "optional search terms for products"
+}
+
+EXAMPLES:
+User: "gifts for my mom"
+Response: {
+  "response": "I'd love to help find the perfect gift for your mom! What does she enjoy doing? For now, here are some universally loved options: a cozy cashmere scarf, a beautiful jewelry box, or a premium tea collection. Would you like me to add your mom to your profile so I can give you personalized reminders for her birthday and other special occasions?",
+  "intent": "gift_search",
+  "actions": [
+    {"type": "add_person", "label": "Add Mom to Profile", "data": {"name": "Mom", "relationship": "mother"}},
+    {"type": "search_products", "label": "Browse Gifts for Moms", "data": {"query": "gifts for mom mother parent"}}
+  ],
+  "products_query": "gifts for mom mother parent"
+}`;
+
+    const conversationHistory = context?.conversation_history || [];
+    const messages = [
+      ...conversationHistory.slice(-4), // Keep last 4 messages for context
+      { role: 'user' as const, content: message }
+    ];
+
+    const response = await this.chat(messages, {
+      systemPrompt,
+      temperature: 0.8,
+      maxTokens: 600
+    });
+
+    try {
+      return JSON.parse(response);
+    } catch (error) {
+      console.error('Failed to parse conversation JSON:', error);
+      // Fallback response
+      return {
+        response: response,
+        intent: 'general',
+        actions: []
+      };
+    }
+  }
+
+  // Generate search suggestions for autocomplete
+  async generateSearchSuggestions(query: string): Promise<string[]> {
+    if (!query.trim()) return [];
+
+    const systemPrompt = `You are a search suggestion assistant for a gift and product discovery platform. 
+    
+Generate 5-7 relevant search suggestions based on the user's partial query. Suggestions should be:
+- Complete, actionable search terms
+- Diverse in scope (different categories, price points, occasions)
+- Gift-focused when appropriate
+- Natural and conversational
+
+Return ONLY a JSON array of strings, no other text.`;
+
+    const userPrompt = `Generate search suggestions for: "${query}"`;
+
+    try {
+      const response = await this.chat([
+        { role: 'user', content: userPrompt }
+      ], {
+        systemPrompt,
+        temperature: 0.6,
+        maxTokens: 300
+      });
+
+      const suggestions = JSON.parse(response);
+      return Array.isArray(suggestions) ? suggestions : [];
+    } catch (error) {
+      console.error('Failed to generate search suggestions:', error);
+      return [];
+    }
+  }
+
   // Generate smart product descriptions
   async enhanceProductDescription(product: {
     name: string;
@@ -311,3 +483,30 @@ Analyze this product's potential as a gift and provide enhancement details.`;
 
 // Singleton instance
 export const anthropicAI = new AnthropicAI();
+
+// Service exports for easy access
+export const anthropicService = {
+  // Person parsing
+  parsePerson: (input: string) => anthropicAI.parsePerson(input),
+  
+  // Gift recommendations
+  recommendGifts: (context: {
+    person: { name: string; relationship?: string; age?: number; interests?: string[]; };
+    occasion?: string;
+    budget?: { min?: number; max?: number; };
+    avoidRepeats?: string[];
+  }) => anthropicAI.recommendGifts(context),
+  
+  // Search enhancement
+  enhanceProductSearch: (query: string) => anthropicAI.enhanceProductSearch(query),
+  generateSearchSuggestions: (query: string) => anthropicAI.generateSearchSuggestions(query),
+  
+  // Event parsing
+  parseEvent: (input: string) => anthropicAI.parseEvent(input),
+  
+  // Conversation handling
+  handleConversation: (message: string, context?: any) => anthropicAI.handleConversation(message, context),
+  
+  // Product enhancement
+  enhanceProductDescription: (product: any) => anthropicAI.enhanceProductDescription(product)
+};

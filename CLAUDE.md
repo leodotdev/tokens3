@@ -10,6 +10,14 @@ Following https://benji.org/family-values principles:
 **Fluidity**: Seamless navigation between people, dates, and gifts
 **Delight**: Magical AI moments that feel genuinely helpful
 
+### AI-First Architecture
+The entire platform is designed around Anthropic Claude AI:
+- **Natural Language Input**: "Add my mom Mary, 68, loves gardening and cooking"
+- **Contextual Gift Suggestions**: AI analyzes relationships, interests, and past gifts
+- **Smart Search Enhancement**: Plain queries become sophisticated product filtering
+- **Wirecutter-Quality Curation**: AI evaluates products for gift-worthiness
+- **Proactive Reminders**: Intelligent notifications with personalized suggestions
+
 ## Tech Stack - AI-Enhanced & Elegant
 - **React Native + Expo** (v53) - Cross-platform foundation
 - **Supabase** - Database, auth, real-time, people & gift tracking
@@ -36,11 +44,12 @@ Following https://benji.org/family-values principles:
 - `person_product_bookmarks` - Wishlist management per person
 - Enhanced `products` table with AI-ready metadata
 
-### AI Integration Points (Coming Soon)
-1. **Person Creation**: "Add my mom Mary, 68, loves gardening and cooking"
-2. **Gift Suggestions**: Context-aware recommendations per person
-3. **Event Planning**: "Get them a housewarming gift in 2 weeks"
-4. **Smart Reminders**: Proactive notifications with curated suggestions
+### AI Integration Points (Active)
+1. **Person Creation**: ✅ "Add my mom Mary, 68, loves gardening and cooking"
+2. **Gift Suggestions**: 🚧 Context-aware recommendations per person
+3. **Product Search**: ✅ AI-enhanced search with intelligent filtering
+4. **Event Planning**: 🚧 "Get them a housewarming gift in 2 weeks"
+5. **Smart Reminders**: 🚧 Proactive notifications with curated suggestions
 
 ## User Journey - Magical Gift Giving
 1. **Sign Up** → Dashboard with people management
@@ -73,23 +82,78 @@ Following https://benji.org/family-values principles:
 - **Real-time Sync**: Live updates across devices
 - **Type Safety**: Full TypeScript coverage for reliability
 
-## Current Status (December 2024)
+## Styling Architecture - NativeWind Only
+**STRICT CONSTRAINT**: All styling must use NativeWind/Tailwind classes exclusively.
+
+### ✅ Correct Approach
+```tsx
+<View className="flex-1 bg-background border border-border rounded-2xl p-4">
+  <Text className="text-xl font-bold text-foreground">Hello</Text>
+</View>
+```
+
+### ❌ NEVER Use
+```tsx
+<View style={{ flex: 1, backgroundColor: '#fff', padding: 16 }}>
+  <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Hello</Text>
+</View>
+```
+
+### Theme System - NativeWind vars()
+Using proper NativeWind theming with `vars()` for dynamic themes:
+
+```tsx
+// ThemeContext.tsx
+import { vars } from 'nativewind';
+
+const themes = {
+  light: vars({
+    '--color-background': '255 255 255',
+    '--color-foreground': '24 24 27',
+  }),
+  dark: vars({
+    '--color-background': '24 24 27', 
+    '--color-foreground': '250 250 250',
+  }),
+};
+```
+
+### Design System Classes
+- **Colors**: `bg-background`, `text-foreground`, `border-border`, `bg-accent`
+- **Spacing**: `p-4`, `m-6`, `gap-4`, `px-6`, `py-2`
+- **Layout**: `flex-1`, `flex-row`, `items-center`, `justify-between`
+- **Typography**: `text-xl`, `font-bold`, `text-center`, `leading-relaxed`
+- **Borders**: `border`, `border-2`, `rounded-2xl`, `rounded-full`
+
+### Exceptions (Rare)
+Only use inline `style` for:
+- Platform-specific values (e.g., `paddingTop: insets.top`)
+- Dynamic calculations that can't be expressed in Tailwind
+- React Native Reanimated animated values
+
+## Current Status (January 2025)
 ✅ Core product management and discovery
 ✅ User authentication and profiles  
 ✅ People and special dates tracking
 ✅ Responsive navigation system
 ✅ Dashboard with AI person input
 ✅ About page with transparent mission
+✅ **Anthropic Claude AI Integration** - Person parsing and search enhancement
 
-🚧 **Next Phase**: AI integration with Anthropic Claude for person parsing and gift suggestions
+🚧 **Current Phase**: AI gift suggestion engine and curated product database
 
 ## Development Heuristics
 - Always check with user before major changes
 - Create CLAUDE.md files in each significant folder
 - Commit frequently with meaningful messages
 - Follow Family Values in every interaction design
+- **Use ONLY FluentUI Emoji** - No other icon libraries, consistent visual language
+- **STRICT: Use ONLY NativeWind classes** - No inline `style` props, always use Tailwind/NativeWind classes (https://www.nativewind.dev/)
+- **Simple UI patterns** - Prefer simple buttons over complex controls (e.g., two buttons vs segmented control)
+- **No shadows, borders only** - Use `border border-border` instead of shadows for clean, flat design
 - Use only specified tech stack (no additional dependencies without approval)
 - Prioritize user delight over feature completeness
+- AI-first mindset: how can Claude enhance this experience?
 
 ---
 *Updated 2025-01-12 - AI-Enhanced Gift Platform Architecture*

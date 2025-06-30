@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, TextInput, TouchableOpacity, FlatList, Dimensions, useWindowDimensions } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, FlatList, useWindowDimensions } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -7,32 +7,36 @@ import Animated, {
   withTiming,
   interpolate,
 } from 'react-native-reanimated';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { productQueries } from '../../lib/queries';
+import { anthropicService } from '../../lib/ai/anthropic';
 import type { Product } from '../../lib/supabase';
 import { TablerIcon } from '../icons/TablerIcon';
 import { SparklesEmoji, ShoppingCartEmoji } from '../icons/FluentEmojiReal';
-import { ProductCard } from '../features/ProductCard';
-import { ProductActionOverlay } from '../features/ProductActionOverlay';
-import { AddProductModal } from '../features/AddProductModal';
-import { EditProductModal } from '../features/EditProductModal';
-import { AuthModal } from '../features/AuthModal';
-import { AIChatInterface } from '../features/AIChatInterface';
+import { ProductCard } from './ProductCard';
+import { ProductActionOverlay } from './ProductActionOverlay';
+import { AddProductModal } from './AddProductModal';
+import { EditProductModal } from './EditProductModal';
+import { AuthModal } from './AuthModal';
 import { useAuth } from '../../contexts/AuthContext';
 
 const CARD_MARGIN = 12;
 const PADDING = 24;
 
-export const MainScreen: React.FC = () => {
-  const { user, signOut } = useAuth();
+interface ProductsSearchTabProps {
+  isMobile?: boolean;
+}
+
+export const ProductsSearchTab: React.FC<ProductsSearchTabProps> = ({ isMobile = false }) => {
+  const { user } = useAuth();
   const { width } = useWindowDimensions();
-  const insets = useSafeAreaInsets();
-  const isMobile = width <= 500;
   const NUM_COLUMNS = width > 960 ? 4 : width > 500 ? 2 : 1;
+  
   const [products, setProducts] = useState<Product[]>([]);
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [aiSearchEnhancement, setAiSearchEnhancement] = useState<any>(null);
+  const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [selectionMode, setSelectionMode] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -41,9 +45,9 @@ export const MainScreen: React.FC = () => {
   const [addModalVisible, setAddModalVisible] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [isLoadingAI, setIsLoadingAI] = useState(false);
 
   // Animation values
-  const headerScale = useSharedValue(0);
   const listOpacity = useSharedValue(0);
   const fabScale = useSharedValue(0);
 
@@ -54,7 +58,6 @@ export const MainScreen: React.FC = () => {
       if (searchQuery) {
         // Use AI enhancement if available
         if (aiSearchEnhancement) {
-          // Use AI-enhanced search terms
           const enhancedQuery = aiSearchEnhancement.searchTerms?.join(' ') || searchQuery;
           searchParams.search = enhancedQuery;
         } else {
@@ -70,12 +73,11 @@ export const MainScreen: React.FC = () => {
         // Apply AI-based sorting if we have enhancement data and user is authenticated
         if (aiSearchEnhancement && user) {
           // TODO: Sort by AI relevance score in future
-          // For now, maintain original order but could add preference weighting
         }
         
         setProducts(productsData);
         if (!searchQuery) {
-          setAllProducts(productsData); // Store all products for reference
+          setAllProducts(productsData);
         }
       }
     } catch {
@@ -85,39 +87,55 @@ export const MainScreen: React.FC = () => {
     }
   }, [searchQuery, aiSearchEnhancement, user]);
 
+  const handleSearchWithAI = useCallback(async (query: string) => {
+    if (!query.trim()) {
+      setAiSearchEnhancement(null);
+      setAiSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+
+    setIsLoadingAI(true);
+    try {
+      // Get AI enhancement for search
+      const enhancement = await anthropicService.enhanceProductSearch(query);
+      setAiSearchEnhancement(enhancement);
+      
+      // Get AI suggestions for autocomplete
+      const suggestions = await anthropicService.generateSearchSuggestions(query);
+      setAiSuggestions(suggestions || []);
+      setShowSuggestions(suggestions && suggestions.length > 0);
+    } catch (error) {
+      console.log('AI enhancement failed, using basic search');
+      setAiSearchEnhancement(null);
+      setAiSuggestions([]);
+      setShowSuggestions(false);
+    } finally {
+      setIsLoadingAI(false);
+    }
+  }, []);
+
   useEffect(() => {
     loadProducts();
 
-    // Fluid entrance animations
+    // Entrance animations
     setTimeout(() => {
-      headerScale.value = withSpring(1, { damping: 15, stiffness: 150 });
+      listOpacity.value = withTiming(1, { duration: 800 });
     }, 100);
 
     setTimeout(() => {
-      listOpacity.value = withTiming(1, { duration: 800 });
-    }, 300);
-
-    setTimeout(() => {
       fabScale.value = withSpring(1, { damping: 12, stiffness: 200 });
-    }, 600);
-  }, [loadProducts, headerScale, listOpacity, fabScale]);
+    }, 400);
+  }, [loadProducts, listOpacity, fabScale]);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       loadProducts();
+      handleSearchWithAI(searchQuery);
     }, 300); // Debounce search
 
     return () => clearTimeout(timeoutId);
-  }, [loadProducts]);
-
-  const headerAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      {
-        scale: interpolate(headerScale.value, [0, 1], [0.8, 1]),
-      },
-    ],
-    opacity: headerScale.value,
-  }));
+  }, [loadProducts, handleSearchWithAI, searchQuery]);
 
   const listAnimatedStyle = useAnimatedStyle(() => ({
     opacity: listOpacity.value,
@@ -144,6 +162,24 @@ export const MainScreen: React.FC = () => {
           <Text className="mt-2 text-center text-foreground-tertiary">
             Try searching with different keywords
           </Text>
+          {aiSuggestions.length > 0 && (
+            <View className="mt-4">
+              <Text className="text-sm font-medium text-foreground-secondary mb-2">
+                Try these suggestions:
+              </Text>
+              <View className="flex-row flex-wrap gap-2">
+                {aiSuggestions.slice(0, 3).map((suggestion, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    onPress={() => setSearchQuery(suggestion)}
+                    className="px-3 py-1 bg-primary/10 rounded-full"
+                  >
+                    <Text className="text-sm text-primary">{suggestion}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+          )}
         </View>
       );
     }
@@ -152,10 +188,10 @@ export const MainScreen: React.FC = () => {
       <View className="flex-1 items-center justify-center px-8">
         <SparklesEmoji size={80} />
         <Text className="mt-6 text-center text-2xl font-bold text-foreground">
-          Ready for something magical?
+          Discover amazing products
         </Text>
         <Text className="mt-3 text-center leading-6 text-foreground-tertiary">
-          Add your first product and watch your collection come to life
+          Search for gifts, gadgets, and everything in between
         </Text>
       </View>
     );
@@ -191,7 +227,7 @@ export const MainScreen: React.FC = () => {
 
   const closeProductOverlay = () => {
     setOverlayVisible(false);
-    setTimeout(() => setSelectedProduct(null), 300); // Clear after animation
+    setTimeout(() => setSelectedProduct(null), 300);
   };
 
   const openEditModal = (product: Product) => {
@@ -201,111 +237,95 @@ export const MainScreen: React.FC = () => {
 
   const closeEditModal = () => {
     setEditModalVisible(false);
-    setTimeout(() => setEditingProduct(null), 300); // Clear after animation
+    setTimeout(() => setEditingProduct(null), 300);
   };
 
   const handleProductAdded = () => {
-    loadProducts(); // Refresh the product list
+    loadProducts();
   };
 
   const handleProductUpdated = () => {
-    loadProducts(); // Refresh the product list
+    loadProducts();
   };
 
-  const handleAISearch = (query: string, aiEnhancement?: any) => {
-    setSearchQuery(query);
-    setAiSearchEnhancement(aiEnhancement);
+  const handleSuggestionPress = (suggestion: string) => {
+    setSearchQuery(suggestion);
+    setShowSuggestions(false);
   };
 
   return (
-    <View className="flex-1 bg-background" style={{ paddingTop: isMobile ? insets.top : 0 }}>
-      <View style={{ flex: 1, maxWidth: 960, alignSelf: 'center', width: '100%' }}>
-      {/* Header with gentle animation */}
-      <Animated.View style={[headerAnimatedStyle]} className="px-6 pb-6 pt-4">
-        <View className="mb-6 flex-row items-center justify-between">
-          <View>
-            <Text className="text-3xl font-bold text-foreground">Tokens</Text>
-            <Text className="mt-1 text-foreground-tertiary">Your personal collection</Text>
-          </View>
-          <View className="flex-row items-center gap-4">
-            {selectionMode ? (
-              <>
-                <TouchableOpacity
-                  onPress={() => {
-                    setSelectionMode(false);
-                    setSelectedIds(new Set());
-                  }}>
-                  <TablerIcon name="x" size={24} color="#6B7280" />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={handleDeleteSelected}
-                  disabled={selectedIds.size === 0}>
-                  <TablerIcon 
-                    name="trash" 
-                    size={24} 
-                    color={selectedIds.size === 0 ? '#D1D5DB' : '#EF4444'}
-                  />
-                </TouchableOpacity>
-                <Text className="text-sm font-medium text-foreground-secondary">
-                  {selectedIds.size} selected
-                </Text>
-              </>
-            ) : (
-              <>
-                {user ? (
-                  <TouchableOpacity
-                    onPress={() => signOut()}
-                    className="flex-row items-center gap-2 rounded-xl bg-background-secondary px-3 py-2">
-                    <TablerIcon name="user" size={20} color="#374151" />
-                    <Text className="text-sm font-medium text-foreground">
-                      {user.email?.split('@')[0]}
-                    </Text>
-                  </TouchableOpacity>
-                ) : (
-                  <TouchableOpacity
-                    onPress={() => setAuthModalVisible(true)}
-                    className="flex-row items-center gap-2 rounded-xl bg-accent px-4 py-2">
-                    <Text className="text-sm font-medium text-accent-foreground">
-                      Sign In
-                    </Text>
-                  </TouchableOpacity>
-                )}
-              </>
+    <View className="flex-1">
+      {/* Search Section */}
+      <View className="px-6 pb-4">
+        {/* Search Input with AI Enhancement */}
+        <View className="relative">
+          <View className="flex-row items-center bg-background-secondary rounded-xl px-4 py-3 border border-border">
+            <TablerIcon name="search" size={20} color="#9CA3AF" style={{ marginRight: 12 }} />
+            <TextInput
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              placeholder="Search for gifts, gadgets, or anything..."
+              placeholderTextColor="#9CA3AF"
+              className="flex-1 text-foreground text-base"
+              onFocus={() => setShowSuggestions(aiSuggestions.length > 0)}
+              onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
+            />
+            {isLoadingAI && (
+              <View className="ml-2">
+                <TablerIcon name="loading" size={16} color="#9CA3AF" />
+              </View>
             )}
           </View>
+
+          {/* AI Suggestions Dropdown */}
+          {showSuggestions && aiSuggestions.length > 0 && (
+            <View className="absolute top-full left-0 right-0 mt-2 bg-background-secondary rounded-xl border border-border z-10">
+              {aiSuggestions.slice(0, 5).map((suggestion, index) => (
+                <TouchableOpacity
+                  key={index}
+                  onPress={() => handleSuggestionPress(suggestion)}
+                  className={`px-4 py-3 flex-row items-center ${
+                    index < aiSuggestions.length - 1 ? 'border-b border-border' : ''
+                  }`}
+                >
+                  <SparklesEmoji size={16} style={{ marginRight: 12, opacity: 0.7 }} />
+                  <Text className="text-foreground">{suggestion}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
         </View>
 
-        {/* AI Chat Interface */}
-        <View className="mb-4 rounded-2xl bg-white border border-gray-200">
-          <AIChatInterface
-            placeholder={user 
-              ? "Ask me about gifts for your people..." 
-              : "Ask me about gifts, people, or events..."
-            }
-            initialPrompts={user ? [
-              "🎁 Gift ideas for my mom",
-              "🎂 Upcoming birthdays this month", 
-              "💝 Anniversary gifts under $100",
-              "🎄 Holiday gift planning",
-              "👨‍👩‍👧‍👦 Add my family members"
-            ] : [
-              "🎁 Great gifts for parents",
-              "💝 Romantic anniversary gifts",
-              "🎓 Graduation gift ideas", 
-              "🏠 Housewarming presents",
-              "🎂 Birthday gifts by age"
-            ]}
-            onProductsFound={(products) => {
-              setProducts(products);
-              setSearchQuery('AI Search Results');
-            }}
-            compact={true}
-          />
-        </View>
+        {/* Selection Mode Controls */}
+        {selectionMode && (
+          <View className="flex-row items-center justify-between mt-4 px-4 py-3 bg-background-secondary rounded-xl">
+            <Text className="text-sm font-medium text-foreground-secondary">
+              {selectedIds.size} selected
+            </Text>
+            <View className="flex-row items-center gap-4">
+              <TouchableOpacity
+                onPress={() => {
+                  setSelectionMode(false);
+                  setSelectedIds(new Set());
+                }}>
+                <TablerIcon name="x" size={24} color="#6B7280" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleDeleteSelected}
+                disabled={selectedIds.size === 0}>
+                <TablerIcon 
+                  name="trash" 
+                  size={24} 
+                  color={selectedIds.size === 0 ? '#D1D5DB' : '#EF4444'}
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
 
         {/* Search Results Count with AI Enhancement */}
         {searchQuery && (
-          <View className="mb-2">
+          <View className="mt-3">
             <Text className="text-sm text-foreground-tertiary">
               {products.length} result{products.length !== 1 ? 's' : ''} for "{searchQuery}"
             </Text>
@@ -316,9 +336,9 @@ export const MainScreen: React.FC = () => {
             )}
           </View>
         )}
-      </Animated.View>
+      </View>
 
-      {/* Product List with fade-in */}
+      {/* Product List */}
       <Animated.View style={[listAnimatedStyle, { flex: 1 }]}>
         {products.length === 0 ? (
           <EmptyState />
@@ -326,17 +346,17 @@ export const MainScreen: React.FC = () => {
           <FlatList
             data={products}
             numColumns={NUM_COLUMNS}
-            key={NUM_COLUMNS} // Force re-render on orientation change
+            key={NUM_COLUMNS}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{
               paddingHorizontal: PADDING,
-              paddingBottom: 100, // Space for FAB
+              paddingBottom: isMobile ? 80 : 100,
             }}
             columnWrapperStyle={
               NUM_COLUMNS > 1 ? { justifyContent: 'space-between' } : undefined
             }
             renderItem={({ item: product, index }) => {
-              const containerWidth = Math.min(width, 960); // Respect max width
+              const containerWidth = Math.min(width, 960);
               const availableWidth = containerWidth - PADDING * 2;
               const itemWidth = NUM_COLUMNS === 1 
                 ? availableWidth
@@ -374,7 +394,7 @@ export const MainScreen: React.FC = () => {
         )}
       </Animated.View>
 
-      {/* Floating Action Button with spring animation */}
+      {/* Floating Action Button */}
       <Animated.View
         style={[
           fabAnimatedStyle,
@@ -393,7 +413,7 @@ export const MainScreen: React.FC = () => {
         </TouchableOpacity>
       </Animated.View>
 
-      {/* Product Action Overlay */}
+      {/* Modals */}
       <ProductActionOverlay
         product={selectedProduct}
         visible={overlayVisible}
@@ -401,14 +421,12 @@ export const MainScreen: React.FC = () => {
         onAuthRequired={() => setAuthModalVisible(true)}
       />
 
-      {/* Add Product Modal */}
       <AddProductModal
         visible={addModalVisible}
         onClose={() => setAddModalVisible(false)}
         onProductAdded={handleProductAdded}
       />
 
-      {/* Edit Product Modal */}
       <EditProductModal
         visible={editModalVisible}
         product={editingProduct}
@@ -416,12 +434,10 @@ export const MainScreen: React.FC = () => {
         onProductUpdated={handleProductUpdated}
       />
 
-      {/* Auth Modal */}
       <AuthModal
         visible={authModalVisible}
         onClose={() => setAuthModalVisible(false)}
       />
-      </View>
     </View>
   );
 };

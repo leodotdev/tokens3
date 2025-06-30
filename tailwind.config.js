@@ -57,48 +57,31 @@ module.exports = {
         950: '#172554',
       },
       
-      // Semantic color system
+      // NativeWind Theme System - Dynamic semantic colors
       background: {
-        DEFAULT: '#ffffff',
-        secondary: '#f4f4f5', // zinc-100
-        tertiary: '#fafafa', // zinc-50
+        DEFAULT: 'rgb(var(--color-background) / <alpha-value>)',
+        secondary: 'rgb(var(--color-background-secondary) / <alpha-value>)',
       },
       
       foreground: {
-        DEFAULT: '#18181b', // zinc-900
-        secondary: '#3f3f46', // zinc-700
-        tertiary: '#71717a', // zinc-500
-        muted: '#a1a1aa', // zinc-400
+        DEFAULT: 'rgb(var(--color-foreground) / <alpha-value>)',
+        secondary: 'rgb(var(--color-foreground-secondary) / <alpha-value>)',
+        muted: 'rgb(var(--color-foreground-muted) / <alpha-value>)',
       },
       
       border: {
-        DEFAULT: '#e4e4e7', // zinc-200
-        secondary: '#d4d4d8', // zinc-300
+        DEFAULT: 'rgb(var(--color-border) / <alpha-value>)',
       },
       
       accent: {
-        DEFAULT: '#3b82f6', // blue-500
-        foreground: '#ffffff',
-        light: '#dbeafe', // blue-100
-        dark: '#1d4ed8', // blue-700
+        DEFAULT: 'rgb(var(--color-accent) / <alpha-value>)',
+        foreground: 'rgb(var(--color-accent-foreground) / <alpha-value>)',
       },
       
-      success: {
-        DEFAULT: '#22c55e',
-        foreground: '#ffffff',
-        light: '#dcfce7',
-      },
-      
-      warning: {
-        DEFAULT: '#f59e0b',
-        foreground: '#ffffff',
-        light: '#fef3c7',
-      },
-      
-      error: {
+      // Semantic state colors
+      destructive: {
         DEFAULT: '#ef4444',
         foreground: '#ffffff',
-        light: '#fee2e2',
       },
       
       // Legacy color mappings for smooth transition
@@ -116,8 +99,14 @@ module.exports = {
         950: '#09090b',
       },
     },
-    extend: {},
+    extend: {
+      width: {
+        '50': '200px', // Product card width
+      },
+      spacing: {
+        '18': '72px', // Custom spacing values
+      }
+    },
   },
   plugins: [],
-  darkMode: 'class',
 };

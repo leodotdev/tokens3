@@ -225,14 +225,8 @@ export const ProductActionOverlay: React.FC<ProductActionOverlayProps> = ({
               padding: 24,
               width: '100%',
               maxWidth: 320,
-              shadowColor: '#000',
-              shadowOffset: {
-                width: 0,
-                height: 20,
-              },
-              shadowOpacity: 0.25,
-              shadowRadius: 25,
-              elevation: 20,
+              borderWidth: 1,
+              borderColor: '#e4e4e7',
             },
           ]}>
           {/* Product Header */}

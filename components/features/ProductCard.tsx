@@ -105,14 +105,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           onLongPress={onLongPress}
           onPressIn={handlePressIn}
           onPressOut={handlePressOut}
-          style={{
-            marginBottom: 16,
-            overflow: 'hidden',
-            borderRadius: 16,
-            backgroundColor: '#ffffff',
-            borderWidth: isSelected ? 2 : 1,
-            borderColor: isSelected ? '#3b82f6' : '#e4e4e7',
-          }}
+          className={`mb-4 overflow-hidden rounded-2xl bg-background border-2 ${isSelected ? 'border-blue-500' : 'border-border'}`}
           activeOpacity={0.9}>
           <View className="flex-row">
             {/* Image Section */}
@@ -137,14 +130,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                     e.stopPropagation();
                     onEdit();
                   }}
-                  className="absolute right-2 top-2 rounded-full bg-white/90 p-1.5"
-                  style={{
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.1,
-                    shadowRadius: 4,
-                    elevation: 3,
-                  }}>
+                  className="absolute right-2 top-2 rounded-full bg-background border border-border p-1.5">
                   <FluentEmoji name="Edit" size={16} />
                 </TouchableOpacity>
               )}
@@ -226,13 +212,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         onLongPress={onLongPress}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
-        style={{
-          overflow: 'hidden',
-          borderRadius: 16,
-          backgroundColor: '#ffffff',
-          borderWidth: isSelected ? 2 : 1,
-          borderColor: isSelected ? '#3b82f6' : '#e4e4e7',
-        }}
+        className={`overflow-hidden rounded-2xl bg-background border-2 ${isSelected ? 'border-blue-500' : 'border-border'}`}
         activeOpacity={0.9}>
         <View className="relative">
           {product.image_url && (
@@ -254,14 +234,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                 e.stopPropagation();
                 onEdit();
               }}
-              className="absolute right-2 top-2 rounded-full bg-white/90 p-2"
-              style={{
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.1,
-                shadowRadius: 4,
-                elevation: 3,
-              }}>
+              className="absolute right-2 top-2 rounded-full bg-background border border-border p-2">
               <FluentEmoji name="Edit" size={20} />
             </TouchableOpacity>
           )}
