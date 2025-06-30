@@ -6,6 +6,7 @@ import { TablerIcon } from '../icons/TablerIcon';
 import { FluentEmoji } from '../icons/FluentEmojiReal';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
+import { getThemeClassName } from '../../lib/theme-utils';
 import { AuthModal } from '../features/AuthModal';
 
 const getThemeDisplayName = (theme: 'light' | 'dark' | 'system') => {
@@ -30,6 +31,7 @@ export const SettingsScreen: React.FC = () => {
   const { width } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const isMobile = width <= 500;
+  const isWeb = Platform.OS === 'web';
   const [authModalVisible, setAuthModalVisible] = useState(false);
   const [themePickerVisible, setThemePickerVisible] = useState(false);
 
@@ -77,7 +79,13 @@ export const SettingsScreen: React.FC = () => {
   if (!user) {
     // Not signed in - show sign in interface
     return (
-      <View className="flex-1" style={{ backgroundColor: colors.background, paddingTop: isMobile ? insets.top : 0 }}>
+      <View 
+        className={getThemeClassName('flex-1', ['bg-background'], isWeb)}
+        style={{ 
+          ...(!isWeb && { backgroundColor: colors.background }),
+          paddingTop: isMobile ? insets.top : 0 
+        }}
+      >
         <ScrollView 
           className="flex-1" 
           showsVerticalScrollIndicator={false}
@@ -86,13 +94,30 @@ export const SettingsScreen: React.FC = () => {
           <View className="mx-auto w-full max-w-md px-6 py-8">
             <View className="flex-col gap-8">
               <Animated.View entering={FadeInDown.delay(100)} className="flex-col items-center gap-4">
-                <View className="h-24 w-24 items-center justify-center rounded-full" style={{ backgroundColor: colors.backgroundSecondary }}>
+                <View 
+                  className={getThemeClassName(
+                    'h-24 w-24 items-center justify-center rounded-full',
+                    ['bg-background-secondary'],
+                    isWeb
+                  )}
+                  style={{
+                    ...(!isWeb && { backgroundColor: colors.backgroundSecondary })
+                  }}
+                >
                   <FluentEmoji name="Gear" size={48} />
                 </View>
                 
                 <View className="flex-col items-center gap-2">
-                  <Text className="text-3xl font-bold" style={{ color: colors.foreground }}>Settings</Text>
-                  <Text className="text-center" style={{ color: colors.foregroundSecondary }}>
+                  <Text 
+                    className={getThemeClassName('text-3xl font-bold', ['text-foreground'], isWeb)}
+                    style={{ ...(!isWeb && { color: colors.foreground }) }}
+                  >
+                    Settings
+                  </Text>
+                  <Text 
+                    className={getThemeClassName('text-center', ['text-foreground-secondary'], isWeb)}
+                    style={{ ...(!isWeb && { color: colors.foregroundSecondary }) }}
+                  >
                     Customize your app experience and manage your account
                   </Text>
                 </View>
@@ -118,19 +143,44 @@ export const SettingsScreen: React.FC = () => {
               {/* Theme Section - Moved below sign-in buttons */}
               <View className="w-full">
                 <View className="flex-col gap-4">
-                  <Text className="text-xl font-bold" style={{ color: colors.foreground }}>Appearance</Text>
+                  <Text 
+                    className={getThemeClassName('text-xl font-bold', ['text-foreground'], isWeb)}
+                    style={{ ...(!isWeb && { color: colors.foreground }) }}
+                  >
+                    Appearance
+                  </Text>
                   
-                  <View className="rounded-2xl border" style={{ backgroundColor: colors.backgroundSecondary, borderColor: colors.border }}>
+                  <View 
+                    className={getThemeClassName(
+                      'rounded-2xl border',
+                      ['bg-background-secondary', 'border-border'],
+                      isWeb
+                    )}
+                    style={{
+                      ...(!isWeb && {
+                        backgroundColor: colors.backgroundSecondary,
+                        borderColor: colors.border
+                      })
+                    }}
+                  >
                     <TouchableOpacity 
                       className="flex-row items-center justify-between px-6 py-4"
                       onPress={handleThemePress}
                     >
                       <View className="flex-row items-center gap-4">
                         <TablerIcon name={getThemeIcon(theme)} size={24} color="#a1a1aa" />
-                        <Text className="text-lg" style={{ color: colors.foreground }}>Theme</Text>
+                        <Text 
+                          className={getThemeClassName('text-lg', ['text-foreground'], isWeb)}
+                          style={{ ...(!isWeb && { color: colors.foreground }) }}
+                        >
+                          Theme
+                        </Text>
                       </View>
                       <View className="flex-row items-center gap-2">
-                        <Text className="text-sm" style={{ color: colors.foregroundSecondary }}>
+                        <Text 
+                          className={getThemeClassName('text-sm', ['text-foreground-secondary'], isWeb)}
+                          style={{ ...(!isWeb && { color: colors.foregroundSecondary }) }}
+                        >
                           {getThemeDisplayName(theme)}
                         </Text>
                         <TablerIcon name="chevron-right" size={20} color="#a1a1aa" />
@@ -139,27 +189,61 @@ export const SettingsScreen: React.FC = () => {
                     
                     {/* Custom Theme Picker for Web */}
                     {themePickerVisible && Platform.OS === 'web' && (
-                      <View className="mt-2 border rounded-xl overflow-hidden relative z-50" style={{ backgroundColor: colors.backgroundSecondary, borderColor: colors.border }}>
+                      <View 
+                        className={getThemeClassName(
+                          'mt-2 border rounded-xl overflow-hidden relative z-50',
+                          ['bg-background-secondary', 'border-border'],
+                          isWeb
+                        )}
+                        style={{
+                          ...(!isWeb && {
+                            backgroundColor: colors.backgroundSecondary,
+                            borderColor: colors.border
+                          })
+                        }}
+                      >
                         <TouchableOpacity
-                          className="flex-row items-center justify-between px-6 py-3 border-b"
-                          style={{ borderBottomColor: colors.border }}
+                          className={getThemeClassName(
+                            'flex-row items-center justify-between px-6 py-3 border-b',
+                            ['border-border'],
+                            isWeb
+                          )}
+                          style={{
+                            ...(!isWeb && { borderBottomColor: colors.border })
+                          }}
                           onPress={() => handleThemeSelect('light')}
                         >
                           <View className="flex-row items-center gap-4">
                             <TablerIcon name="sun" size={20} color="#a1a1aa" />
-                            <Text className="text-base" style={{ color: colors.foreground }}>Light</Text>
+                            <Text 
+                              className={getThemeClassName('text-base', ['text-foreground'], isWeb)}
+                              style={{ ...(!isWeb && { color: colors.foreground }) }}
+                            >
+                              Light
+                            </Text>
                           </View>
                           {theme === 'light' && <TablerIcon name="check" size={16} color="#3B82F6" />}
                         </TouchableOpacity>
                         
                         <TouchableOpacity
-                          className="flex-row items-center justify-between px-6 py-3 border-b"
-                          style={{ borderBottomColor: colors.border }}
+                          className={getThemeClassName(
+                            'flex-row items-center justify-between px-6 py-3 border-b',
+                            ['border-border'],
+                            isWeb
+                          )}
+                          style={{
+                            ...(!isWeb && { borderBottomColor: colors.border })
+                          }}
                           onPress={() => handleThemeSelect('dark')}
                         >
                           <View className="flex-row items-center gap-4">
                             <TablerIcon name="moon" size={20} color="#a1a1aa" />
-                            <Text className="text-base" style={{ color: colors.foreground }}>Dark</Text>
+                            <Text 
+                              className={getThemeClassName('text-base', ['text-foreground'], isWeb)}
+                              style={{ ...(!isWeb && { color: colors.foreground }) }}
+                            >
+                              Dark
+                            </Text>
                           </View>
                           {theme === 'dark' && <TablerIcon name="check" size={16} color="#3B82F6" />}
                         </TouchableOpacity>
@@ -170,7 +254,12 @@ export const SettingsScreen: React.FC = () => {
                         >
                           <View className="flex-row items-center gap-4">
                             <TablerIcon name="device-desktop" size={20} color="#a1a1aa" />
-                            <Text className="text-base" style={{ color: colors.foreground }}>System</Text>
+                            <Text 
+                              className={getThemeClassName('text-base', ['text-foreground'], isWeb)}
+                              style={{ ...(!isWeb && { color: colors.foreground }) }}
+                            >
+                              System
+                            </Text>
                           </View>
                           {theme === 'system' && <TablerIcon name="check" size={16} color="#3B82F6" />}
                         </TouchableOpacity>
@@ -202,7 +291,13 @@ export const SettingsScreen: React.FC = () => {
 
   // Signed in - show user settings and options
   return (
-    <View className="flex-1" style={{ backgroundColor: colors.background, paddingTop: isMobile ? insets.top : 0 }}>
+    <View 
+      className={getThemeClassName('flex-1', ['bg-background'], isWeb)}
+      style={{ 
+        ...(!isWeb && { backgroundColor: colors.background }),
+        paddingTop: isMobile ? insets.top : 0 
+      }}
+    >
       <ScrollView 
         className="flex-1" 
         showsVerticalScrollIndicator={false}
@@ -212,24 +307,58 @@ export const SettingsScreen: React.FC = () => {
           <View className="flex-col gap-8">
             {/* User Profile Header */}
             <Animated.View entering={FadeInDown.delay(100)} className="flex-col items-center gap-6">
-              <View className="h-24 w-24 items-center justify-center rounded-full" style={{ backgroundColor: colors.backgroundSecondary }}>
+              <View 
+                className={getThemeClassName(
+                  'h-24 w-24 items-center justify-center rounded-full',
+                  ['bg-background-secondary'],
+                  isWeb
+                )}
+                style={{
+                  ...(!isWeb && { backgroundColor: colors.backgroundSecondary })
+                }}
+              >
                 <FluentEmoji name="Person" size={48} />
               </View>
               
               <View className="flex-col items-center gap-2">
-                <Text className="text-3xl font-bold" style={{ color: colors.foreground }}>
+                <Text 
+                  className={getThemeClassName('text-3xl font-bold', ['text-foreground'], isWeb)}
+                  style={{ ...(!isWeb && { color: colors.foreground }) }}
+                >
                   {user.user_metadata?.name || user.email?.split('@')[0] || 'User'}
                 </Text>
-                <Text style={{ color: colors.foregroundSecondary }}>{user.email}</Text>
+                <Text 
+                  className={getThemeClassName('', ['text-foreground-secondary'], isWeb)}
+                  style={{ ...(!isWeb && { color: colors.foregroundSecondary }) }}
+                >
+                  {user.email}
+                </Text>
               </View>
             </Animated.View>
 
             {/* Appearance Settings */}
             <Animated.View entering={FadeInDown.delay(200)} className="w-full">
               <View className="flex-col gap-4">
-                <Text className="text-xl font-bold" style={{ color: colors.foreground }}>Appearance</Text>
+                <Text 
+                  className={getThemeClassName('text-xl font-bold', ['text-foreground'], isWeb)}
+                  style={{ ...(!isWeb && { color: colors.foreground }) }}
+                >
+                  Appearance
+                </Text>
                 
-                <View className="rounded-2xl border" style={{ backgroundColor: colors.backgroundSecondary, borderColor: colors.border }}>
+                <View 
+                  className={getThemeClassName(
+                    'rounded-2xl border',
+                    ['bg-background-secondary', 'border-border'],
+                    isWeb
+                  )}
+                  style={{
+                    ...(!isWeb && {
+                      backgroundColor: colors.backgroundSecondary,
+                      borderColor: colors.border
+                    })
+                  }}
+                >
                   <TouchableOpacity 
                     className="flex-row items-center justify-between px-6 py-4"
                     onPress={handleThemePress}
