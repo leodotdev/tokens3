@@ -10,6 +10,8 @@ import type { Product } from '../../lib/supabase';
 import { FluentEmoji, HeartEmoji, StarEmoji } from '../icons/FluentEmojiReal';
 import { likeQueries } from '../../lib/queries';
 import { useAuth } from '../../contexts/AuthContext';
+import { useTheme } from '../../contexts/ThemeContext';
+import { getThemeClassName } from '../../lib/theme-utils';
 import { WebImage } from '../ui/WebImage';
 
 interface ProductCardProps {
@@ -34,8 +36,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   showAIIndicator = false,
 }) => {
   const { user } = useAuth();
+  const { colors } = useTheme();
   const [likeCount, setLikeCount] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
+  const isWeb = Platform.OS === 'web';
 
   const scale = useSharedValue(1);
   const opacity = useSharedValue(1);
@@ -105,12 +109,31 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           onLongPress={onLongPress}
           onPressIn={handlePressIn}
           onPressOut={handlePressOut}
-          className={`mb-4 overflow-hidden rounded-2xl bg-background border-2 ${isSelected ? 'border-blue-500' : 'border-border'}`}
+          className={getThemeClassName(
+            `mb-4 overflow-hidden rounded-2xl border-2`,
+            ['bg-background', isSelected ? 'border-blue-500' : 'border-border'],
+            isWeb
+          )}
+          style={{
+            ...(!isWeb && {
+              backgroundColor: colors.background,
+              borderColor: isSelected ? '#3b82f6' : colors.border
+            })
+          }}
           activeOpacity={0.9}>
           <View className="flex-row">
             {/* Image Section */}
             {product.image_url && (
-              <View className="bg-background-secondary h-24 w-24 overflow-hidden rounded-l-2xl">
+              <View 
+                className={getThemeClassName(
+                  'h-24 w-24 overflow-hidden rounded-l-2xl',
+                  ['bg-background-secondary'],
+                  isWeb
+                )}
+                style={{
+                  ...(!isWeb && { backgroundColor: colors.backgroundSecondary })
+                }}
+              >
                 <WebImage
                   source={{ uri: product.image_url }}
                   className="h-full w-full"
@@ -212,11 +235,31 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         onLongPress={onLongPress}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
-        className={`overflow-hidden rounded-2xl bg-background border-2 ${isSelected ? 'border-blue-500' : 'border-border'}`}
+        className={getThemeClassName(
+          `overflow-hidden rounded-2xl border-2`,
+          ['bg-background', isSelected ? 'border-blue-500' : 'border-border'],
+          isWeb
+        )}
+        style={{
+          ...(!isWeb && {
+            backgroundColor: colors.background,
+            borderColor: isSelected ? '#3b82f6' : colors.border
+          })
+        }}
         activeOpacity={0.9}>
         <View className="relative">
           {product.image_url && (
-            <View className="w-full overflow-hidden rounded-t-2xl bg-background-secondary" style={{ aspectRatio: 1 }}>
+            <View 
+              className={getThemeClassName(
+                'w-full overflow-hidden rounded-t-2xl',
+                ['bg-background-secondary'],
+                isWeb
+              )}
+              style={{
+                aspectRatio: 1,
+                ...(!isWeb && { backgroundColor: colors.backgroundSecondary })
+              }}
+            >
               <WebImage
                 source={{ uri: product.image_url }}
                 className="h-full w-full"

@@ -24,9 +24,10 @@ const PADDING = 24;
 
 interface ProductsSearchTabProps {
   isMobile?: boolean;
+  showSearchInput?: boolean;
 }
 
-export const ProductsSearchTab: React.FC<ProductsSearchTabProps> = ({ isMobile = false }) => {
+export const ProductsSearchTab: React.FC<ProductsSearchTabProps> = ({ isMobile = false, showSearchInput = true }) => {
   const { user } = useAuth();
   const { width } = useWindowDimensions();
   const NUM_COLUMNS = width > 960 ? 4 : width > 500 ? 2 : 1;
@@ -256,7 +257,8 @@ export const ProductsSearchTab: React.FC<ProductsSearchTabProps> = ({ isMobile =
   return (
     <View className="flex-1">
       {/* Search Section */}
-      <View className="px-6 pb-4">
+      {showSearchInput && (
+        <View className="px-6 pb-4">
         {/* Search Input with AI Enhancement */}
         <View className="relative">
           <View className="flex-row items-center bg-background-secondary rounded-xl px-4 py-3 border border-border">
@@ -336,7 +338,8 @@ export const ProductsSearchTab: React.FC<ProductsSearchTabProps> = ({ isMobile =
             )}
           </View>
         )}
-      </View>
+        </View>
+      )}
 
       {/* Product List */}
       <Animated.View style={[listAnimatedStyle, { flex: 1 }]}>

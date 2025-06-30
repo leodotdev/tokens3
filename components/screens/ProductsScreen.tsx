@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, useWindowDimensions } from 'react-native';
+import { View, Text, TouchableOpacity, useWindowDimensions, Platform } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { TablerIcon } from '../icons/TablerIcon';
@@ -9,6 +9,7 @@ import { ProductsSearchTab } from '../features/ProductsSearchTab';
 import { AuthModal } from '../features/AuthModal';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
+import { getThemeClassName } from '../../lib/theme-utils';
 
 type ProductsTab = 'chat' | 'search';
 
@@ -18,49 +19,10 @@ export const ProductsScreen: React.FC = () => {
   const { width } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const isMobile = width <= 500;
-  const [activeTab, setActiveTab] = useState<ProductsTab>('chat');
+  const isWeb = Platform.OS === 'web';
+  const [activeTab, setActiveTab] = useState<ProductsTab>('search'); // Start with search tab
   const [authModalVisible, setAuthModalVisible] = useState(false);
 
-  const renderContent = () => {
-    switch (activeTab) {
-      case 'chat':
-        return (
-          <View className="flex-1">
-            <AIChatInterface
-              placeholder={user 
-                ? "Ask me about gifts for your people..." 
-                : "Ask me about gifts, people, or events..."
-              }
-              initialPrompts={user ? [
-                "🎁 Gift ideas for my mom",
-                "🎂 Upcoming birthdays this month", 
-                "💝 Anniversary gifts under $100",
-                "🎄 Holiday gift planning",
-                "👨‍👩‍👧‍👦 Add my family members"
-              ] : [
-                "🎁 Great gifts for parents",
-                "💝 Romantic anniversary gifts",
-                "🎓 Graduation gift ideas", 
-                "🏠 Housewarming presents",
-                "🎂 Birthday gifts by age"
-              ]}
-              onProductsFound={() => {
-                // Switch to search tab when products are found
-                setActiveTab('search');
-              }}
-              compact={false}
-              isMobile={isMobile}
-            />
-          </View>
-        );
-      
-      case 'search':
-        return <ProductsSearchTab isMobile={isMobile} />;
-      
-      default:
-        return null;
-    }
-  };
 
   return (
     <View className="flex-1" style={{ backgroundColor: colors.background, paddingTop: isMobile ? insets.top : 0 }}>
@@ -71,10 +33,7 @@ export const ProductsScreen: React.FC = () => {
             <View className="flex-1">
               <Text className="text-3xl font-bold" style={{ color: colors.foreground }}>Products</Text>
               <Text className="mt-1" style={{ color: colors.foregroundSecondary }}>
-                {activeTab === 'chat' 
-                  ? 'AI-powered gift discovery' 
-                  : 'Search and browse products'
-                }
+                Search and browse products
               </Text>
             </View>
             {!user && (
@@ -86,69 +45,49 @@ export const ProductsScreen: React.FC = () => {
               </TouchableOpacity>
             )}
           </View>
-          
-
-          {/* Tab Buttons */}
-          <View className="mb-4 flex-row gap-3">
-            {/* Assistant Button */}
-            <TouchableOpacity
-              onPress={() => setActiveTab('chat')}
-              className="flex-1 py-3 px-4 rounded-xl border"
-              style={{
-                backgroundColor: activeTab === 'chat' ? colors.accent : colors.backgroundSecondary,
-                borderColor: activeTab === 'chat' ? colors.accent : colors.border
-              }}
-            >
-              <View className="flex-row items-center justify-center">
-                <TablerIcon 
-                  name="message" 
-                  size={20}
-                  color={activeTab === 'chat' ? colors.accentForeground : colors.foregroundMuted}
-                  className="mr-2" 
-                />
-                <Text 
-                  className="font-semibold text-base"
-                  style={{
-                    color: activeTab === 'chat' ? colors.accentForeground : colors.foregroundMuted
-                  }}
-                >
-                  Assistant
-                </Text>
-              </View>
-            </TouchableOpacity>
-
-            {/* Search Button */}
-            <TouchableOpacity
-              onPress={() => setActiveTab('search')}
-              className="flex-1 py-3 px-4 rounded-xl border"
-              style={{
-                backgroundColor: activeTab === 'search' ? colors.accent : colors.backgroundSecondary,
-                borderColor: activeTab === 'search' ? colors.accent : colors.border
-              }}
-            >
-              <View className="flex-row items-center justify-center">
-                <TablerIcon 
-                  name="search" 
-                  size={20}
-                  color={activeTab === 'search' ? colors.accentForeground : colors.foregroundMuted}
-                  className="mr-2" 
-                />
-                <Text 
-                  className="font-semibold text-base"
-                  style={{
-                    color: activeTab === 'search' ? colors.accentForeground : colors.foregroundMuted
-                  }}
-                >
-                  Search
-                </Text>
-              </View>
-            </TouchableOpacity>
-          </View>
         </View>
 
         {/* Content */}
         <View className="flex-1">
-          {renderContent()}
+          <ProductsSearchTab 
+            isMobile={isMobile} 
+            showSearchInput={false} // Hide the built-in search input
+          />
+        </View>
+
+        {/* Sticky Search Input */}
+        <View 
+          className={getThemeClassName(
+            'px-4 pt-3 pb-3 border-t',
+            ['bg-background', 'border-border'],
+            isWeb
+          )}
+          style={{
+            ...(!isWeb && {
+              backgroundColor: colors.background,
+              borderColor: colors.border
+            }),
+            position: isMobile ? 'absolute' : 'relative',
+            bottom: isMobile ? 48 + insets.bottom : 0, // Position above nav tabs
+            left: 0,
+            right: 0,
+          }}
+        >
+          <View className="flex-row items-center rounded-2xl px-4 py-2" style={{ backgroundColor: colors.backgroundSecondary }}>
+            <TablerIcon name="search" size={20} color={colors.foregroundMuted} />
+            <Text 
+              className="flex-1 ml-3 text-base"
+              style={{ color: colors.foregroundMuted }}
+            >
+              Search for gifts, gadgets, or anything...
+            </Text>
+            <TouchableOpacity
+              className="ml-2 p-2 rounded-full"
+              style={{ backgroundColor: colors.foregroundMuted }}
+            >
+              <TablerIcon name="sparkles" size={18} color={colors.background} />
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
 
