@@ -502,7 +502,7 @@ export const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
       {/* Input Area */}
       <View 
         className={getThemeClassName(
-          'px-4 pt-4 pb-6 border-t',
+          'px-4 pt-3 pb-3 border-t',
           ['bg-background', 'border-border'],
           isWeb
         )}
@@ -512,7 +512,7 @@ export const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
             borderColor: colors.border
           }),
           position: isMobile && !compact ? 'absolute' : 'relative',
-          bottom: isMobile && !compact ? 56 + insets.bottom : 0,
+          bottom: isMobile && !compact ? 48 + insets.bottom : 0, // Reduced from 56 to 48 to account for shorter nav bar
           left: 0,
           right: 0,
         }}

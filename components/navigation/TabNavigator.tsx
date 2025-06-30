@@ -48,12 +48,12 @@ export const TabNavigator: React.FC<TabNavigatorProps> = ({
           paddingBottom: insets.bottom 
         }}
       >
-        <View className="flex-row items-center justify-around py-2">
+        <View className="flex-row items-center justify-around py-1">
           {tabs.map((tab) => (
             <TouchableOpacity
               key={tab.id}
               onPress={() => onTabPress(tab.id)}
-              className="items-center justify-center px-4 py-2"
+              className="items-center justify-center px-4 py-1"
             >
               <TablerIcon
                 name={tab.icon}
