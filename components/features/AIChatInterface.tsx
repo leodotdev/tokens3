@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, ActivityIndicator, Alert, Platform } from 'react-native';
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
-import { FluentEmoji } from '../icons/FluentEmojiReal';
+import { TablerIcon } from '../icons/TablerIcon';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { getThemeClassName } from '../../lib/theme-utils';
@@ -409,7 +409,7 @@ export const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
         {messages.length === 0 && (
           <Animated.View entering={FadeInDown.delay(100)} className="mb-6">
             <View className="items-center mb-6">
-              <FluentEmoji name="Sparkles" size={48} />
+              <TablerIcon name="sparkles" size={48} color={colors.accent} />
               <Text className="mt-3 text-xl font-bold text-center" style={{ color: colors.foreground }}>
                 Hi! I'm your AI gift assistant
               </Text>
@@ -431,19 +431,19 @@ export const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
                     const emoji = emojiMatch ? emojiMatch[1] : '';
                     const text = emojiMatch ? emojiMatch[2] : prompt;
                     
-                    // Map Unicode emojis to FluentUI emojis
-                    const getFluentEmoji = (unicodeEmoji: string) => {
+                    // Map Unicode emojis to Tabler icons
+                    const getTablerIcon = (unicodeEmoji: string) => {
                       switch (unicodeEmoji) {
-                        case '🎁': return <FluentEmoji name="Gift" size={20} />;
-                        case '💝': return <FluentEmoji name="Heart" size={20} />;
-                        case '🎓': return <FluentEmoji name="GraduationCap" size={20} />;
-                        case '🏠': return <FluentEmoji name="House" size={20} />;
-                        case '🎂': return <FluentEmoji name="Cake" size={20} />;
+                        case '🎁': return <TablerIcon name="gift" size={20} color={colors.accent} />;
+                        case '💝': return <TablerIcon name="heart" size={20} color={colors.accent} />;
+                        case '🎓': return <TablerIcon name="school" size={20} color={colors.accent} />;
+                        case '🏠': return <TablerIcon name="home" size={20} color={colors.accent} />;
+                        case '🎂': return <TablerIcon name="cake" size={20} color={colors.accent} />;
                         default: return null;
                       }
                     };
                     
-                    const fluentEmoji = getFluentEmoji(emoji);
+                    const tablerIcon = getTablerIcon(emoji);
                     
                     return (
                       <Animated.View key={prompt} entering={FadeInDown.delay(200 + index * 100)}>
@@ -453,9 +453,9 @@ export const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
                           style={{ backgroundColor: colors.backgroundSecondary, borderColor: colors.border }}
                         >
                           <View className="flex-row items-center">
-                            {fluentEmoji && (
+                            {tablerIcon && (
                               <View className="mr-3">
-                                {fluentEmoji}
+                                {tablerIcon}
                               </View>
                             )}
                             <Text style={{ 
@@ -519,14 +519,14 @@ export const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
       >
         {!aiAvailable && (
           <View className="mb-3 flex-row items-center justify-center rounded-lg bg-orange-50 px-3 py-2">
-            <FluentEmoji name="Warning" size={16} />
+            <TablerIcon name="alert-triangle" size={16} color="#c2410c" />
             <Text className="ml-2 text-sm text-orange-700">
               AI temporarily unavailable - using fallback responses
             </Text>
           </View>
         )}
         <View className="flex-row items-center rounded-2xl px-4 py-2" style={{ backgroundColor: colors.backgroundSecondary }}>
-          <FluentEmoji name={aiAvailable ? "Sparkles" : "Search"} size={20} />
+          <TablerIcon name={aiAvailable ? "sparkles" : "search"} size={20} color={colors.foregroundMuted} />
           <TextInput
             className="flex-1 ml-3 text-base"
             placeholder={aiAvailable ? placeholder : "Browse products and use manual features..."}
@@ -544,7 +544,7 @@ export const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
             className="ml-2 p-2 rounded-full"
             style={{ backgroundColor: inputText.trim() ? '#3B82F6' : '#a1a1aa' }}
           >
-            <FluentEmoji name="Send" size={18} />
+            <TablerIcon name="send" size={18} color="white" />
           </TouchableOpacity>
         </View>
       </View>
