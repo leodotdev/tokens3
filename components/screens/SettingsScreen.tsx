@@ -86,9 +86,9 @@ export const SettingsScreen: React.FC = () => {
     // Not signed in - show sign in interface
     return (
       <View 
-        className={getThemeClassName('flex-1', ['bg-background'], isWeb)}
+        className="flex-1 bg-background"
         style={{ 
-          ...(!isWeb && { backgroundColor: colors.background }),
+          ...(isWeb ? {} : { backgroundColor: colors.background }),
           paddingTop: isMobile ? insets.top : 0 
         }}
       >
@@ -101,28 +101,22 @@ export const SettingsScreen: React.FC = () => {
             <View className="flex-col gap-8">
               <Animated.View entering={FadeInDown.delay(100)} className="flex-col items-center gap-4">
                 <View 
-                  className={getThemeClassName(
-                    'h-24 w-24 items-center justify-center rounded-full',
-                    ['bg-background-secondary'],
-                    isWeb
-                  )}
-                  style={{
-                    ...(!isWeb && { backgroundColor: colors.backgroundSecondary })
-                  }}
+                  className="h-24 w-24 items-center justify-center rounded-full bg-background-secondary"
+                  style={isWeb ? {} : { backgroundColor: colors.backgroundSecondary }}
                 >
                   <FluentEmoji name="Gear" size={48} />
                 </View>
                 
                 <View className="flex-col items-center gap-2">
                   <Text 
-                    className={getThemeClassName('text-3xl font-bold', ['text-foreground'], isWeb)}
-                    style={{ ...(!isWeb && { color: colors.foreground }) }}
+                    className="text-3xl font-bold text-foreground"
+                    style={isWeb ? {} : { color: colors.foreground }}
                   >
                     Settings
                   </Text>
                   <Text 
-                    className={getThemeClassName('text-center', ['text-foreground-secondary'], isWeb)}
-                    style={{ ...(!isWeb && { color: colors.foregroundSecondary }) }}
+                    className="text-center text-foreground-secondary"
+                    style={isWeb ? {} : { color: colors.foregroundSecondary }}
                   >
                     Customize your app experience and manage your account
                   </Text>
