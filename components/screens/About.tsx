@@ -98,7 +98,7 @@ export const About: React.FC = () => {
                 <View className="flex-1">
                   <Text className="font-semibold" style={{ color: colors.foreground }}>Get Reminders</Text>
                   <Text className="mt-1 text-sm" style={{ color: colors.foregroundSecondary }}>
-                    We'll remind you about birthdays, anniversaries, and special occasions - 
+                    We&apos;ll remind you about birthdays, anniversaries, and special occasions - 
                     with enough time to find the perfect gift.
                   </Text>
                 </View>
@@ -123,7 +123,7 @@ export const About: React.FC = () => {
           <Animated.View entering={FadeInDown.delay(400)} className="mb-8">
             <View className="rounded-2xl border p-6" style={{ borderColor: colors.border, backgroundColor: colors.backgroundSecondary }}>
               <View className="mb-4 flex-row items-center">
-                <TablerIcon name="shield" size={24} color={colors.foregroundMuted} />
+                <TablerIcon name="lock" size={24} color={colors.foregroundMuted} />
                 <Text className="ml-2 text-xl font-bold" style={{ color: colors.foreground }}>Our Promise</Text>
               </View>
               <Text className="mb-3 leading-relaxed" style={{ color: colors.foregroundSecondary }}>
@@ -135,7 +135,7 @@ export const About: React.FC = () => {
               </Text>
               <Text className="leading-relaxed" style={{ color: colors.foregroundSecondary }}>
                 <Text className="font-semibold" style={{ color: colors.foreground }}>Transparent business model.</Text> We make a small 
-                commission from purchases through our affiliate links. That's it. No hidden agenda, 
+                commission from purchases through our affiliate links. That&apos;s it. No hidden agenda, 
                 no data mining, just helping you find great gifts.
               </Text>
             </View>
@@ -146,12 +146,12 @@ export const About: React.FC = () => {
             <Text className="mb-4 text-xl font-bold" style={{ color: colors.foreground }}>Coming Soon</Text>
             <View className="rounded-2xl border p-6" style={{ borderColor: colors.border, backgroundColor: colors.backgroundSecondary }}>
               <Text className="leading-relaxed" style={{ color: colors.foregroundSecondary }}>
-                Imagine getting a notification: "Mother's Day is in 2 weeks! Here are 5 perfect 
+                Imagine getting a notification: "Mother&apos;s Day is in 2 weeks! Here are 5 perfect 
                 gifts for Mary based on her love of travel and art" - with options already filtered 
-                by your budget, excluding anything you've given before.
+                by your budget, excluding anything you&apos;ve given before.
               </Text>
               <Text className="mt-4 text-sm font-medium" style={{ color: colors.accent }}>
-                That's the future we're building. ✨
+                That&apos;s the future we&apos;re building. ✨
               </Text>
             </View>
           </Animated.View>

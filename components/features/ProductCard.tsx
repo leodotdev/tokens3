@@ -109,7 +109,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           onLongPress={onLongPress}
           onPressIn={handlePressIn}
           onPressOut={handlePressOut}
-          className={`mb-4 overflow-hidden rounded-2xl border-2 bg-background ${isSelected ? 'border-blue-500' : 'border-border'}`}
+          className={`mb-4 overflow-hidden rounded-2xl border bg-background ${isSelected ? 'border-blue-500' : 'border-border'}`}
           style={{
             backgroundColor: colors.background,
             borderColor: isSelected ? '#3b82f6' : colors.border
@@ -241,7 +241,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         onLongPress={onLongPress}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
-        className={`overflow-hidden rounded-2xl border-2 bg-background ${isSelected ? 'border-blue-500' : 'border-border'}`}
+        className={`overflow-hidden rounded-2xl border bg-background ${isSelected ? 'border-blue-500' : 'border-border'}`}
         style={{
           backgroundColor: colors.background,
           borderColor: isSelected ? '#3b82f6' : colors.border

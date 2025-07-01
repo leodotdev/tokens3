@@ -10,7 +10,7 @@ console.log('Working directory:', process.cwd());
 
 try {
   // Clear any existing dist directory
-  const distPath = path.join(__dirname, 'dist');
+  const distPath = path.join(process.cwd(), 'dist');
   if (fs.existsSync(distPath)) {
     console.log('🧹 Cleaning existing dist directory...');
     execSync('rm -rf dist', { stdio: 'inherit' });

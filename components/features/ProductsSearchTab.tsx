@@ -30,7 +30,7 @@ interface ProductsSearchTabProps {
 export const ProductsSearchTab: React.FC<ProductsSearchTabProps> = ({ isMobile = false, showSearchInput = true }) => {
   const { user } = useAuth();
   const { width } = useWindowDimensions();
-  const NUM_COLUMNS = width > 960 ? 4 : width > 500 ? 2 : 1;
+  const NUM_COLUMNS = width > 960 ? 3 : width > 500 ? 2 : 1;
   
   const [products, setProducts] = useState<Product[]>([]);
   const [allProducts, setAllProducts] = useState<Product[]>([]);
@@ -408,7 +408,7 @@ export const ProductsSearchTab: React.FC<ProductsSearchTabProps> = ({ isMobile =
           fabAnimatedStyle,
           {
             position: 'absolute',
-            bottom: 30,
+            bottom: isMobile ? 100 : 30,
             right: 24,
           },
         ]}>

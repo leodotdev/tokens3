@@ -104,7 +104,7 @@ export const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
       }
     } catch (error) {
       console.error('AI Chat Error:', error);
-      addMessage('assistant', "I'm having trouble right now. Could you try rephrasing that?");
+      addMessage('assistant', "I&apos;m having trouble right now. Could you try rephrasing that?");
     } finally {
       setIsLoading(false);
     }
@@ -169,7 +169,7 @@ export const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
       // Check for specific API errors
       if (error.message?.includes('credit balance is too low')) {
         return {
-          content: "I'm temporarily unavailable due to API limits. You can still browse our curated products and add people manually using the dashboard cards.",
+          content: "I&apos;m temporarily unavailable due to API limits. You can still browse our curated products and add people manually using the dashboard cards.",
           actions: [
             {
               id: 'browse_products',
@@ -183,13 +183,13 @@ export const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
       
       if (error.message?.includes('API error: 400')) {
         return {
-          content: "I'm having trouble understanding that request. Try asking about specific gifts, people, or events.",
+          content: "I&apos;m having trouble understanding that request. Try asking about specific gifts, people, or events.",
           actions: []
         };
       }
       
       return {
-        content: "I'm having trouble right now. You can still browse products and use the manual add features on the dashboard.",
+        content: "I&apos;m having trouble right now. You can still browse products and use the manual add features on the dashboard.",
         actions: [
           {
             id: 'browse_products',
@@ -328,7 +328,7 @@ export const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
         }
       } else {
         addMessage('user', prompt);
-        addMessage('assistant', "I'm temporarily unavailable. You can browse our curated products or use the manual features on the dashboard.", [
+        addMessage('assistant', "I&apos;m temporarily unavailable. You can browse our curated products or use the manual features on the dashboard.", [
           {
             id: 'browse_products',
             label: 'Browse Products',
@@ -411,7 +411,7 @@ export const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
             <View className="items-center mb-6">
               <TablerIcon name="sparkles" size={48} color={colors.accent} />
               <Text className="mt-3 text-xl font-bold text-center" style={{ color: colors.foreground }}>
-                Hi! I'm your AI gift assistant
+                Hi! I&apos;m your AI gift assistant
               </Text>
               <Text className="mt-2 text-center" style={{ color: colors.foregroundSecondary }}>
                 Ask me anything about gifts, people, or events

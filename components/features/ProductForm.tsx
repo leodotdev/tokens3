@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import type { Product, ProductInsert, ProductUpdate } from '../../lib/supabase';
 import { FluentEmoji } from '../icons/FluentEmojiReal';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface ProductFormProps {
   initialData?: Partial<Product>;
@@ -30,6 +31,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
   isEditing = false,
   autoFocus = true,
 }) => {
+  const { colors } = useTheme();
   const [formData, setFormData] = useState({
     name: initialData?.name || '',
     description: initialData?.description || '',
@@ -82,23 +84,32 @@ export const ProductForm: React.FC<ProductFormProps> = ({
         <View className="p-6 pb-2">
         {/* Form Title */}
         <View className="mb-6">
-          <Text className="text-2xl font-bold text-foreground">
+          <Text style={{ fontSize: 24, fontWeight: 'bold', color: colors.foreground }}>
             {isEditing ? 'Edit Product' : 'Add Product'}
           </Text>
-          <Text className="mt-1 text-foreground-tertiary">
+          <Text style={{ marginTop: 4, color: colors.foregroundSecondary }}>
             {isEditing ? 'Update product details' : 'Add a new product to your collection'}
           </Text>
         </View>
 
         {/* Amazon Link */}
         <View className="mb-4">
-          <Text className="mb-2 text-sm font-medium text-foreground-secondary">
+          <Text style={{ marginBottom: 8, fontSize: 14, fontWeight: '600', color: colors.foregroundSecondary }}>
             Amazon Link
           </Text>
           <TextInput
-            className="rounded-xl border border-border bg-background px-4 py-3 text-base text-foreground"
+            style={{
+              borderRadius: 12,
+              borderWidth: 1,
+              borderColor: colors.border,
+              backgroundColor: colors.backgroundSecondary,
+              paddingHorizontal: 16,
+              paddingVertical: 12,
+              fontSize: 16,
+              color: colors.foreground,
+            }}
             placeholder="https://amazon.com/..."
-            placeholderTextColor="#a1a1aa"
+            placeholderTextColor={colors.foregroundMuted}
             value={formData.amazon_link}
             onChangeText={(value) => updateFormData('amazon_link', value)}
             autoCapitalize="none"
@@ -109,13 +120,22 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 
         {/* Image URL */}
         <View className="mb-4">
-          <Text className="mb-2 text-sm font-medium text-foreground-secondary">
+          <Text style={{ marginBottom: 8, fontSize: 14, fontWeight: '600', color: colors.foregroundSecondary }}>
             Image URL
           </Text>
           <TextInput
-            className="rounded-xl border border-border bg-background px-4 py-3 text-base text-foreground"
+            style={{
+              borderRadius: 12,
+              borderWidth: 1,
+              borderColor: colors.border,
+              backgroundColor: colors.backgroundSecondary,
+              paddingHorizontal: 16,
+              paddingVertical: 12,
+              fontSize: 16,
+              color: colors.foreground,
+            }}
             placeholder="https://example.com/image.jpg"
-            placeholderTextColor="#a1a1aa"
+            placeholderTextColor={colors.foregroundMuted}
             value={formData.image_url}
             onChangeText={(value) => updateFormData('image_url', value)}
             autoCapitalize="none"
@@ -125,13 +145,22 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 
         {/* Product Name */}
         <View className="mb-4">
-          <Text className="mb-2 text-sm font-medium text-foreground-secondary">
-            Product Name *
+          <Text style={{ marginBottom: 8, fontSize: 14, fontWeight: '600', color: colors.foregroundSecondary }}>
+            Product Name <Text style={{ color: '#ef4444' }}>*</Text>
           </Text>
           <TextInput
-            className="rounded-xl border border-border bg-background px-4 py-3 text-base text-foreground"
+            style={{
+              borderRadius: 12,
+              borderWidth: 1,
+              borderColor: colors.border,
+              backgroundColor: colors.backgroundSecondary,
+              paddingHorizontal: 16,
+              paddingVertical: 12,
+              fontSize: 16,
+              color: colors.foreground,
+            }}
             placeholder="Enter product name"
-            placeholderTextColor="#a1a1aa"
+            placeholderTextColor={colors.foregroundMuted}
             value={formData.name}
             onChangeText={(value) => updateFormData('name', value)}
           />
@@ -139,13 +168,22 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 
         {/* Description */}
         <View className="mb-4">
-          <Text className="mb-2 text-sm font-medium text-foreground-secondary">
+          <Text style={{ marginBottom: 8, fontSize: 14, fontWeight: '600', color: colors.foregroundSecondary }}>
             Description
           </Text>
           <TextInput
-            className="rounded-xl border border-border bg-background px-4 py-3 text-base text-foreground"
+            style={{
+              borderRadius: 12,
+              borderWidth: 1,
+              borderColor: colors.border,
+              backgroundColor: colors.backgroundSecondary,
+              paddingHorizontal: 16,
+              paddingVertical: 12,
+              fontSize: 16,
+              color: colors.foreground,
+            }}
             placeholder="Enter product description"
-            placeholderTextColor="#a1a1aa"
+            placeholderTextColor={colors.foregroundMuted}
             value={formData.description}
             onChangeText={(value) => updateFormData('description', value)}
             multiline
@@ -157,26 +195,44 @@ export const ProductForm: React.FC<ProductFormProps> = ({
         {/* Price and Category Row */}
         <View className="mb-4 flex-row gap-4">
           <View className="flex-1">
-            <Text className="mb-2 text-sm font-medium text-foreground-secondary">
+            <Text style={{ marginBottom: 8, fontSize: 14, fontWeight: '600', color: colors.foregroundSecondary }}>
               Price
             </Text>
             <TextInput
-              className="rounded-xl border border-border bg-background px-4 py-3 text-base text-foreground"
+              style={{
+              borderRadius: 12,
+              borderWidth: 1,
+              borderColor: colors.border,
+              backgroundColor: colors.backgroundSecondary,
+              paddingHorizontal: 16,
+              paddingVertical: 12,
+              fontSize: 16,
+              color: colors.foreground,
+            }}
               placeholder="0.00"
-              placeholderTextColor="#a1a1aa"
+              placeholderTextColor={colors.foregroundMuted}
               value={formData.price}
               onChangeText={(value) => updateFormData('price', value)}
               keyboardType="decimal-pad"
             />
           </View>
           <View className="flex-1">
-            <Text className="mb-2 text-sm font-medium text-foreground-secondary">
+            <Text style={{ marginBottom: 8, fontSize: 14, fontWeight: '600', color: colors.foregroundSecondary }}>
               Category
             </Text>
             <TextInput
-              className="rounded-xl border border-border bg-background px-4 py-3 text-base text-foreground"
+              style={{
+              borderRadius: 12,
+              borderWidth: 1,
+              borderColor: colors.border,
+              backgroundColor: colors.backgroundSecondary,
+              paddingHorizontal: 16,
+              paddingVertical: 12,
+              fontSize: 16,
+              color: colors.foreground,
+            }}
               placeholder="e.g. Electronics"
-              placeholderTextColor="#a1a1aa"
+              placeholderTextColor={colors.foregroundMuted}
               value={formData.category}
               onChangeText={(value) => updateFormData('category', value)}
             />
@@ -185,7 +241,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 
         {/* Status Selection */}
         <View className="mb-4">
-          <Text className="mb-3 text-sm font-medium text-foreground-secondary">
+          <Text style={{ marginBottom: 12, fontSize: 14, fontWeight: '600', color: colors.foregroundSecondary }}>
             Status
           </Text>
           <View className="flex-row gap-3">
@@ -193,18 +249,31 @@ export const ProductForm: React.FC<ProductFormProps> = ({
               <TouchableOpacity
                 key={option.value}
                 onPress={() => updateFormData('status', option.value)}
-                className={`flex-1 flex-row items-center rounded-xl border px-3 py-3 ${
-                  formData.status === option.value
-                    ? 'border-accent bg-accent-light'
-                    : 'border-border bg-background'
-                }`}>
+                style={{
+                  flex: 1,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  borderRadius: 12,
+                  borderWidth: 1,
+                  paddingHorizontal: 12,
+                  paddingVertical: 12,
+                  borderColor: formData.status === option.value
+                    ? colors.accent
+                    : colors.border,
+                  backgroundColor: formData.status === option.value
+                    ? colors.backgroundSecondary
+                    : colors.background,
+                }}>
                 <FluentEmoji name={option.icon as any} size={20} />
                 <Text
-                  className={`ml-2 text-sm font-medium ${
-                    formData.status === option.value
-                      ? 'text-accent-dark'
-                      : 'text-foreground-tertiary'
-                  }`}>
+                  style={{
+                    marginLeft: 8,
+                    fontSize: 14,
+                    fontWeight: '600',
+                    color: formData.status === option.value
+                      ? colors.accent
+                      : colors.foregroundSecondary
+                  }}>
                   {option.label}
                 </Text>
               </TouchableOpacity>
@@ -214,7 +283,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 
         {/* Priority Selection */}
         <View className="mb-4">
-          <Text className="mb-3 text-sm font-medium text-foreground-secondary">
+          <Text style={{ marginBottom: 12, fontSize: 14, fontWeight: '600', color: colors.foregroundSecondary }}>
             Priority
           </Text>
           <View className="flex-row gap-3">
@@ -222,17 +291,28 @@ export const ProductForm: React.FC<ProductFormProps> = ({
               <TouchableOpacity
                 key={option.value}
                 onPress={() => updateFormData('priority', option.value)}
-                className={`flex-1 items-center rounded-xl border px-3 py-3 ${
-                  formData.priority === option.value
-                    ? 'border-accent bg-accent-light'
-                    : 'border-border bg-background'
-                }`}>
+                style={{
+                  flex: 1,
+                  alignItems: 'center',
+                  borderRadius: 12,
+                  borderWidth: 1,
+                  paddingHorizontal: 12,
+                  paddingVertical: 12,
+                  borderColor: formData.priority === option.value
+                    ? colors.accent
+                    : colors.border,
+                  backgroundColor: formData.priority === option.value
+                    ? colors.backgroundSecondary
+                    : colors.background,
+                }}>
                 <Text
-                  className={`text-sm font-medium ${
-                    formData.priority === option.value
-                      ? 'text-accent-dark'
-                      : 'text-foreground-tertiary'
-                  }`}>
+                  style={{
+                    fontSize: 14,
+                    fontWeight: '600',
+                    color: formData.priority === option.value
+                      ? colors.accent
+                      : colors.foregroundSecondary
+                  }}>
                   {option.label}
                 </Text>
               </TouchableOpacity>
@@ -244,12 +324,21 @@ export const ProductForm: React.FC<ProductFormProps> = ({
         <View className="mb-6">
           <TouchableOpacity
             onPress={() => updateFormData('in_stock', !formData.in_stock)}
-            className="flex-row items-center rounded-xl border border-border bg-background px-4 py-3">
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              borderRadius: 12,
+              borderWidth: 1,
+              borderColor: colors.border,
+              backgroundColor: colors.background,
+              paddingHorizontal: 16,
+              paddingVertical: 12,
+            }}>
             <FluentEmoji
               name={formData.in_stock ? 'CheckboxChecked' : 'CheckboxUnchecked'}
               size={24}
             />
-            <Text className="ml-3 text-base font-medium text-foreground">
+            <Text style={{ marginLeft: 12, fontSize: 16, fontWeight: '600', color: colors.foreground }}>
               In Stock
             </Text>
           </TouchableOpacity>
@@ -258,29 +347,50 @@ export const ProductForm: React.FC<ProductFormProps> = ({
       </ScrollView>
 
       {/* Sticky Action Buttons */}
-      <View className="border-t border-border bg-background p-6 pb-8">
+      <View style={{
+        borderTopWidth: 1,
+        borderTopColor: colors.border,
+        backgroundColor: colors.background,
+        paddingHorizontal: 24,
+        paddingTop: 24,
+        paddingBottom: 32,
+      }}>
         <View className="flex-row gap-4">
           <TouchableOpacity
             onPress={onCancel}
-            className="flex-1 items-center rounded-xl border border-border bg-background py-4">
-            <Text className="text-base font-medium text-foreground-tertiary">
+            style={{
+              flex: 1,
+              alignItems: 'center',
+              borderRadius: 12,
+              borderWidth: 1,
+              borderColor: colors.border,
+              backgroundColor: colors.background,
+              paddingVertical: 16,
+            }}>
+            <Text style={{ fontSize: 16, fontWeight: '600', color: colors.foregroundSecondary }}>
               Cancel
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={handleSubmit}
             disabled={isSubmitting || !formData.name.trim()}
-            className={`flex-1 items-center rounded-xl py-4 ${
-              isSubmitting || !formData.name.trim()
-                ? 'bg-zinc-200'
-                : 'bg-accent'
-            }`}>
+            style={{
+              flex: 1,
+              alignItems: 'center',
+              borderRadius: 12,
+              paddingVertical: 16,
+              backgroundColor: isSubmitting || !formData.name.trim()
+                ? colors.foregroundMuted
+                : colors.accent,
+            }}>
             <Text
-              className={`text-base font-medium ${
-                isSubmitting || !formData.name.trim()
-                  ? 'text-zinc-400'
-                  : 'text-accent-foreground'
-              }`}>
+              style={{
+                fontSize: 16,
+                fontWeight: '600',
+                color: isSubmitting || !formData.name.trim()
+                  ? colors.background
+                  : colors.accentForeground,
+              }}>
               {isSubmitting ? 'Saving...' : isEditing ? 'Update Product' : 'Add Product'}
             </Text>
           </TouchableOpacity>

@@ -9,6 +9,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import type { Product } from '../../lib/supabase';
 import { FluentEmoji } from '../icons/FluentEmojiReal';
+import { TablerIcon } from '../icons/TablerIcon';
 import { useAuth } from '../../contexts/AuthContext';
 import { bookmarkQueries, likeQueries } from '../../lib/queries';
 import { WebImage } from '../ui/WebImage';
@@ -245,16 +246,23 @@ export const ProductActionOverlay: React.FC<ProductActionOverlayProps> = ({
               </View>
             )}
             <View className="flex-1">
-              <Text className="text-lg font-semibold text-foreground" numberOfLines={2}>
+              <Text style={{ fontSize: 18, fontWeight: '600', color: colors.foreground }} numberOfLines={2}>
                 {product.name}
               </Text>
               {formatPrice(product.price) && (
-                <Text className="mt-1 text-xl font-bold text-foreground">
+                <Text style={{ marginTop: 4, fontSize: 20, fontWeight: 'bold', color: colors.foreground }}>
                   {formatPrice(product.price)}
                 </Text>
               )}
               {product.category && (
-                <Text className="mt-1 text-sm font-medium uppercase tracking-wide text-foreground-muted">
+                <Text style={{ 
+                  marginTop: 4, 
+                  fontSize: 14, 
+                  fontWeight: '600', 
+                  textTransform: 'uppercase', 
+                  letterSpacing: 1.2, 
+                  color: colors.foregroundMuted 
+                }}>
                   {product.category}
                 </Text>
               )}
@@ -274,8 +282,8 @@ export const ProductActionOverlay: React.FC<ProductActionOverlayProps> = ({
                 <View className="mr-4">
                   <FluentEmoji name={action.icon as any} size={24} />
                 </View>
-                <Text className="flex-1 text-base font-medium text-foreground">{action.label}</Text>
-                <FluentEmoji name="ArrowRight" size={16} style={{ opacity: 0.5 }} />
+                <Text style={{ flex: 1, fontSize: 16, fontWeight: '600', color: colors.foreground }}>{action.label}</Text>
+                <TablerIcon name="chevron-right" size={16} color={colors.foregroundMuted} />
               </TouchableOpacity>
             ))}
           </View>

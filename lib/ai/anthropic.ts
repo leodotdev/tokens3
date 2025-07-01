@@ -9,10 +9,10 @@ interface AnthropicMessage {
 }
 
 interface AnthropicResponse {
-  content: Array<{
+  content: {
     type: 'text';
     text: string;
-  }>;
+  }[];
   id: string;
   model: string;
   role: 'assistant';
@@ -140,17 +140,17 @@ Output: {"name": "John", "relationship": "friend", "interests": ["technology", "
     previousGifts?: string[];
     daysUntil?: number;
   }): Promise<{
-    recommendations: Array<{
+    recommendations: {
       category: string;
-      items: Array<{
+      items: {
         name: string;
         description: string;
         priceRange: string;
         reasoning: string;
         tags: string[];
         urgency?: 'low' | 'medium' | 'high';
-      }>;
-    }>;
+      }[];
+    }[];
     reasoning: string;
   }> {
     const { person, occasion, budget, previousGifts, daysUntil } = context;
@@ -203,6 +203,69 @@ Focus on high-quality, well-reviewed products that would be meaningful for this 
     } catch (error) {
       console.error('Failed to parse gift recommendations:', error);
       throw new Error('Failed to generate gift recommendations');
+    }
+  }
+
+  // Parse entity creation from natural language
+  async parseEntityCreation(input: string, type: 'person' | 'event' | 'list'): Promise<{
+    entities: {
+      type: 'person' | 'event' | 'list';
+      data: any;
+      confidence: number;
+    }[];
+    reasoning: string;
+  }> {
+    const systemPrompt = `You are an AI assistant that parses natural language input to create structured entities for a gift-giving app.
+
+Parse the user's input and extract entities of the specified type: ${type}
+
+For PEOPLE, extract:
+- name (required)
+- relationship (mother, father, friend, partner, etc.)
+- age (if mentioned)
+- birthday (convert to YYYY-MM-DD format if possible)
+- interests (array of specific interests, hobbies, activities)
+- address (if mentioned)
+- notes (any other relevant context)
+
+For EVENTS, extract:
+- title (required)
+- date (required, convert to YYYY-MM-DD format)
+- person (if mentioned)
+- type (birthday, anniversary, graduation, wedding, holiday, etc.)
+- recurring (true/false)
+- reminder_days (default: 14)
+- notes (any other context)
+
+For LISTS, extract:
+- name (required)
+- description (what the list is for)
+- criteria (budget constraints, themes, etc.)
+- category (gift, wishlist, shopping, etc.)
+- members (people this list relates to)
+- notes (any other context)
+
+Return a JSON object with:
+{
+  "entities": [array of entities with type, data, and confidence (0-1)],
+  "reasoning": "explanation of what was parsed and any assumptions made"
+}
+
+If multiple entities can be extracted, include them all. Be generous in parsing - if someone mentions "birthday gift for Sarah on March 15", you could create both a person (Sarah) and an event (Sarah's birthday).`;
+
+    const response = await this.chat([
+      { role: 'user', content: input }
+    ], {
+      systemPrompt,
+      temperature: 0.3,
+      maxTokens: 800
+    });
+
+    try {
+      return JSON.parse(response);
+    } catch (error) {
+      console.error('Failed to parse entity creation JSON:', error);
+      throw new Error('Failed to parse entity creation');
     }
   }
 
@@ -318,16 +381,16 @@ Output: {"name": "Christmas Party", "date": "2024-12-25", "category": "holiday",
       user_id?: string;
       existing_people?: string[];
       recent_events?: string[];
-      conversation_history?: Array<{role: 'user' | 'assistant', content: string}>;
+      conversation_history?: {role: 'user' | 'assistant', content: string}[];
     }
   ): Promise<{
     response: string;
     intent: 'gift_search' | 'add_person' | 'create_event' | 'general' | 'follow_up';
-    actions: Array<{
+    actions: {
       type: 'add_person' | 'create_event' | 'search_products' | 'ask_follow_up';
       label: string;
       data: any;
-    }>;
+    }[];
     products_query?: string;
   }> {
     const systemPrompt = `You are an AI gift-giving assistant that helps users find gifts, manage people in their lives, and track important dates.
@@ -503,6 +566,9 @@ export const anthropicService = {
   
   // Event parsing
   parseEvent: (input: string) => anthropicAI.parseEvent(input),
+  
+  // Entity creation parsing
+  parseEntityCreation: (input: string, type: 'person' | 'event' | 'list') => anthropicAI.parseEntityCreation(input, type),
   
   // Conversation handling
   handleConversation: (message: string, context?: any) => anthropicAI.handleConversation(message, context),

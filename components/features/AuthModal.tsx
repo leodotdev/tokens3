@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   View, 
   Text, 
@@ -18,6 +18,7 @@ import Animated, {
 import { TablerIcon } from '../icons/TablerIcon';
 import { FluentEmoji } from '../icons/FluentEmojiReal';
 import { useAuth } from '../../contexts/AuthContext';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface AuthModalProps {
   visible: boolean;
@@ -26,10 +27,12 @@ interface AuthModalProps {
 
 export const AuthModal: React.FC<AuthModalProps> = ({ visible, onClose }) => {
   const { signIn, signUp, signInWithProvider } = useAuth();
+  const { colors } = useTheme();
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const emailInputRef = useRef<TextInput>(null);
   
   const backdropOpacity = useSharedValue(0);
   const modalScale = useSharedValue(0.95);
@@ -40,6 +43,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({ visible, onClose }) => {
       backdropOpacity.value = withTiming(1, { duration: 300 });
       modalScale.value = withSpring(1, { damping: 20, stiffness: 300 });
       modalOpacity.value = withTiming(1, { duration: 300 });
+      
+      // Focus email input after modal animation completes
+      setTimeout(() => {
+        emailInputRef.current?.focus();
+      }, 400);
     } else {
       backdropOpacity.value = withTiming(0, { duration: 200 });
       modalScale.value = withSpring(0.95, { damping: 20, stiffness: 300 });
@@ -114,58 +122,79 @@ export const AuthModal: React.FC<AuthModalProps> = ({ visible, onClose }) => {
           style={[
             modalAnimatedStyle,
             {
-              backgroundColor: '#ffffff',
+              backgroundColor: colors.background,
               borderRadius: 24,
               padding: 32,
               width: '100%',
               maxWidth: 400,
+              borderColor: colors.border,
+              borderWidth: 1,
             },
-          ]}
-          className="border border-border">
+          ]}>
           {/* Header */}
-          <View className="mb-6 flex-row items-center justify-between">
+          <View style={{ marginBottom: 24, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
             <View>
-              <Text className="text-2xl font-bold text-foreground">
+              <Text style={{ fontSize: 24, fontWeight: 'bold', color: colors.foreground }}>
                 {mode === 'signin' ? 'Welcome back' : 'Create account'}
               </Text>
-              <Text className="mt-1 text-foreground-tertiary">
+              <Text style={{ marginTop: 4, color: colors.foregroundSecondary }}>
                 {mode === 'signin' 
                   ? 'Sign in to your account' 
                   : 'Start building your collection'}
               </Text>
             </View>
             <TouchableOpacity onPress={onClose}>
-              <TablerIcon name="x" size={24} color="#6B7280" />
+              <TablerIcon name="x" size={24} color={colors.foregroundMuted} />
             </TouchableOpacity>
           </View>
 
           {/* Email Input */}
-          <View className="mb-4">
-            <Text className="mb-2 text-sm font-medium text-foreground-secondary">
+          <View style={{ marginBottom: 16 }}>
+            <Text style={{ marginBottom: 8, fontSize: 14, fontWeight: '600', color: colors.foregroundSecondary }}>
               Email
             </Text>
             <TextInput
-              className="rounded-xl border border-border bg-background px-4 py-3 text-base text-foreground"
+              ref={emailInputRef}
+              style={{
+                borderRadius: 12,
+                borderWidth: 1,
+                borderColor: colors.border,
+                backgroundColor: colors.backgroundSecondary,
+                paddingHorizontal: 16,
+                paddingVertical: 12,
+                fontSize: 16,
+                color: colors.foreground,
+              }}
               placeholder="you@example.com"
-              placeholderTextColor="#a1a1aa"
+              placeholderTextColor={colors.foregroundMuted}
               value={email}
               onChangeText={setEmail}
               autoCapitalize="none"
               autoCorrect={false}
               keyboardType="email-address"
               editable={!loading}
+              autoFocus={false}
             />
           </View>
 
           {/* Password Input */}
-          <View className="mb-6">
-            <Text className="mb-2 text-sm font-medium text-foreground-secondary">
+          <View style={{ marginBottom: 24 }}>
+            <Text style={{ marginBottom: 8, fontSize: 14, fontWeight: '600', color: colors.foregroundSecondary }}>
               Password
             </Text>
             <TextInput
-              className="rounded-xl border border-border bg-background px-4 py-3 text-base text-foreground"
+              style={{
+                borderRadius: 12,
+                borderWidth: 1,
+                borderColor: colors.border,
+                backgroundColor: colors.backgroundSecondary,
+                paddingHorizontal: 16,
+                paddingVertical: 12,
+                fontSize: 16,
+                color: colors.foreground,
+              }}
               placeholder="••••••••"
-              placeholderTextColor="#a1a1aa"
+              placeholderTextColor={colors.foregroundMuted}
               value={password}
               onChangeText={setPassword}
               secureTextEntry
@@ -177,33 +206,55 @@ export const AuthModal: React.FC<AuthModalProps> = ({ visible, onClose }) => {
           <TouchableOpacity
             onPress={handleSubmit}
             disabled={loading}
-            className={`mb-4 items-center rounded-xl py-4 ${
-              loading ? 'bg-zinc-200' : 'bg-accent'
-            }`}>
+            style={{
+              marginBottom: 16,
+              alignItems: 'center',
+              borderRadius: 12,
+              paddingVertical: 16,
+              backgroundColor: loading ? colors.foregroundMuted : colors.accent,
+            }}>
             {loading ? (
-              <ActivityIndicator color="#ffffff" />
+              <ActivityIndicator color={colors.accentForeground} />
             ) : (
-              <Text className="text-base font-medium text-accent-foreground">
+              <Text style={{
+                fontSize: 16,
+                fontWeight: '600',
+                color: colors.accentForeground,
+              }}>
                 {mode === 'signin' ? 'Sign In' : 'Sign Up'}
               </Text>
             )}
           </TouchableOpacity>
 
           {/* Divider */}
-          <View className="mb-4 flex-row items-center">
-            <View className="flex-1 border-b border-border" />
-            <Text className="mx-4 text-sm text-foreground-tertiary">or</Text>
-            <View className="flex-1 border-b border-border" />
+          <View style={{ marginBottom: 16, flexDirection: 'row', alignItems: 'center' }}>
+            <View style={{ flex: 1, borderBottomWidth: 1, borderBottomColor: colors.border }} />
+            <Text style={{ marginHorizontal: 16, fontSize: 14, color: colors.foregroundSecondary }}>or</Text>
+            <View style={{ flex: 1, borderBottomWidth: 1, borderBottomColor: colors.border }} />
           </View>
 
           {/* Social Login */}
-          <View className="mb-6 gap-3">
+          <View style={{ marginBottom: 24, gap: 12 }}>
             <TouchableOpacity
               onPress={() => handleSocialLogin('google')}
               disabled={loading}
-              className="flex-row items-center justify-center rounded-xl border border-border bg-background py-3">
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 12,
+                borderWidth: 1,
+                borderColor: colors.border,
+                backgroundColor: colors.backgroundSecondary,
+                paddingVertical: 12,
+              }}>
               <FluentEmoji name="Globe" size={20} />
-              <Text className="ml-2 text-base font-medium text-foreground">
+              <Text style={{
+                marginLeft: 8,
+                fontSize: 16,
+                fontWeight: '600',
+                color: colors.foreground,
+              }}>
                 Continue with Google
               </Text>
             </TouchableOpacity>
@@ -212,9 +263,23 @@ export const AuthModal: React.FC<AuthModalProps> = ({ visible, onClose }) => {
               <TouchableOpacity
                 onPress={() => handleSocialLogin('apple')}
                 disabled={loading}
-                className="flex-row items-center justify-center rounded-xl border border-border bg-background py-3">
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 12,
+                  borderWidth: 1,
+                  borderColor: colors.border,
+                  backgroundColor: colors.backgroundSecondary,
+                  paddingVertical: 12,
+                }}>
                 <FluentEmoji name="Heart" size={20} />
-                <Text className="ml-2 text-base font-medium text-foreground">
+                <Text style={{
+                  marginLeft: 8,
+                  fontSize: 16,
+                  fontWeight: '600',
+                  color: colors.foreground,
+                }}>
                   Continue with Apple
                 </Text>
               </TouchableOpacity>
@@ -225,16 +290,16 @@ export const AuthModal: React.FC<AuthModalProps> = ({ visible, onClose }) => {
           <TouchableOpacity
             onPress={() => setMode(mode === 'signin' ? 'signup' : 'signin')}
             disabled={loading}>
-            <Text className="text-center text-sm text-foreground-tertiary">
+            <Text style={{ textAlign: 'center', fontSize: 14, color: colors.foregroundSecondary }}>
               {mode === 'signin' ? (
                 <>
-                  Don't have an account?{' '}
-                  <Text className="font-medium text-accent">Sign up</Text>
+                  Don&apos;t have an account?{' '}
+                  <Text style={{ fontWeight: '600', color: colors.accent }}>Sign up</Text>
                 </>
               ) : (
                 <>
                   Already have an account?{' '}
-                  <Text className="font-medium text-accent">Sign in</Text>
+                  <Text style={{ fontWeight: '600', color: colors.accent }}>Sign in</Text>
                 </>
               )}
             </Text>

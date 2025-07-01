@@ -10,6 +10,7 @@ import { productQueries } from '../../lib/queries';
 import type { Product, ProductUpdate } from '../../lib/supabase';
 import { ProductForm } from './ProductForm';
 import { TablerIcon } from '../icons/TablerIcon';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface EditProductModalProps {
   visible: boolean;
@@ -24,6 +25,7 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({
   onClose,
   onProductUpdated,
 }) => {
+  const { colors } = useTheme();
   const backdropOpacity = useSharedValue(0);
   const modalTranslateY = useSharedValue(Platform.OS === 'web' ? 0 : 400);
   const modalOpacity = useSharedValue(0);
@@ -129,7 +131,7 @@ export const EditProductModal: React.FC<EditProductModalProps> = ({
           style={[
             modalAnimatedStyle,
             {
-              backgroundColor: '#ffffff',
+              backgroundColor: colors.background,
               borderRadius: isWeb ? 24 : 0,
               borderTopLeftRadius: isWeb ? 24 : 20,
               borderTopRightRadius: isWeb ? 24 : 20,

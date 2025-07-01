@@ -23,13 +23,11 @@ const getTabFromPath = (path: string): string => {
 };
 
 export const useWebRouting = (activeTab: string, setActiveTab: (tab: string) => void) => {
-  // Only handle routing on web
-  if (Platform.OS !== 'web') {
-    return { updateURL: () => {} };
-  }
+  const isWeb = Platform.OS === 'web';
 
   // Listen for browser back/forward navigation
   useEffect(() => {
+    if (!isWeb) return;
     const handlePopState = () => {
       const currentPath = window.location.pathname;
       const tabFromPath = getTabFromPath(currentPath);
@@ -48,10 +46,12 @@ export const useWebRouting = (activeTab: string, setActiveTab: (tab: string) => 
     }
 
     return () => window.removeEventListener('popstate', handlePopState);
-  }, []);
+  }, [activeTab, setActiveTab]);
 
   // Update URL when tab changes
   const updateURL = (tabId: string) => {
+    if (!isWeb) return;
+    
     const newPath = getPathFromTab(tabId);
     if (window.location.pathname !== newPath) {
       window.history.pushState({}, '', newPath);
