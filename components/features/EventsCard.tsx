@@ -82,7 +82,7 @@ export const EventsCard: React.FC<EventsCardProps> = ({ upcomingDates, onEventAd
           // Ask user if they want to create the person
           Alert.alert(
             'Create New Person?',
-            `"${eventData.person_name}" isn't in your people list. Would you like to add them?`,
+            `"${eventData.person_name}" isn&apos;t in your people list. Would you like to add them?`,
             [
               { text: 'Skip', style: 'cancel' },
               { 

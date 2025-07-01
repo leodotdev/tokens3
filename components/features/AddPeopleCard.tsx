@@ -198,7 +198,7 @@ export const AddPeopleCard: React.FC<AddPeopleCardProps> = ({ onPersonAdded }) =
           ...(!isWeb && { color: colors.foregroundSecondary })
         }}
       >
-        💡 Try: "Add my sister Sarah, 32, birthday March 15th, loves yoga and reading"
+        💡 Try: &quot;Add my sister Sarah, 32, birthday March 15th, loves yoga and reading&quot;
       </Text>
     </Animated.View>
   );

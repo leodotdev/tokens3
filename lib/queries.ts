@@ -1,5 +1,10 @@
 import { supabase } from './supabase';
-import type { Product, ProductInsert, ProductUpdate } from './supabase';
+import type { 
+  Product, ProductInsert, ProductUpdate,
+  List, ListInsert, ListUpdate,
+  ListProduct, ListProductInsert, ListProductUpdate,
+  ListWithProducts, ListProductWithProduct
+} from './supabase';
 
 // Product queries with error handling and type safety
 export const productQueries = {
@@ -413,5 +418,124 @@ export const specialDatesQueries = {
       .eq('id', id);
       
     return { error };
+  },
+  
+  // Clear all items from a list
+  async clearList(listId: string) {
+    const { error } = await supabase
+      .from('list_products')
+      .delete()
+      .eq('list_id', listId);
+      
+    return { error };
+  },
+  // Get all lists for a user
+  async getByUserExtended(userId: string) {
+    const { data, error } = await supabase
+      .from('lists')
+      .select('*')
+      .eq('user_id', userId)
+      .order('updated_at', { ascending: false });
+      
+    return { data: data as List[] | null, error };
+  },
+
+  // Get a single list with products
+  async getWithProducts(id: string, userId: string) {
+    const { data, error } = await supabase
+      .from('lists')
+      .select(`
+        *,
+        list_products (
+          *,
+          products (*)
+        )
+      `)
+      .eq('id', id)
+      .eq('user_id', userId)
+      .single();
+      
+    return { data: data as ListWithProducts | null, error };
+  },
+
+  // Create a new list
+  async create(list: ListInsert) {
+    const { data, error } = await supabase
+      .from('lists')
+      .insert(list)
+      .select()
+      .single();
+      
+    return { data: data as List | null, error };
+  },
+
+  // Update a list
+  async update(id: string, updates: ListUpdate) {
+    const { data, error } = await supabase
+      .from('lists')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
+      
+    return { data: data as List | null, error };
+  },
+
+  // Delete a list
+  async delete(id: string) {
+    const { error } = await supabase
+      .from('lists')
+      .delete()
+      .eq('id', id);
+      
+    return { error };
+  },
+
+  // Add product to list
+  async addProduct(listProduct: ListProductInsert) {
+    const { data, error } = await supabase
+      .from('list_products')
+      .insert(listProduct)
+      .select()
+      .single();
+      
+    return { data: data as ListProduct | null, error };
+  },
+
+  // Remove product from list
+  async removeProduct(listId: string, productId: string) {
+    const { error } = await supabase
+      .from('list_products')
+      .delete()
+      .eq('list_id', listId)
+      .eq('product_id', productId);
+      
+    return { error };
+  },
+
+  // Get products in a list
+  async getProducts(listId: string) {
+    const { data, error } = await supabase
+      .from('list_products')
+      .select(`
+        *,
+        products (*)
+      `)
+      .eq('list_id', listId)
+      .order('added_at', { ascending: false });
+      
+    return { data: data as ListProductWithProduct[] | null, error };
+  },
+
+  // Update list product (notes, etc.)
+  async updateProduct(id: string, updates: ListProductUpdate) {
+    const { data, error } = await supabase
+      .from('list_products')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
+      
+    return { data: data as ListProduct | null, error };
   },
 };

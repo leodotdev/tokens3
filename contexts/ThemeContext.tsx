@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useColorScheme, Appearance, StyleSheet } from 'react-native';
-import { Platform } from 'react-native';
+import { useColorScheme, Appearance , Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type Theme = 'light' | 'dark' | 'system';
@@ -32,13 +31,13 @@ interface ThemeContextType {
   };
 }
 
-// Theme color definitions
+// Theme color definitions matching global.css
 const themeVars = {
   light: {
     '--color-background': '255 255 255',
-    '--color-background-secondary': '244 244 245',
+    '--color-background-secondary': '244 244 245', 
     '--color-foreground': '24 24 27',
-    '--color-foreground-secondary': '113 113 122',
+    '--color-foreground-secondary': '63 63 70',
     '--color-foreground-muted': '161 161 170',
     '--color-border': '228 228 231',
     '--color-accent': '59 130 246',
@@ -48,7 +47,7 @@ const themeVars = {
     '--color-background': '24 24 27',
     '--color-background-secondary': '39 39 42',
     '--color-foreground': '250 250 250',
-    '--color-foreground-secondary': '212 212 216',
+    '--color-foreground-secondary': '244 244 245',
     '--color-foreground-muted': '161 161 170',
     '--color-border': '63 63 70',
     '--color-accent': '96 165 250',
@@ -56,27 +55,27 @@ const themeVars = {
   },
 };
 
-// React Native color definitions
+// React Native color definitions matching global.css
 const themes = {
   light: {
-    background: '#ffffff',
-    backgroundSecondary: '#f4f4f5',
-    foreground: '#18181b',
-    foregroundSecondary: '#71717a',
-    foregroundMuted: '#a1a1aa',
-    border: '#e4e4e7',
-    accent: '#3b82f6',
-    accentForeground: '#ffffff',
+    background: '#ffffff',           // rgb(255 255 255)
+    backgroundSecondary: '#f4f4f5',  // rgb(244 244 245)
+    foreground: '#18181b',           // rgb(24 24 27)
+    foregroundSecondary: '#3f3f46',  // rgb(63 63 70)
+    foregroundMuted: '#a1a1aa',      // rgb(161 161 170)
+    border: '#e4e4e7',              // rgb(228 228 231)
+    accent: '#3b82f6',              // rgb(59 130 246)
+    accentForeground: '#ffffff',     // rgb(255 255 255)
   },
   dark: {
-    background: '#18181b',
-    backgroundSecondary: '#27272a',
-    foreground: '#fafafa',
-    foregroundSecondary: '#d4d4d8',
-    foregroundMuted: '#a1a1aa',
-    border: '#3f3f46',
-    accent: '#60a5fa',
-    accentForeground: '#18181b',
+    background: '#18181b',           // rgb(24 24 27)
+    backgroundSecondary: '#27272a',  // rgb(39 39 42)
+    foreground: '#fafafa',           // rgb(250 250 250)
+    foregroundSecondary: '#f4f4f5',  // rgb(244 244 245)
+    foregroundMuted: '#a1a1aa',      // rgb(161 161 170)
+    border: '#3f3f46',              // rgb(63 63 70)
+    accent: '#60a5fa',              // rgb(96 165 250)
+    accentForeground: '#18181b',     // rgb(24 24 27)
   },
 };
 
@@ -90,16 +89,10 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [theme, setThemeState] = useState<Theme>('system');
   const [isInitialized, setIsInitialized] = useState(false);
 
-  // Configure React Native Web to use class-based dark mode
+  // Initialize web theme on mount
   useEffect(() => {
     if (Platform.OS === 'web') {
-      try {
-        // @ts-ignore - StyleSheet.setFlag is web-only
-        StyleSheet.setFlag('darkMode', 'class');
-        console.log('Set React Native Web to use class-based dark mode');
-      } catch (error) {
-        console.warn('Could not set StyleSheet darkMode flag:', error);
-      }
+      console.log('Initializing web theme support');
     }
   }, []);
 
@@ -122,27 +115,25 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const applyTheme = (actualTheme: 'light' | 'dark') => {
     if (Platform.OS === 'web') {
-      // Apply CSS custom properties to the document root
       const root = document.documentElement;
-      const vars = themeVars[actualTheme];
       
-      // Clear any existing theme classes
+      console.log('applyTheme called with:', actualTheme);
+      console.log('Document root before:', root.className);
+      
+      // Simply toggle the theme class - CSS handles the rest
       root.classList.remove('light', 'dark');
       root.classList.add(actualTheme);
       
-      // Apply CSS custom properties
-      Object.entries(vars).forEach(([property, value]) => {
-        root.style.setProperty(property, value);
-      });
+      console.log('Document root after class changes:', root.className);
+      console.log('Applied theme to web:', actualTheme);
       
-      console.log('Applied theme to web:', actualTheme, 'Variables:', vars);
-      
-      // Force a repaint by triggering layout
+      // Force a repaint to ensure styles apply immediately
       requestAnimationFrame(() => {
-        document.body.style.opacity = '0.99';
-        requestAnimationFrame(() => {
-          document.body.style.opacity = '';
-        });
+        const testEl = document.querySelector('[class*="bg-background"]');
+        if (testEl) {
+          const styles = getComputedStyle(testEl);
+          console.log('Test element background color:', styles.backgroundColor);
+        }
       });
     } else {
       // For React Native, colors are handled via context
@@ -185,6 +176,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const setTheme = (newTheme: Theme) => {
     console.log('ThemeContext setTheme called with:', newTheme);
     console.log('Platform.OS:', Platform.OS);
+    console.log('Current document.documentElement.className:', Platform.OS === 'web' ? document.documentElement.className : 'N/A');
+    
     setThemeState(newTheme);
     
     // Apply theme immediately for better responsiveness
@@ -205,6 +198,17 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
     
     applyTheme(immediateActualTheme);
+    
+    // Additional debugging for web
+    if (Platform.OS === 'web') {
+      setTimeout(() => {
+        console.log('After setTheme - document.documentElement.className:', document.documentElement.className);
+        console.log('After setTheme - CSS variables on root:', {
+          background: getComputedStyle(document.documentElement).getPropertyValue('--color-background'),
+          foreground: getComputedStyle(document.documentElement).getPropertyValue('--color-foreground')
+        });
+      }, 100);
+    }
   };
 
   // Resolve actual theme

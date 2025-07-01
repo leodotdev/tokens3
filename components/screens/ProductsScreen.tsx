@@ -6,7 +6,10 @@ import { TablerIcon } from '../icons/TablerIcon';
 import { SparklesEmoji } from '../icons/FluentEmojiReal';
 import { AIChatInterface } from '../features/AIChatInterface';
 import { ProductsSearchTab } from '../features/ProductsSearchTab';
+import { UniversalComposer } from '../features/UniversalComposer';
+import { InlineChatInterface } from '../features/InlineChatInterface';
 import { AuthModal } from '../features/AuthModal';
+import { ChatConversation } from '../../lib/chat-storage';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { getThemeClassName } from '../../lib/theme-utils';
@@ -22,74 +25,87 @@ export const ProductsScreen: React.FC = () => {
   const isWeb = Platform.OS === 'web';
   const [activeTab, setActiveTab] = useState<ProductsTab>('search'); // Start with search tab
   const [authModalVisible, setAuthModalVisible] = useState(false);
+  const [showChatInterface, setShowChatInterface] = useState(false);
+  const [currentConversation, setCurrentConversation] = useState<ChatConversation | null>(null);
 
+
+  const handleChatStart = (conversation: ChatConversation) => {
+    setCurrentConversation(conversation);
+    setShowChatInterface(true);
+  };
+
+  const handleCloseChatInterface = () => {
+    setShowChatInterface(false);
+    setCurrentConversation(null);
+  };
+
+  const handleSearchSubmit = (query: string, filters?: any) => {
+    // Handle search submission - update products list
+    console.log('Products search:', query, filters);
+    // TODO: Implement product search functionality
+  };
 
   return (
     <View className="flex-1" style={{ backgroundColor: colors.background, paddingTop: isMobile ? insets.top : 0 }}>
-      <View className="flex-1 max-w-4xl self-center w-full">
-        {/* Header */}
-        <View className="px-6 pb-4 pt-4">
-          <View className="mb-6 flex-row items-start justify-between">
-            <View className="flex-1">
-              <Text className="text-3xl font-bold" style={{ color: colors.foreground }}>Products</Text>
-              <Text className="mt-1" style={{ color: colors.foregroundSecondary }}>
-                Search and browse products
-              </Text>
-            </View>
-            {!user && (
-              <TouchableOpacity
-                onPress={() => setAuthModalVisible(true)}
-                className="ml-4 rounded-full bg-blue-500 px-4 py-2"
-              >
-                <Text className="text-sm font-medium text-white">Sign In</Text>
-              </TouchableOpacity>
-            )}
-          </View>
-        </View>
-
-        {/* Content */}
-        <View className="flex-1">
-          <ProductsSearchTab 
-            isMobile={isMobile} 
-            showSearchInput={false} // Hide the built-in search input
-          />
-        </View>
-
-        {/* Sticky Search Input */}
-        <View 
-          className={getThemeClassName(
-            'px-4 pt-3 pb-3 border-t',
-            ['bg-background', 'border-border'],
-            isWeb
-          )}
-          style={{
-            ...(!isWeb && {
-              backgroundColor: colors.background,
-              borderColor: colors.border
-            }),
-            position: isMobile ? 'absolute' : 'relative',
-            bottom: isMobile ? 48 + insets.bottom : 0, // Position above nav tabs
-            left: 0,
-            right: 0,
+      {showChatInterface && currentConversation ? (
+        // Full screen chat interface
+        <InlineChatInterface
+          initialMessage={currentConversation.messages[0]?.text || ''}
+          onClose={handleCloseChatInterface}
+          isMobile={isMobile}
+          onProductsFound={(products) => {
+            console.log('Products found:', products);
           }}
-        >
-          <View className="flex-row items-center rounded-2xl px-4 py-2" style={{ backgroundColor: colors.backgroundSecondary }}>
-            <TablerIcon name="search" size={20} color={colors.foregroundMuted} />
-            <Text 
-              className="flex-1 ml-3 text-base"
-              style={{ color: colors.foregroundMuted }}
-            >
-              Search for gifts, gadgets, or anything...
-            </Text>
-            <TouchableOpacity
-              className="ml-2 p-2 rounded-full"
-              style={{ backgroundColor: colors.foregroundMuted }}
-            >
-              <TablerIcon name="sparkles" size={18} color={colors.background} />
-            </TouchableOpacity>
+        />
+      ) : (
+        // Normal products view
+        <View className="flex-1 max-w-4xl self-center w-full">
+          {/* Header */}
+          <View className="px-6 pb-4 pt-4">
+            <View className="mb-6 flex-row items-start justify-between">
+              <View className="flex-1">
+                <Text className="text-3xl font-bold" style={{ color: colors.foreground }}>Products</Text>
+                <Text className="mt-1" style={{ color: colors.foregroundSecondary }}>
+                  Search and browse products
+                </Text>
+              </View>
+              {!user && (
+                <TouchableOpacity
+                  onPress={() => setAuthModalVisible(true)}
+                  className="ml-4 rounded-full bg-blue-500 px-4 py-2"
+                >
+                  <Text className="text-sm font-medium text-white">Sign In</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          </View>
+
+          {/* Content */}
+          <View className="flex-1">
+            <ProductsSearchTab 
+              isMobile={isMobile} 
+              showSearchInput={false} // Hide the built-in search input
+            />
+          </View>
+
+          {/* Universal Composer */}
+          <View
+            style={{
+              position: isMobile ? 'absolute' : 'relative',
+              bottom: isMobile ? 48 + insets.bottom : 0, // Position above nav tabs
+              left: 0,
+              right: 0,
+            }}
+          >
+            <UniversalComposer
+              isMobile={isMobile}
+              onChatStart={handleChatStart}
+              onSearchSubmit={handleSearchSubmit}
+              placeholder="Search products or ask AI assistant..."
+            />
           </View>
         </View>
-      </View>
+      )}
 
       <AuthModal
         visible={authModalVisible}

@@ -10,6 +10,7 @@ import { productQueries } from '../../lib/queries';
 import type { ProductInsert } from '../../lib/supabase';
 import { ProductForm } from './ProductForm';
 import { TablerIcon } from '../icons/TablerIcon';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface AddProductModalProps {
   visible: boolean;
@@ -22,6 +23,7 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({
   onClose,
   onProductAdded,
 }) => {
+  const { colors } = useTheme();
   const backdropOpacity = useSharedValue(0);
   const modalTranslateY = useSharedValue(Platform.OS === 'web' ? 0 : 400);
   const modalOpacity = useSharedValue(0);
@@ -123,7 +125,7 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({
           style={[
             modalAnimatedStyle,
             {
-              backgroundColor: '#ffffff',
+              backgroundColor: colors.background,
               borderRadius: isWeb ? 24 : 0,
               borderTopLeftRadius: isWeb ? 24 : 20,
               borderTopRightRadius: isWeb ? 24 : 20,
@@ -136,7 +138,7 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({
               display: 'flex',
               flexDirection: 'column',
               borderWidth: 1,
-              borderColor: '#e4e4e7',
+              borderColor: colors.border,
             },
           ]}>
           <View style={{ flex: 1, overflow: 'hidden' }}>

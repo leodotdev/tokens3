@@ -11,7 +11,10 @@ import type { Person, SpecialDate, Bookmark } from '../../lib/supabase';
 import { AIChatCard } from '../features/AIChatCard';
 import { EventsCard } from '../features/EventsCard';
 import { PlaceholderCard } from '../features/PlaceholderCard';
+import { UniversalComposer } from '../features/UniversalComposer';
+import { InlineChatInterface } from '../features/InlineChatInterface';
 import { AITest } from '../debug/AITest';
+import { ChatConversation } from '../../lib/chat-storage';
 
 export const Dashboard: React.FC = () => {
   const { user } = useAuth();
@@ -25,6 +28,8 @@ export const Dashboard: React.FC = () => {
   const [upcomingDates, setUpcomingDates] = useState<SpecialDate[]>([]);
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showChatInterface, setShowChatInterface] = useState(false);
+  const [currentConversation, setCurrentConversation] = useState<ChatConversation | null>(null);
 
   useEffect(() => {
     if (user) {
@@ -59,6 +64,21 @@ export const Dashboard: React.FC = () => {
     loadDashboardData();
   };
 
+  const handleChatStart = (conversation: ChatConversation) => {
+    setCurrentConversation(conversation);
+    setShowChatInterface(true);
+  };
+
+  const handleCloseChatInterface = () => {
+    setShowChatInterface(false);
+    setCurrentConversation(null);
+  };
+
+  const handleSearchSubmit = (query: string, filters?: any) => {
+    // Handle search submission - could navigate to products screen with search
+    console.log('Dashboard search:', query, filters);
+  };
+
   // Grid layout configuration
   const getGridColumns = () => {
     if (isMobile) return 1;
@@ -84,27 +104,40 @@ export const Dashboard: React.FC = () => {
 
   return (
     <View className="flex-1" style={{ backgroundColor: colors.background, paddingTop: isMobile ? insets.top : 0 }}>
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        <View className="mx-auto w-full max-w-7xl px-6 pb-32">
-          <View className="flex-col gap-8">
-            {/* Header */}
-            <Animated.View entering={FadeInDown.delay(100)} className="flex-col gap-6 pt-6">
-              <View className="flex-row items-start justify-between">
-                <View className="flex-1">
-                  <View className="flex-col gap-2">
-                    <Text className="text-3xl font-bold" style={{ color: colors.foreground }}>
-                      Welcome back{user?.user_metadata?.name ? `, ${user.user_metadata.name}` : ''}!
-                    </Text>
-                    <Text style={{ color: colors.foregroundSecondary }}>
-                      Your AI-powered gift giving dashboard ✨
-                    </Text>
+      {showChatInterface && currentConversation ? (
+        // Full screen chat interface
+        <InlineChatInterface
+          initialMessage={currentConversation.messages[0]?.text || ''}
+          onClose={handleCloseChatInterface}
+          isMobile={isMobile}
+          onProductsFound={(products) => {
+            console.log('Products found:', products);
+          }}
+        />
+      ) : (
+        // Normal dashboard view
+        <>
+          <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+            <View className="mx-auto w-full max-w-7xl px-6 pb-32">
+              <View className="flex-col gap-8">
+                {/* Header */}
+                <Animated.View entering={FadeInDown.delay(100)} className="flex-col gap-6 pt-6">
+                  <View className="flex-row items-start justify-between">
+                    <View className="flex-1">
+                      <View className="flex-col gap-2">
+                        <Text className="text-3xl font-bold" style={{ color: colors.foreground }}>
+                          Welcome back{user?.user_metadata?.name ? `, ${user.user_metadata.name}` : ''}!
+                        </Text>
+                        <Text style={{ color: colors.foregroundSecondary }}>
+                          Your AI-powered gift giving dashboard ✨
+                        </Text>
+                      </View>
+                    </View>
                   </View>
-                </View>
-              </View>
-            </Animated.View>
+                </Animated.View>
 
-            {/* Dashboard Grid */}
-            <View className="flex-col gap-6">
+                {/* Dashboard Grid */}
+                <View className="flex-col gap-6">
             {/* Row 1 */}
             <View className={`flex-row gap-6 ${isMobile ? 'flex-col' : ''}`}>
               <Animated.View 
@@ -204,10 +237,13 @@ export const Dashboard: React.FC = () => {
                 <AITest />
               </Animated.View>
             )}
+                </View>
+              </View>
             </View>
-          </View>
-        </View>
-      </ScrollView>
+          </ScrollView>
+
+        </>
+      )}
     </View>
   );
 };

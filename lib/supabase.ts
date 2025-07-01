@@ -1,10 +1,18 @@
 import { createClient } from '@supabase/supabase-js';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Supabase configuration
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL || '';
 const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || '';
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    storage: AsyncStorage,
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: false,
+  },
+});
 
 // Database types matching your existing products table structure
 export type Database = {
@@ -67,6 +75,67 @@ export type Database = {
           last_checked?: string | null;
         };
       };
+      lists: {
+        Row: {
+          id: string;
+          user_id: string;
+          name: string;
+          description: string | null;
+          category: string | null;
+          criteria: string | null;
+          is_public: boolean | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          name: string;
+          description?: string | null;
+          category?: string | null;
+          criteria?: string | null;
+          is_public?: boolean | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          name?: string;
+          description?: string | null;
+          category?: string | null;
+          criteria?: string | null;
+          is_public?: boolean | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      list_products: {
+        Row: {
+          id: string;
+          list_id: string;
+          product_id: string;
+          added_at: string;
+          notes: string | null;
+          ai_suggested: boolean | null;
+        };
+        Insert: {
+          id?: string;
+          list_id: string;
+          product_id: string;
+          added_at?: string;
+          notes?: string | null;
+          ai_suggested?: boolean | null;
+        };
+        Update: {
+          id?: string;
+          list_id?: string;
+          product_id?: string;
+          added_at?: string;
+          notes?: string | null;
+          ai_suggested?: boolean | null;
+        };
+      };
     };
   };
 };
@@ -74,6 +143,14 @@ export type Database = {
 export type Product = Database['public']['Tables']['products']['Row'];
 export type ProductInsert = Database['public']['Tables']['products']['Insert'];
 export type ProductUpdate = Database['public']['Tables']['products']['Update'];
+
+export type List = Database['public']['Tables']['lists']['Row'];
+export type ListInsert = Database['public']['Tables']['lists']['Insert'];
+export type ListUpdate = Database['public']['Tables']['lists']['Update'];
+
+export type ListProduct = Database['public']['Tables']['list_products']['Row'];
+export type ListProductInsert = Database['public']['Tables']['list_products']['Insert'];
+export type ListProductUpdate = Database['public']['Tables']['list_products']['Update'];
 
 // User feature types
 export interface Bookmark {
@@ -92,22 +169,12 @@ export interface Like {
   product?: Product;
 }
 
-export interface List {
-  id: string;
-  user_id: string;
-  name: string;
-  description: string | null;
-  is_public: boolean | null;
-  created_at: string | null;
-  updated_at: string | null;
+// Extended types with relations
+export interface ListWithProducts extends List {
+  products?: (ListProduct & { product?: Product })[];
 }
 
-export interface ListProduct {
-  id: string;
-  list_id: string;
-  product_id: string;
-  added_at: string | null;
-  notes: string | null;
+export interface ListProductWithProduct extends ListProduct {
   product?: Product;
 }
 

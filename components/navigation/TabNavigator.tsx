@@ -1,9 +1,8 @@
 import React from 'react';
-import { View, TouchableOpacity, Text, Platform } from 'react-native';
+import { View, TouchableOpacity, Text, Platform , useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TablerIcon } from '../icons/TablerIcon';
 import type { TablerIconName } from '../icons/TablerIcon';
-import { useWindowDimensions } from 'react-native';
 import { useTheme } from '../../contexts/ThemeContext';
 import { getThemeStyle, getThemeClassName } from '../../lib/theme-utils';
 
