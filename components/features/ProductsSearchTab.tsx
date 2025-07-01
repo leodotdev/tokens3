@@ -19,7 +19,7 @@ import { EditProductModal } from './EditProductModal';
 import { AuthModal } from './AuthModal';
 import { useAuth } from '../../contexts/AuthContext';
 
-const CARD_MARGIN = 12;
+const CARD_MARGIN = 20;
 const PADDING = 24;
 
 interface ProductsSearchTabProps {
@@ -356,17 +356,22 @@ export const ProductsSearchTab: React.FC<ProductsSearchTabProps> = ({ isMobile =
               paddingBottom: isMobile ? 80 : 100,
             }}
             columnWrapperStyle={
-              NUM_COLUMNS > 1 ? { justifyContent: 'space-between' } : undefined
+              NUM_COLUMNS > 1 ? { flexDirection: 'row' } : undefined
             }
             renderItem={({ item: product, index }) => {
-              const containerWidth = Math.min(width, 960);
-              const availableWidth = containerWidth - PADDING * 2;
+              // Calculate exact item width based on available space
+              const isLastInRow = NUM_COLUMNS === 1 || (index + 1) % NUM_COLUMNS === 0;
               const itemWidth = NUM_COLUMNS === 1 
-                ? availableWidth
-                : (availableWidth - CARD_MARGIN * (NUM_COLUMNS - 1)) / NUM_COLUMNS;
+                ? '100%' 
+                : `${100 / NUM_COLUMNS}%`;
               
               return (
-                <View style={{ width: itemWidth, marginBottom: CARD_MARGIN }}>
+                <View style={{ 
+                  width: itemWidth,
+                  paddingBottom: CARD_MARGIN,
+                  paddingRight: isLastInRow ? 0 : CARD_MARGIN / 2,
+                  paddingLeft: index % NUM_COLUMNS === 0 ? 0 : CARD_MARGIN / 2,
+                }}>
                   <ProductCard
                     product={product}
                     isSelected={selectedIds.has(product.id)}
