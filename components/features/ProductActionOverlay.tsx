@@ -12,6 +12,7 @@ import { FluentEmoji } from '../icons/FluentEmojiReal';
 import { useAuth } from '../../contexts/AuthContext';
 import { bookmarkQueries, likeQueries } from '../../lib/queries';
 import { WebImage } from '../ui/WebImage';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface ProductActionOverlayProps {
   product: Product | null;
@@ -34,6 +35,7 @@ export const ProductActionOverlay: React.FC<ProductActionOverlayProps> = ({
   onAuthRequired,
 }) => {
   const { user } = useAuth();
+  const { colors } = useTheme();
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   
@@ -220,13 +222,13 @@ export const ProductActionOverlay: React.FC<ProductActionOverlayProps> = ({
           style={[
             overlayAnimatedStyle,
             {
-              backgroundColor: '#ffffff',
+              backgroundColor: colors.background,
               borderRadius: 24,
               padding: 24,
               width: '100%',
               maxWidth: 320,
               borderWidth: 1,
-              borderColor: '#e4e4e7',
+              borderColor: colors.border,
             },
           ]}>
           {/* Product Header */}
@@ -267,7 +269,7 @@ export const ProductActionOverlay: React.FC<ProductActionOverlayProps> = ({
                 onPress={action.onPress}
                 className="flex-row items-center rounded-xl px-4 py-4"
                 style={{
-                  backgroundColor: '#fafafa',
+                  backgroundColor: colors.backgroundSecondary,
                 }}>
                 <View className="mr-4">
                   <FluentEmoji name={action.icon as any} size={24} />
